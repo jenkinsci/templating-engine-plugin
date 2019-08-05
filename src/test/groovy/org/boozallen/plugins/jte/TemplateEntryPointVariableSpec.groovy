@@ -230,7 +230,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     setup:
     String templateVar;
     String templateString = "the template";
-    Map config = [:] as HashMap
+    Map config = Mock(HashMap)
 
     TemplateFlowDefinition templateFlowDefinition = Mock(TemplateFlowDefinition)
     1 * templateFlowDefinition.getTemplate() >> { return templateString }
@@ -245,11 +245,68 @@ class TemplateEntryPointVariableSpec extends Specification {
     GroovyMock(TemplateLogger, global: true)
     1 * TemplateLogger.print("Obtained Pipeline Template from job configuration") >> {return }
 
+    GroovyMock(FileSystemWrapper, global: true)
+    0 * FileSystemWrapper.createFromJob()
+
+    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
+    0 * fs.getFileContents(_, _, _)
+
+    GroovyMock(GovernanceTier, global: true)
+    0 * GovernanceTier.getHierarchy()
+
+    0 * config.get("pipeline_template")
+    0 * config.get("allow_scm_jenkinsfile")
+
     when:
     templateVar = TemplateEntryPointVariable.getTemplate(config)
 
     then:
-    templateVar == templateString
     notThrown(Exception)
+    templateVar == templateString
+
   }
+
+  def "getTemplate from JenkinsFile" (){
+
+    setup:
+    String templateVar;
+    String fileString = "the fileString";
+    Map config = Mock(HashMap)//new HashMap()
+    //config.allow_scm_jenkinsfile = true
+    1 * config.get("allow_scm_jenkinsfile") >> {return true }
+    FlowDefinition flowDefinition = Mock(FlowDefinition)
+
+    WorkflowJob job = GroovyMock(WorkflowJob)
+    1 * job.getDefinition() >> {return flowDefinition }
+
+    GroovyMock(RunUtils, global: true)
+    1 * RunUtils.getJob() >> { return job}
+
+    GroovyMock(TemplateLogger, global: true)
+    0 * TemplateLogger.print(_, _)
+    0 * TemplateLogger.printWarning(_)
+
+    GroovyMock(FileSystemWrapper, global: true)
+    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
+    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return fileString}
+
+    1 * FileSystemWrapper.createFromJob() >> { return fs }
+
+    GroovyMock(GovernanceTier, global: true)
+    0 * GovernanceTier.getHierarchy()
+
+    // config.pipeline_template
+    0 * config.get("pipeline_template")
+
+
+    when:
+    templateVar = TemplateEntryPointVariable.getTemplate(config)
+
+    then:
+    notThrown(Exception)
+    templateVar == fileString
+
+
+  }
+
 }
