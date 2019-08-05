@@ -1,14 +1,20 @@
 package org.boozallen.plugins.jte
 
+import hudson.Extension
 import org.boozallen.plugins.jte.binding.TemplateBinding
+import org.boozallen.plugins.jte.binding.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.config.GovernanceTier
 import org.boozallen.plugins.jte.config.PipelineConfig
 import org.boozallen.plugins.jte.config.TemplateConfigDsl
 import org.boozallen.plugins.jte.config.TemplateConfigObject
+import org.boozallen.plugins.jte.console.TemplateLogger
+import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.boozallen.plugins.jte.utils.FileSystemWrapper
 import org.boozallen.plugins.jte.utils.RunUtils
 import org.boozallen.plugins.jte.utils.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.cps.CpsScript
+import org.jenkinsci.plugins.workflow.flow.FlowDefinition
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import spock.lang.*
 import hudson.model.*
 import org.junit.*;
@@ -38,6 +44,7 @@ class TemplateEntryPointVariableSpec extends Specification {
 
     then:
     name == TemplateEntryPointVariable.NAME
+    notThrown(Exception)
   }
 
   def "getValue returns the existing value from script.binding" (){
@@ -56,6 +63,7 @@ class TemplateEntryPointVariableSpec extends Specification {
 
     then:
     value == template
+    notThrown(Exception)
 
   }
 
@@ -64,7 +72,6 @@ class TemplateEntryPointVariableSpec extends Specification {
     CpsScript script = Mock(CpsScript)
     groovy.lang.Binding bindingStart = Mock(groovy.lang.Binding)
     TemplateBinding binding = Mock(TemplateBinding)
-    Script template = Mock(Script)
 
     1 * script.getBinding() >> { return bindingStart }
     0 * bindingStart.getVariable(TemplateEntryPointVariable.NAME)
@@ -103,6 +110,7 @@ class TemplateEntryPointVariableSpec extends Specification {
 
     then:
     value == parseResult
+    notThrown(Exception)
 
   }
 
@@ -130,7 +138,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     templateEntryPointVariable.aggregateTemplateConfigurations(pipelineConfigMain)
 
     then:
-    true == true
+    notThrown(Exception)
   }
 
   def "aggregateTemplateConfigurations #tier_count tier, with local config"(){
@@ -170,10 +178,78 @@ class TemplateEntryPointVariableSpec extends Specification {
     templateEntryPointVariable.aggregateTemplateConfigurations(pipelineConfigMain)
 
     then:
-    true == true
+    notThrown(Exception)
 
     where:
     tier_count << [0, 1, 5]
 
+  }
+
+  @Extension
+  public static class TemplatePrimitiveInjectorLocal extends TemplatePrimitiveInjector {
+    static final public String DO_INJECT = "TemplatePrimitiveInjectorLocal-doInject"
+    static final public String DO_POST_INJECT = "TemplatePrimitiveInjectorLocal-doPostInject"
+    // Optional. delegate injecting template primitives into the binding to the specific
+    // implementations of TemplatePrimitive
+    static void doInject(TemplateConfigObject config, CpsScript script){
+      script.getBinding().setVariable(DO_INJECT, TemplatePrimitiveInjectorLocal.newInstance())
+    }
+
+    // Optional. do post processing of the config and binding.
+    static void doPostInject(TemplateConfigObject config, CpsScript script){
+      script.getBinding().setVariable(DO_POST_INJECT, TemplatePrimitiveInjectorLocal.newInstance())
+    }
+  }
+
+  def "initializeBinding" (){
+    TemplateConfigObject templateConfigObject = Mock(TemplateConfigObject)
+    PipelineConfig pipelineConfigMain = Mock(PipelineConfig)
+    1 * pipelineConfigMain.getConfig() >> { return templateConfigObject }
+
+    CpsScript script = Mock(CpsScript)
+    TemplateBinding templateBinding = Mock(TemplateBinding)
+
+    3 * script.getBinding() >> { return templateBinding} //
+    1 * templateBinding.lock() >> { return }
+    1 * templateBinding.setVariable(TemplatePrimitiveInjectorLocal.DO_INJECT, _) >> { return }
+    1 * templateBinding.setVariable(TemplatePrimitiveInjectorLocal.DO_POST_INJECT, _) >> { return }
+
+    GroovySpy(TemplatePrimitiveInjector.Impl.class, global:true)
+    1 * TemplatePrimitiveInjector.Impl.all() >> { return groovyJenkinsRule.jenkins.getExtensionList(TemplateEntryPointVariableSpec.TemplatePrimitiveInjectorLocal.class) }
+
+    when:
+    templateEntryPointVariable.initializeBinding(pipelineConfigMain, script)
+
+    then:
+    notThrown(Exception)
+
+  }
+
+  def "getTemplate from TemplateFlowDefinition" (){
+
+    setup:
+    String templateVar;
+    String templateString = "the template";
+    Map config = [:] as HashMap
+
+    TemplateFlowDefinition templateFlowDefinition = Mock(TemplateFlowDefinition)
+    1 * templateFlowDefinition.getTemplate() >> { return templateString }
+    FlowDefinition flowDefinition = templateFlowDefinition
+
+    WorkflowJob job = GroovyMock(WorkflowJob)
+    1 * job.getDefinition() >> {return flowDefinition }
+
+    GroovyMock(RunUtils, global: true)
+    1 * RunUtils.getJob() >> { return job}
+
+    GroovyMock(TemplateLogger, global: true)
+    1 * TemplateLogger.print("Obtained Pipeline Template from job configuration") >> {return }
+
+    when:
+    templateVar = TemplateEntryPointVariable.getTemplate(config)
+
+    then:
+    templateVar == templateString
+    notThrown(Exception)
   }
 }
