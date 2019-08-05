@@ -340,7 +340,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     1 * GovernanceTier.getHierarchy() >> { return [] as ArrayList }
 
     // config.pipeline_template
-    1 * config.get("pipeline_template") >> { return false}
+    1 * config.get("pipeline_template") >> { return null }
 
 
     when:
@@ -382,7 +382,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     1 * GovernanceTier.getHierarchy() >> { return [] as ArrayList }
 
     // config.pipeline_template
-    1 * config.get("pipeline_template") >> { return false}
+    1 * config.get("pipeline_template") >> { return null }
 
     when:
     templateVar = TemplateEntryPointVariable.getTemplate(config)
