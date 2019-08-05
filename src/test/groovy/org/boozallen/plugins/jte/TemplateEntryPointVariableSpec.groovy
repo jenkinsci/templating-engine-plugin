@@ -6,6 +6,7 @@ import org.boozallen.plugins.jte.binding.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.config.GovernanceTier
 import org.boozallen.plugins.jte.config.PipelineConfig
 import org.boozallen.plugins.jte.config.TemplateConfigDsl
+import org.boozallen.plugins.jte.config.TemplateConfigException
 import org.boozallen.plugins.jte.config.TemplateConfigObject
 import org.boozallen.plugins.jte.console.TemplateLogger
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
@@ -266,7 +267,7 @@ class TemplateEntryPointVariableSpec extends Specification {
 
   }
 
-  def "getTemplate from JenkinsFile" (){
+  def "getTemplate from app JenkinsFile and allow_scm_jenkinsfile" (){
 
     setup:
     String templateVar;
@@ -309,4 +310,86 @@ class TemplateEntryPointVariableSpec extends Specification {
 
   }
 
+  def "getTemplate throws exception when app JenkinsFile and !allow_scm_jenkinsfile and !pipeline_template and no tiers" (){
+
+    setup:
+    String templateVar;
+    String fileString = "the fileString";
+    Map config = Mock(HashMap)//new HashMap()
+    //config.allow_scm_jenkinsfile = false
+    1 * config.get("allow_scm_jenkinsfile") >> {return false }
+    FlowDefinition flowDefinition = Mock(FlowDefinition)
+
+    WorkflowJob job = GroovyMock(WorkflowJob)
+    1 * job.getDefinition() >> {return flowDefinition }
+
+    GroovyMock(RunUtils, global: true)
+    1 * RunUtils.getJob() >> { return job}
+
+    GroovyMock(TemplateLogger, global: true)
+    0 * TemplateLogger.print(_, _)
+    1 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
+
+    GroovyMock(FileSystemWrapper, global: true)
+    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
+    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return fileString}
+
+    1 * FileSystemWrapper.createFromJob() >> { return fs }
+
+    GroovyMock(GovernanceTier, global: true)
+    1 * GovernanceTier.getHierarchy() >> { return [] as ArrayList }
+
+    // config.pipeline_template
+    1 * config.get("pipeline_template") >> { return false}
+
+
+    when:
+    templateVar = TemplateEntryPointVariable.getTemplate(config)
+
+    then:
+    def e = thrown(TemplateConfigException)
+    e.getMessage() == "Could not determine pipeline template."
+
+  }
+
+  def "getTemplate throws exception when no app JenkinsFile and !pipeline_template and no tiers" (){
+
+    setup:
+    String templateVar;
+    String fileString = null;
+    Map config = Mock(HashMap)//new HashMap()
+    //config.allow_scm_jenkinsfile = false
+    0 * config.get("allow_scm_jenkinsfile") >> {return false }
+    FlowDefinition flowDefinition = Mock(FlowDefinition)
+
+    WorkflowJob job = GroovyMock(WorkflowJob)
+    1 * job.getDefinition() >> {return flowDefinition }
+
+    GroovyMock(RunUtils, global: true)
+    1 * RunUtils.getJob() >> { return job}
+
+    GroovyMock(TemplateLogger, global: true)
+    0 * TemplateLogger.print(_, _)
+    0 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
+
+    GroovyMock(FileSystemWrapper, global: true)
+    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
+    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return fileString}
+
+    1 * FileSystemWrapper.createFromJob() >> { return fs }
+
+    GroovyMock(GovernanceTier, global: true)
+    1 * GovernanceTier.getHierarchy() >> { return [] as ArrayList }
+
+    // config.pipeline_template
+    1 * config.get("pipeline_template") >> { return false}
+
+    when:
+    templateVar = TemplateEntryPointVariable.getTemplate(config)
+
+    then:
+    def e = thrown(TemplateConfigException)
+    e.getMessage() == "Could not determine pipeline template."
+
+  }
 }
