@@ -399,6 +399,51 @@ class TemplateEntryPointVariableSpec extends Specification {
 
   }
 
+  def "getTemplate return when app JenkinsFile and !allow_scm_jenkinsfile and config.pipeline_template and a tier template" (){
+
+    setup:
+    String templateVar;
+    String fileString = "the fileString";
+    Map config = Mock(HashMap)//new HashMap()
+    //config.allow_scm_jenkinsfile = false
+    1 * config.get("allow_scm_jenkinsfile") >> {return false }
+    FlowDefinition flowDefinition = Mock(FlowDefinition)
+
+    WorkflowJob job = GroovyMock(WorkflowJob)
+    1 * job.getDefinition() >> {return flowDefinition }
+
+    GroovyMock(RunUtils, global: true)
+    1 * RunUtils.getJob() >> { return job}
+
+    GroovyMock(TemplateLogger, global: true)
+    0 * TemplateLogger.print(_, _)
+    1 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
+
+    GroovyMock(FileSystemWrapper, global: true)
+    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
+    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return fileString}
+
+    1 * FileSystemWrapper.createFromJob() >> { return fs }
+
+    GroovyMock(GovernanceTier, global: true)
+    GovernanceTier tier = GroovyMock(GovernanceTier)
+    1 * tier.getTemplate("pipeline-template") >> { return fileString }
+    0 * tier.getJenkinsfile() >> { return null }
+    1 * GovernanceTier.getHierarchy() >> { return [tier] as ArrayList }
+
+    // config.pipeline_template
+    2 * config.get("pipeline_template") >> { return "pipeline-template" }
+
+
+    when:
+    templateVar = TemplateEntryPointVariable.getTemplate(config)
+
+    then:
+    notThrown(Exception)
+    templateVar == fileString
+
+  }
+
   def "getTemplate throws exception when app JenkinsFile and !allow_scm_jenkinsfile and !pipeline_template and no tier jenkinsfile" (){
 
     setup:
@@ -444,7 +489,7 @@ class TemplateEntryPointVariableSpec extends Specification {
 
   }
 
-  def "getTemplate throws exception when no app JenkinsFile and !pipeline_template and no tiers" (){
+  def "getTemplate throws exception when no app JenkinsFile and !pipeline_template and no tier Jenkinsfile" (){
 
     setup:
     String templateVar;
