@@ -359,28 +359,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     setup:
     String templateVar;
     String fileString = null;
-    Map config = Mock(HashMap)//new HashMap()
-    //config.allow_scm_jenkinsfile = false
-    0 * config.get("allow_scm_jenkinsfile") >> {return false }
-    FlowDefinition flowDefinition = Mock(FlowDefinition)
-
-    WorkflowJob job = GroovyMock(WorkflowJob)
-    1 * job.getDefinition() >> {return flowDefinition }
-
-    GroovyMock(RunUtils, global: true)
-    1 * RunUtils.getJob() >> { return job}
-
-    GroovyMock(TemplateLogger, global: true)
-    0 * TemplateLogger.print(_, _)
-
-    GroovyMock(FileSystemWrapper, global: true)
-    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
-    1 * FileSystemWrapper.createFromJob() >> { return fs }
-
-    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return fileString}
-    0 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
-
-
+    Map config = helperGetTemplateNoRepoJenkinsFile()
     GroovyMock(GovernanceTier, global: true)
     GovernanceTier tier = GroovyMock(GovernanceTier)
     1 * tier.getTemplate("pipeline-template") >> { return null }
@@ -404,27 +383,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     setup:
     String templateVar;
     String fileString = "the fileString";
-    Map config = Mock(HashMap)//new HashMap()
-    //config.allow_scm_jenkinsfile = false
-    0 * config.get("allow_scm_jenkinsfile") >> {return false }
-    FlowDefinition flowDefinition = Mock(FlowDefinition)
-
-    WorkflowJob job = GroovyMock(WorkflowJob)
-    1 * job.getDefinition() >> {return flowDefinition }
-
-    GroovyMock(RunUtils, global: true)
-    1 * RunUtils.getJob() >> { return job}
-
-    GroovyMock(TemplateLogger, global: true)
-    0 * TemplateLogger.print(_, _)
-
-    GroovyMock(FileSystemWrapper, global: true)
-    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
-    1 * FileSystemWrapper.createFromJob() >> { return fs }
-
-    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return null}
-    0 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
-
+    Map config = helperGetTemplateNoRepoJenkinsFile()
     GroovyMock(GovernanceTier, global: true)
     GovernanceTier tier = GroovyMock(GovernanceTier)
     1 * tier.getTemplate("pipeline-template") >> { return fileString }
@@ -449,37 +408,15 @@ class TemplateEntryPointVariableSpec extends Specification {
     setup:
     String templateVar;
     String fileString = "the fileString";
-    Map config = Mock(HashMap)//new HashMap()
-    //config.allow_scm_jenkinsfile = false
-    0 * config.get("allow_scm_jenkinsfile") >> {return false }
+    Map config = helperGetTemplateNoRepoJenkinsFile()
     // config.pipeline_template
     1 * config.get("pipeline_template") >> { return null }
-
-    FlowDefinition flowDefinition = Mock(FlowDefinition)
-
-    WorkflowJob job = GroovyMock(WorkflowJob)
-    1 * job.getDefinition() >> {return flowDefinition }
-
-    GroovyMock(RunUtils, global: true)
-    1 * RunUtils.getJob() >> { return job}
-
-    GroovyMock(TemplateLogger, global: true)
-    0 * TemplateLogger.print(_, _)
-
-    GroovyMock(FileSystemWrapper, global: true)
-    FileSystemWrapper fs = GroovyMock(FileSystemWrapper)
-    1 * FileSystemWrapper.createFromJob() >> { return fs }
-
-    1 * fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false) >> {return null}
-    0 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
 
     GroovyMock(GovernanceTier, global: true)
     GovernanceTier tier = GroovyMock(GovernanceTier)
     0 * tier.getTemplate(_)
     1 * tier.getJenkinsfile() >> { return null }
     1 * GovernanceTier.getHierarchy() >> { return [tier] as ArrayList }
-
-
 
     when:
     templateVar = TemplateEntryPointVariable.getTemplate(config)
@@ -495,11 +432,30 @@ class TemplateEntryPointVariableSpec extends Specification {
     setup:
     String templateVar;
     String fileString = "{ template }";
+    Map config = helperGetTemplateNoRepoJenkinsFile()
+    // config.pipeline_template
+    1 * config.get("pipeline_template") >> { return null }
+
+    GroovyMock(GovernanceTier, global: true)
+    GovernanceTier tier = GroovyMock(GovernanceTier)
+    0 * tier.getTemplate(_)
+    1 * tier.getJenkinsfile() >> { return fileString }
+    1 * GovernanceTier.getHierarchy() >> { return [tier] as ArrayList }
+
+    when:
+    templateVar = TemplateEntryPointVariable.getTemplate(config)
+
+    then:
+    notThrown(Exception)
+    templateVar == fileString
+
+  }
+
+  Map helperGetTemplateNoRepoJenkinsFile(){
     Map config = Mock(HashMap)//new HashMap()
     //config.allow_scm_jenkinsfile = false
     0 * config.get("allow_scm_jenkinsfile") >> {return false }
-    // config.pipeline_template
-    1 * config.get("pipeline_template") >> { return null }
+
 
     FlowDefinition flowDefinition = Mock(FlowDefinition)
 
@@ -519,19 +475,7 @@ class TemplateEntryPointVariableSpec extends Specification {
     1 * FileSystemWrapper.createFromJob() >> { return fs }
     0 * TemplateLogger.printWarning("Repository provided Jenkinsfile that will not be used, per organizational policy.")
 
-    GroovyMock(GovernanceTier, global: true)
-    GovernanceTier tier = GroovyMock(GovernanceTier)
-    0 * tier.getTemplate(_)
-    1 * tier.getJenkinsfile() >> { return fileString }
-    1 * GovernanceTier.getHierarchy() >> { return [tier] as ArrayList }
-
-    when:
-    templateVar = TemplateEntryPointVariable.getTemplate(config)
-
-    then:
-    notThrown(Exception)
-    templateVar == fileString
-
+    return config
   }
 
   def "whitelist permitsMethod for #receiver" (){
