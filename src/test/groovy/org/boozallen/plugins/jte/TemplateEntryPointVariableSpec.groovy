@@ -3,8 +3,10 @@ package org.boozallen.plugins.jte
 import hudson.Extension
 import org.boozallen.plugins.jte.binding.TemplateBinding
 import org.boozallen.plugins.jte.binding.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.binding.injectors.Stage
 import org.boozallen.plugins.jte.config.GovernanceTier
 import org.boozallen.plugins.jte.config.PipelineConfig
+import org.boozallen.plugins.jte.config.TemplateConfigBuilder
 import org.boozallen.plugins.jte.config.TemplateConfigDsl
 import org.boozallen.plugins.jte.config.TemplateConfigException
 import org.boozallen.plugins.jte.config.TemplateConfigObject
@@ -17,7 +19,6 @@ import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import spock.lang.*
-import hudson.model.*
 import org.junit.*;
 import org.jvnet.hudson.test.*;
 
@@ -531,5 +532,48 @@ class TemplateEntryPointVariableSpec extends Specification {
     notThrown(Exception)
     templateVar == fileString
 
+  }
+
+  def "whitelist permitsMethod for #receiver" (){
+    setup:
+    TemplateEntryPointVariable.MiscWhitelist whitelist = new TemplateEntryPointVariable.MiscWhitelist()
+
+    expect:
+    whitelist.permitsMethod(null, receiver, [])
+
+    where:
+    receiver << [new Stage(), new TemplateBinding(), new TemplatePrimitiveInjector(){} ]
+  }
+
+  def "whitelist !permitsMethod for #receiver" (){
+    setup:
+    TemplateEntryPointVariable.MiscWhitelist whitelist = new TemplateEntryPointVariable.MiscWhitelist()
+
+    expect:
+    !whitelist.permitsMethod(null, receiver, [])
+
+    where:
+    receiver << [new Object(){}, [], "", new GovernanceTier() ]
+  }
+
+// could not test
+//  def "whitelist permitsMethod for TemplateConfigBuilder" (){
+//    setup:
+//    TemplateEntryPointVariable.MiscWhitelist whitelist = new TemplateEntryPointVariable.MiscWhitelist()
+//    TemplateConfigBuilder configBuilder = new LocalTemplateConfigBuilder()
+//
+//    expect:
+//    whitelist.permitsMethod(null, configBuilder, [])
+//  }
+
+  def "whitelist !permitsConstructor for #receiver" (){
+    setup:
+    TemplateEntryPointVariable.MiscWhitelist whitelist = new TemplateEntryPointVariable.MiscWhitelist()
+
+    expect:
+    !whitelist.permitsConstructor(constructor, [])
+
+    where:
+    constructor << [TemplateBinding.constructors[0]]
   }
 }
