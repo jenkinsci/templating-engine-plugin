@@ -18,6 +18,7 @@ package org.boozallen.plugins.jte.config
 
 
 import org.boozallen.plugins.jte.console.TemplateLogger
+import org.boozallen.plugins.jte.utils.RunUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import jenkins.model.Jenkins
 
@@ -29,9 +30,7 @@ class PipelineConfig implements Serializable{
     Boolean firstJoin = true  
 
     PipelineConfig(){
-      String defaultTemplateConfig = Jenkins.instance
-                                  .getPluginManager()
-                                  .uberClassLoader
+      String defaultTemplateConfig = RunUtils.classLoader
                                   .loadClass("org.boozallen.plugins.jte.config.PipelineConfig")
                                   .getResource(GovernanceTier.CONFIG_FILE).text
       

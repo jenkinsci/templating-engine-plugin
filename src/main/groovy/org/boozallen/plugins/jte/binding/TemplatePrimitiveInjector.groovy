@@ -31,17 +31,14 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
     // Optional. do post processing of the config and binding. 
     static void doPostInject(TemplateConfigObject config, CpsScript script){}
 
-    // used to get all loaders
+    // used to get all injectors
     static ExtensionList<TemplatePrimitiveInjector> all(){
         return Impl.all()
     }
 
     static class Impl {// could not mock the abstract class
-        static ClassLoader getClassLoader(){
-            return  RunUtils.classLoader
-        }
 
-        // used to get all loaders
+        // used to get all injectors
         static ExtensionList<TemplatePrimitiveInjector> all(){
             return Jenkins.getActiveInstance().getExtensionList(TemplatePrimitiveInjector)
         }

@@ -13,7 +13,8 @@
 
 package org.boozallen.plugins.jte.binding.injectors
 
-import spock.lang.* 
+import org.boozallen.plugins.jte.utils.RunUtils
+import spock.lang.*
 import org.junit.*
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.boozallen.plugins.jte.config.TemplateConfigObject
@@ -41,8 +42,8 @@ class KeywordSpec extends Specification{
     def setup(){
         ClassLoader shellClassLoader = new groovy.lang.GroovyClassLoader(classLoader)
 
-        GroovySpy(TemplatePrimitiveInjector.Impl.class, global:true)
-        TemplatePrimitiveInjector.Impl.getClassLoader() >> { return shellClassLoader }
+        GroovySpy(RunUtils.class, global:true)
+        RunUtils.getClassLoader() >> { return shellClassLoader }
 
         GroovyShell shell = Spy(GroovyShell)
         shell.getClassLoader() >> { return shellClassLoader }

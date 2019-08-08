@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.config.*
 import org.boozallen.plugins.jte.hooks.*
 import org.boozallen.plugins.jte.config.*
 import org.boozallen.plugins.jte.console.TemplateLogger
+import org.boozallen.plugins.jte.utils.RunUtils
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.InvokerInvocationException
@@ -112,9 +113,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
     @NonCPS
     static StepWrapper createDefaultStep(CpsScript script, String name, Map stepConfig){
         // create default step implementation Script 
-        String defaultImpl = Jenkins.instance
-                                    .pluginManager
-                                    .uberClassLoader
+        String defaultImpl = RunUtils.classLoader
                                     .loadClass("org.boozallen.plugins.jte.binding.injectors.LibraryLoader")
                                     .getResource("defaultStepImplementation.groovy")
                                     .text
