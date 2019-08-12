@@ -187,16 +187,71 @@ class ApplicationEnvironmentSpec extends Specification{
             assert ex.message == "Variable dev is reserved as an Application Environment." 
     }
 
-    def "first environment's previous is null"{
+    def "first environment's previous is null"(){
+        when: 
+            injectEnvironments([
+                dev: [ long_name: "Development" ],
+                test: [ long_name: "Test" ]
+            ])
+        then: 
+            binding.getVariable("dev").previous == null 
+    }
+    
+    def "second env's previous is correct"(){
+        when: 
+            injectEnvironments([
+                dev: [ long_name: "Development" ],
+                test: [ long_name: "Test" ]
+            ])
+        then: 
+            binding.getVariable("test").previous == binding.getVariable("dev")
+    }
+
+    def "first env's next is correct"(){
+        when: 
+            injectEnvironments([
+                dev: [ long_name: "Development" ],
+                test: [ long_name: "Test" ]
+            ])
+        then: 
+            binding.getVariable("dev").next == binding.getVariable("test")
+    }
+
+    def "when only one environment previous/next are null"(){
         when: 
             injectEnvironments([
                 dev: [ long_name: "Development" ]
             ])
-            binding.lo
+            def dev = binding.getVariable("dev")
+        then: 
+            dev.previous == null
+            dev.next == null 
     }
-    def "when only one environment previous/next are null"()
-    def "when >= 3 envs, middle envs previous and next are correct"()
-    def "last environment's next is null"()
+
+    def "when >= 3 envs, middle envs previous and next are correct"(){
+        when: 
+            injectEnvironments([
+                dev: [ long_name: "Development" ],
+                test: [ long_name: "Test" ],
+                prod: [ long_name: "Production" ]
+            ])
+            def test = binding.getVariable("test")
+        then: 
+            test.previous == binding.getVariable("dev")
+            test.next == binding.getVariable("prod")
+    }
+
+    def "last environment's next is null"(){
+        when: 
+            injectEnvironments([
+                    dev: [ long_name: "Development" ],
+                    test: [ long_name: "Test" ],
+                    prod: [ long_name: "Production" ]
+                ])
+            def prod = binding.getVariable("prod")
+        then: 
+            prod.next == null 
+    }
 
 
     def getApplicationEnvironmentClass(){
