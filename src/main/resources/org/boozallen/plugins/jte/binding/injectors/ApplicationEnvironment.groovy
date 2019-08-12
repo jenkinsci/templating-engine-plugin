@@ -29,6 +29,9 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
     String short_name
     String long_name
     final def config
+    ApplicationEnvironment previous 
+    ApplicationEnvironment next 
+
     
     ApplicationEnvironment(){}
 

@@ -187,6 +187,18 @@ class ApplicationEnvironmentSpec extends Specification{
             assert ex.message == "Variable dev is reserved as an Application Environment." 
     }
 
+    def "first environment's previous is null"{
+        when: 
+            injectEnvironments([
+                dev: [ long_name: "Development" ]
+            ])
+            binding.lo
+    }
+    def "when only one environment previous/next are null"()
+    def "when >= 3 envs, middle envs previous and next are correct"()
+    def "last environment's next is null"()
+
+
     def getApplicationEnvironmentClass(){
         /* ApplicationEnvironmentInjector.primitiveClass */
         return TemplateScriptEngine.createShell().classLoader.loadClass("org.boozallen.plugins.jte.binding.injectors.ApplicationEnvironment")
