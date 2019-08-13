@@ -97,7 +97,8 @@ html_theme_options = {
     'sticky_navigation': True,
     'navigation_depth': -1,
     'includehidden': True,
-    'titles_only': False
+    'titles_only': False,
+    'analytics_id': 'UA-144247959-2'
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
