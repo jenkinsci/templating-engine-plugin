@@ -17,6 +17,7 @@
 package org.boozallen.plugins.jte.binding.injectors
 
 import org.boozallen.plugins.jte.binding.*
+import org.boozallen.plugins.jte.utils.RunUtils
 import org.boozallen.plugins.jte.utils.TemplateScriptEngine
 import org.boozallen.plugins.jte.config.TemplateConfigObject
 import org.boozallen.plugins.jte.config.TemplateConfigException
@@ -88,7 +89,7 @@ import com.cloudbees.groovy.cps.NonCPS
 
     static getPrimitiveClass(){
         String self = "org.boozallen.plugins.jte.binding.injectors.LibraryLoader"
-        String classText = TemplatePrimitiveInjector.Impl.classLoader
+        String classText = RunUtils.classLoader
                                     .loadClass(self)
                                     .getResource("StepWrapper.groovy")
                                     .text

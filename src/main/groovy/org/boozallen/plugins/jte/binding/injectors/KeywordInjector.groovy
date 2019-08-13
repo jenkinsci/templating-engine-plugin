@@ -17,6 +17,7 @@
 package org.boozallen.plugins.jte.binding.injectors
 
 import org.boozallen.plugins.jte.binding.*
+import org.boozallen.plugins.jte.utils.RunUtils
 import org.boozallen.plugins.jte.utils.TemplateScriptEngine
 import org.boozallen.plugins.jte.config.TemplateConfigObject
 import org.jenkinsci.plugins.workflow.cps.CpsScript
@@ -33,9 +34,7 @@ import jenkins.model.Jenkins
 
     static Class getPrimitiveClass(){
         String self = "org.boozallen.plugins.jte.binding.injectors.KeywordInjector"
-        String classText = Jenkins.instance
-                                    .pluginManager
-                                    .uberClassLoader
+        String classText = RunUtils.classLoader
                                     .loadClass(self)
                                     .getResource("Keyword.groovy")
                                     .text

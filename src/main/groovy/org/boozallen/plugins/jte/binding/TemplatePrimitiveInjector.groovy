@@ -17,6 +17,7 @@
 package org.boozallen.plugins.jte.binding
 
 import org.boozallen.plugins.jte.config.TemplateConfigObject
+import org.boozallen.plugins.jte.utils.RunUtils
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import hudson.ExtensionPoint
 import hudson.ExtensionList 
@@ -30,19 +31,14 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
     // Optional. do post processing of the config and binding. 
     static void doPostInject(TemplateConfigObject config, CpsScript script){}
 
-    // used to get all loaders
+    // used to get all injectors
     static ExtensionList<TemplatePrimitiveInjector> all(){
         return Impl.all()
     }
 
     static class Impl {// could not mock the abstract class
-        static ClassLoader getClassLoader(){
-            return    Jenkins.get()
-                    .pluginManager
-                    .uberClassLoader
-        }
 
-        // used to get all loaders
+        // used to get all injectors
         static ExtensionList<TemplatePrimitiveInjector> all(){
             return Jenkins.getActiveInstance().getExtensionList(TemplatePrimitiveInjector)
         }

@@ -36,6 +36,15 @@ import java.lang.reflect.Constructor
 import javax.annotation.Nonnull
 
 @Extension public class TemplateEntryPointVariable extends GlobalVariable {
+    final static public String NAME = "template"
+
+    public PipelineConfig newPipelineConfig(){
+        return new PipelineConfig()
+    }
+
+    public TemplateBinding newTemplateBinding(){
+        return new TemplateBinding()
+    }
 
     @Nonnull
     @Override
@@ -49,36 +58,35 @@ import javax.annotation.Nonnull
         Object template
 
         if (script.getBinding().hasVariable(getName())) {
-            template = binding.getVariable(getName())
+            template = script.getBinding().getVariable(getName())
         } else {
+            Binding binding = newTemplateBinding()
             // override script binding with JTE implementation 
-            script.setBinding(new TemplateBinding())
+            script.setBinding(binding)
 
             // set pipelineConfig object 
-            PipelineConfig pipelineConfig = new PipelineConfig()
+            PipelineConfig pipelineConfig = newPipelineConfig()
 
             // aggregate pipeline configs
             aggregateTemplateConfigurations(pipelineConfig)
 
             // make accessible to libs if they need to access
             // more than just their own library config block 
-            script.getBinding().setVariable("pipelineConfig", pipelineConfig.getConfig().getConfig())
+            binding.setVariable("pipelineConfig", pipelineConfig.getConfig().getConfig())
 
-            script.getBinding().setVariable("templateConfigObject", pipelineConfig.getConfig())
+            binding.setVariable("templateConfigObject", pipelineConfig.getConfig())
 
             // populate the template
-            initializeBinding(pipelineConfig, script) 
+            initializeBinding(pipelineConfig, script)
 
             // parse entrypoint and return 
-            String entryPoint = Jenkins.instance
-                                .pluginManager
-                                .uberClassLoader
+            String entryPoint = RunUtils.classLoader
                                 .loadClass(getClass().getName())
                                 .getResource("TemplateEntryPoint.groovy")
                                 .text
 
-            template = TemplateScriptEngine.parse(entryPoint, script.getBinding())
-            script.getBinding().setVariable(getName(), template)
+            template = TemplateScriptEngine.parse(entryPoint, binding)
+            binding.setVariable(getName(), template)
         }
         return template
     }

@@ -16,7 +16,7 @@
 
 package org.boozallen.plugins.jte.utils
 
-
+import jenkins.model.Jenkins
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
@@ -71,5 +71,9 @@ class RunUtils implements Serializable{
         WorkflowJob job = build.getParent()
 
         return job
+    }
+
+    static ClassLoader getClassLoader(){
+        return Jenkins.get().pluginManager.uberClassLoader
     }
 }
