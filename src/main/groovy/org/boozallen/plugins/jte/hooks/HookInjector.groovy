@@ -17,6 +17,7 @@
 package org.boozallen.plugins.jte.hooks
 
 import org.boozallen.plugins.jte.config.*
+import org.boozallen.plugins.jte.utils.RunUtils
 import org.boozallen.plugins.jte.utils.TemplateScriptEngine
 import org.boozallen.plugins.jte.binding.*
 import org.jenkinsci.plugins.workflow.cps.CpsScript
@@ -38,9 +39,7 @@ import jenkins.model.Jenkins
 
     static Class getHooksClass(){
         String self = "org.boozallen.plugins.jte.hooks.HookInjector"
-        String classText = Jenkins.instance
-                                    .pluginManager
-                                    .uberClassLoader
+        String classText = RunUtils.classLoader
                                     .loadClass(self)
                                     .getResource("Hooks.groovy")
                                     .text
@@ -49,9 +48,7 @@ import jenkins.model.Jenkins
 
     static Class getAnnotatedMethodClass(){
         String self = "org.boozallen.plugins.jte.hooks.HookInjector"
-        String classText = Jenkins.instance
-                                    .pluginManager
-                                    .uberClassLoader
+        String classText = RunUtils.classLoader
                                     .loadClass(self)
                                     .getResource("AnnotatedMethod.groovy")
                                     .text

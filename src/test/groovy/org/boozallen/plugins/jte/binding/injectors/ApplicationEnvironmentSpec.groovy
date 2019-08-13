@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.binding.injectors
 import org.boozallen.plugins.jte.binding.TemplateBinding
 import org.boozallen.plugins.jte.binding.TemplateException
 import org.boozallen.plugins.jte.binding.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.utils.RunUtils
 import spock.lang.*
 import org.junit.*
 import org.jenkinsci.plugins.workflow.cps.CpsScript
@@ -47,8 +48,8 @@ class ApplicationEnvironmentSpec extends Specification{
     def setup(){
         ClassLoader shellClassLoader = new groovy.lang.GroovyClassLoader(classLoader)
 
-        GroovySpy(TemplatePrimitiveInjector.Impl.class, global:true)
-        TemplatePrimitiveInjector.Impl.getClassLoader() >> { return shellClassLoader }
+        GroovySpy(RunUtils.class, global:true)
+        RunUtils.getClassLoader() >> { return shellClassLoader }
 
         GroovyShell shell = Spy(GroovyShell)
         shell.getClassLoader() >> { return shellClassLoader }
