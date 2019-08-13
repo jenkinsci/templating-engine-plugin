@@ -23,13 +23,24 @@ import org.boozallen.plugins.jte.binding.*
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import hudson.Extension 
 import jenkins.model.Jenkins
+import com.cloudbees.groovy.cps.NonCPS
 
 @Extension class ApplicationEnvironmentInjector extends TemplatePrimitiveInjector {
 
+    @NonCPS
     static void doInject(TemplateConfigObject config, CpsScript script){
         Class ApplicationEnvironment = getPrimitiveClass()
+        ArrayList createdEnvs = [] 
         config.getConfig().application_environments.each{ name, appEnvConfig ->
-            script.getBinding().setVariable(name, ApplicationEnvironment.newInstance(name, appEnvConfig))
+            def env = ApplicationEnvironment.newInstance(name, appEnvConfig)
+            createdEnvs << env 
+            script.getBinding().setVariable(name, env)
+        }
+        createdEnvs.eachWithIndex{ env, index -> 
+            def previous = index ? createdEnvs[index - 1] : null  
+            def next = (index != (createdEnvs.size() - 1)) ? createdEnvs[index + 1] : null 
+            env.setPrevious(previous)
+            env.setNext(next)
         }
     }
 

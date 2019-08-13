@@ -29,6 +29,9 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
     String short_name
     String long_name
     final def config
+    ApplicationEnvironment previous 
+    ApplicationEnvironment next 
+
     
     ApplicationEnvironment(){}
 
@@ -37,6 +40,18 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
 
         short_name = _config.short_name ?: var_name 
         long_name = _config.long_name ?: var_name 
+
+        /*
+            users cant define the previous or next properties. they'll
+            just be ignored. so throw an exception if they try. 
+        */
+
+        def context = _config.subMap(["previous", "next"])
+        if(context){
+            throw new TemplateConfigException("""Error configuring ApplicationEnvironment ${var_name}
+            The previous and next configuration options are reserved and auto-populated. 
+            """.stripIndent())
+        }
         
         config = _config - _config.subMap(["short_name", "long_name"])
         /*

@@ -42,6 +42,55 @@ accepts an application environment as an argument, you could reference these obj
     test()
     deploy_to prod 
 
+*******************
+Determining Context
+*******************
+
+A created ApplicationEnvironment can determine the previous and next ApplicationEnvironment that's 
+been defined through the ``previous`` and ``next`` properties.  
+
+The first environment's ``previous`` property and the last environment's ``next`` property will be ``null``. 
+
+.. note:: 
+
+    These properties are automatically configured.  If you try to set the ``previous`` and ``next`` properties
+    in the environment's definition an exception will be thrown. 
+
+For example, defining: 
+
+.. code:: 
+
+    application_environments{
+        dev{
+            long_name = "Development"
+        }
+        test{
+            long_name = "Test" 
+        }
+        prod{
+            long_name = "Production" 
+        }
+    }
+
+This will create ``dev``, ``test``, and ``prod`` objects to be leveraged in your libraries and templates. 
+
+Then, to validate their context you could create a template such as: 
+
+.. code:: 
+
+    // validate dev environment's context 
+    assert dev.previous == null
+    assert dev.next == test 
+
+    // validate test environment's context
+    assert test.previous == dev 
+    assert test.next == prod 
+
+    // validate prod environment's context 
+    assert prod.previous == test 
+    assert prod.next == null 
+    
+
 *************************
 Additional Configurations 
 *************************
