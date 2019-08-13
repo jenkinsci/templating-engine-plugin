@@ -33,7 +33,7 @@ docs: ## builds documentation in _build/html
 	elif [ "$(goal)" = "deploy" ]; then\
 		$(eval old_remote := $(shell git remote get-url origin)) \
 		git remote set-url origin https://$(user):$(token)@github.com/jenkinsci/templating-engine-plugin.git ;\
-		docker run -v $(shell pwd):/app sdp-docs sphinx-versioning push --show-banner docs gh-pages . ;\
+		docker run -v $(shell pwd):/app sdp-docs sphinx-versioning --local-conf ./docs/conf.py push --show-banner docs gh-pages . ;\
 		echo git remote set-url origin $(old_remote) ;\
 		git remote set-url origin $(old_remote) ;\
 	else\
