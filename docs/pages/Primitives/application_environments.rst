@@ -70,6 +70,7 @@ For example, defining:
 This will create ``dev``, ``test``, and ``prod`` objects to be leveraged in your libraries and templates. 
 
 .. code:: 
+
     // validate dev environment's context 
     assert dev.previous == null
     assert dev.next == test 
