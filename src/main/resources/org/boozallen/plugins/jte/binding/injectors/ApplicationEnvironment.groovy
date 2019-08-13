@@ -50,7 +50,7 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         if(context){
             throw new TemplateConfigException("""Error configuring ApplicationEnvironment ${var_name}
             The previous and next configuration options are reserved and auto-populated. 
-            """)
+            """.stripIndent())
         }
         
         config = _config - _config.subMap(["short_name", "long_name"])
