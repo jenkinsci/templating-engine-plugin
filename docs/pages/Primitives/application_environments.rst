@@ -51,6 +51,11 @@ been defined through the ``previous`` and ``next`` properties.
 
 The first environment's ``previous`` property and the last environment's ``next`` property will be ``null``. 
 
+.. note:: 
+
+    These properties are automatically configured.  If you try to set the ``previous`` and ``next`` properties
+    in the environment's definition an exception will be thrown. 
+
 For example, defining: 
 
 .. code:: 
@@ -68,6 +73,8 @@ For example, defining:
     }
 
 This will create ``dev``, ``test``, and ``prod`` objects to be leveraged in your libraries and templates. 
+
+Then, to validate their context you could create a template such as: 
 
 .. code:: 
 

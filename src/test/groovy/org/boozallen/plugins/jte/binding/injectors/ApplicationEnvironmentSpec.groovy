@@ -253,6 +253,24 @@ class ApplicationEnvironmentSpec extends Specification{
             prod.next == null 
     }
 
+    def "defining the previous configuration throws exception"(){
+        when:
+            injectEnvironments([
+                dev: [ previous: "_" ]
+            ])
+        then: 
+            thrown(TemplateConfigException)
+    }
+
+    def "defining the next configuration throws exception"(){
+        when:
+            injectEnvironments([
+                dev: [ next: "_" ]
+            ])
+        then: 
+            thrown(TemplateConfigException)
+    }
+
 
     def getApplicationEnvironmentClass(){
         /* ApplicationEnvironmentInjector.primitiveClass */
