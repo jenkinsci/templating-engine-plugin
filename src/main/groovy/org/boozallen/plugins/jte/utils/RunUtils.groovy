@@ -74,8 +74,6 @@ class RunUtils implements Serializable{
     }
 
     static ClassLoader getClassLoader(){
-        return    Jenkins.get()
-                .pluginManager
-                .uberClassLoader
+        return Jenkins.get().pluginManager.uberClassLoader
     }
 }
