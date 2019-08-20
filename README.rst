@@ -4,7 +4,7 @@ Jenkins Templating Engine
 |Jenkins Plugin| |GitHub Release| |Jenkins Plugin Installs| |Gitter| 
 
 .. |Jenkins Plugin| image:: https://img.shields.io/jenkins/plugin/v/templating-engine.svg
-   :target: https://plugins.jenkins.io/configuration-as-code
+   :target: https://plugins.jenkins.io/templating-engine
 
 .. |GitHub Release| image:: https://img.shields.io/github/v/release/jenkinsci/templating-engine-plugin.svg?label=release
    :target: https://github.com/jenkinsci/templating-engine-plugin/releases/latest
