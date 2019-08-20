@@ -1,7 +1,19 @@
-[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/templating-engine.svg)](https://plugins.jenkins.io/configuration-as-code)
-[![GitHub release](https://img.shields.io/github/v/release/jenkinsci/templating-engine-plugin.svg?label=release)](https://github.com/jenkinsci/templating-engine-plugin/releases/latest)
-[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/templating-engine.svg?color=blue)](https://plugins.jenkins.io/templating-engine)
-[![Gitter](https://badges.gitter.im/jenkinsci/templating-engine-plugin.svg)](https://gitter.im/jenkinsci/templating-engine-plugin)
+|Jenkins Plugin| |GitHub Release| |Jenkins Plugin Installs| |Gitter| 
+
+    .. |Generic badge| image:: https://img.shields.io/badge/<SUBJECT>-<STATUS>-<COLOR>.svg
+       :target:
+
+.. |Jenkins Plugin| image:: https://img.shields.io/jenkins/plugin/v/templating-engine.svg
+   :target: https://plugins.jenkins.io/configuration-as-code
+
+.. |GitHub Release| image:: https://img.shields.io/github/v/release/jenkinsci/templating-engine-plugin.svg?label=release
+   :target: https://github.com/jenkinsci/templating-engine-plugin/releases/latest
+       
+.. |Jenkins Plugin Installs| image:: https://img.shields.io/jenkins/plugin/i/templating-engine.svg?color=blue
+   :target: https://plugins.jenkins.io/templating-engine
+
+.. |Gitter| image:: https://badges.gitter.im/jenkinsci/templating-engine-plugin.svg
+   :target: https://gitter.im/jenkinsci/templating-engine-plugin
 
 
 Jenkins Templating Engine
