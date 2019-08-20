@@ -1,7 +1,7 @@
-|Jenkins Plugin| |GitHub Release| |Jenkins Plugin Installs| |Gitter| 
+Jenkins Templating Engine
+=========================
 
-    .. |Generic badge| image:: https://img.shields.io/badge/<SUBJECT>-<STATUS>-<COLOR>.svg
-       :target:
+|Jenkins Plugin| |GitHub Release| |Jenkins Plugin Installs| |Gitter| 
 
 .. |Jenkins Plugin| image:: https://img.shields.io/jenkins/plugin/v/templating-engine.svg
    :target: https://plugins.jenkins.io/configuration-as-code
@@ -15,9 +15,6 @@
 .. |Gitter| image:: https://badges.gitter.im/jenkinsci/templating-engine-plugin.svg
    :target: https://gitter.im/jenkinsci/templating-engine-plugin
 
-
-Jenkins Templating Engine
-=========================
 
 `Full Documentation Can Be Found Here <https://jenkinsci.github.io/templating-engine-plugin>`_
 
