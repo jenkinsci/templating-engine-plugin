@@ -133,6 +133,42 @@ class StageSpec extends Specification{
     }
 
     @WithoutJenkins
+    def "validate stage arguments are passed through to steps"() {
+        given:
+            WorkflowJob job = jenkins.createProject(WorkflowJob);
+            job.setDefinition(new CpsFlowDefinition("""
+            import org.boozallen.plugins.jte.binding.TemplateBinding
+            import org.boozallen.plugins.jte.binding.injectors.StageInjector
+            import org.boozallen.plugins.jte.config.TemplateConfigObject
+
+            /*
+                initialize
+            */
+            setBinding(new TemplateBinding())
+            a = { arg1 -> println "running step A: " + arg1 }
+            b = { println "running step B" }
+            TemplateConfigObject config = new TemplateConfigObject(config: [
+                stages: [
+                    test_stage: [
+                        a: [:],
+                        b: [:]
+                    ]
+                ]
+            ])
+            StageInjector.doInject(config, this)
+
+            // run stage
+            test_stage("Example")
+
+            """, false))
+            def build =  jenkins.buildAndAssertSuccess(job)
+            expect:
+            jenkins.assertLogContains("running step A: Example", build)
+            jenkins.assertLogContains("running step B", build)
+
+    }
+
+    @WithoutJenkins
     def "validate override during initialization throws exception"(){
         setup:
         def stepWrapper = GroovyMock(Object)
@@ -161,13 +197,13 @@ class StageSpec extends Specification{
         GroovySpy(LibraryLoader.class, global:true)
         LibraryLoader.getPrimitiveClass() >> { return stepWrapper }
 
-        when: 
-            TemplateBinding binding = new TemplateBinding() 
+        when:
+            TemplateBinding binding = new TemplateBinding()
             binding.setVariable("a", new Stage(name: "a"))
             binding.lock()
             binding.setVariable("a", 1)
-        then: 
-            TemplateException ex = thrown() 
+        then:
+            TemplateException ex = thrown()
             assert ex.message == "The variable a is reserved as a template Stage."
     }
 

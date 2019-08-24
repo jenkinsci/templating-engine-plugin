@@ -41,11 +41,11 @@ class Stage extends TemplatePrimitive implements Serializable{
         this.steps = steps 
     }
 
-    void call(){
+    void call(Object... args){
         TemplateLogger.print "[Stage - ${name}]" 
         for(def i = 0; i < steps.size(); i++){
             String step = steps.get(i)
-            InvokerHelper.getMetaClass(script).invokeMethod(script, step, null)
+            InvokerHelper.getMetaClass(script).invokeMethod(script, step, args)
         }
     }
 
