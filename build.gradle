@@ -1,5 +1,5 @@
 plugins {
-  id 'org.jenkins-ci.jpi' version '0.37.1'
+  id 'org.jenkins-ci.jpi' version '0.39.0'
   id 'jacoco' 
 }
 
@@ -18,7 +18,7 @@ jenkinsPlugin {
     coreVersion = '2.138.1'
     shortName = 'templating-engine'
     displayName = 'Templating Engine'
-    url = 'https://wiki.jenkins.io/display/JENKINS/Templating+Engine+Plugin'
+    url = 'https://github.com/jenkinsci/templating-engine-plugin'
     disabledTestInjection = false
     localizerOutputDir = "${project.buildDir}/generated-src/localizer"
     configureRepositories = false
@@ -39,12 +39,12 @@ jenkinsPlugin {
 
 dependencies {
     // plugin dependencies
-    jenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-multibranch:2.20'
-    jenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-api:2.28'
-    jenkinsPlugins 'org.jenkins-ci.plugins:branch-api:2.0.20'
-    jenkinsPlugins 'org.jenkins-ci.plugins:scm-api:2.2.7'
-    jenkinsPlugins 'org.jenkins-ci.plugins:junit:1.24'
-    jenkinsPlugins 'org.jenkins-ci.plugins:github-branch-source:2.5.1'
+    implementation 'org.jenkins-ci.plugins.workflow:workflow-multibranch:2.20'
+    implementation 'org.jenkins-ci.plugins.workflow:workflow-api:2.28'
+    implementation 'org.jenkins-ci.plugins:branch-api:2.0.20'
+    implementation 'org.jenkins-ci.plugins:scm-api:2.2.7'
+    implementation 'org.jenkins-ci.plugins:junit:1.24'
+    implementation 'org.jenkins-ci.plugins:github-branch-source:2.5.1'
 
     // unit test dependencies
     testImplementation 'junit:junit:4.12'
@@ -57,14 +57,14 @@ dependencies {
     }
 
     // test plugins
-    jenkinsTest(group: "org.jenkins-ci.plugins", name: "scm-api", version: "2.3.0", classifier: "tests")
-    jenkinsTest(group: 'org.jenkins-ci.plugins', name: 'git', version:'3.9.3') {
+    testImplementation(group: "org.jenkins-ci.plugins", name: "scm-api", version: "2.3.0", classifier: "tests")
+    testImplementation(group: 'org.jenkins-ci.plugins', name: 'git', version:'3.9.3') {
         exclude(module: 'httpclient')
         exclude(module: 'annotation-indexer')
     }
-    jenkinsTest 'org.jenkins-ci.plugins:token-macro:1.12.1'
-    jenkinsTest 'org.jenkins-ci.plugins.workflow:workflow-aggregator:2.6'
-    jenkinsTest 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.19'
+    testImplementation 'org.jenkins-ci.plugins:token-macro:1.12.1'
+    testImplementation 'org.jenkins-ci.plugins.workflow:workflow-aggregator:2.6'
+    testImplementation 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.19'
 }
 
 jacocoTestReport {

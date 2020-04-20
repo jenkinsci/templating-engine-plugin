@@ -220,8 +220,12 @@ class TemplateEntryPointVariableSpec extends Specification {
 
         def injector = GroovyMock(Injector, global:true) 
 
+        ExtensionList<TemplatePrimitiveInjector> injectors = new ExtensionList<TemplatePrimitiveInjector>(jenkins.jenkins, Injector)
+        injectors.removeAll() 
+        injectors.add(injector)
+
         TemplatePrimitiveInjector.metaClass.static.all = {
-            return jenkins.jenkins.getExtensionList(Injector)
+            return injectors
         }
 
         when: 

@@ -21,10 +21,10 @@ preview: clean install ## runs a local preview server to view changes to the doc
 	$(shell npm bin)/gulp preview 
 
 jpi: ## builds the jpi via gradle
-	gradle clean jpi 
+	./gradlew clean jpi 
 
 test: ## runs the plugin's test suite 
-	gradle clean test 
+	./gradlew clean test 
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
