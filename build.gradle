@@ -1,5 +1,6 @@
 plugins {
   id 'org.jenkins-ci.jpi' version '0.39.0'
+  id 'jacoco'
 }
 
 repositories {
@@ -64,6 +65,12 @@ dependencies {
     testImplementation 'org.jenkins-ci.plugins:token-macro:1.12.1'
     testImplementation 'org.jenkins-ci.plugins.workflow:workflow-aggregator:2.6'
     testImplementation 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.19'
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled true
+    }
 }
 
 task testStable(type: Test) {
