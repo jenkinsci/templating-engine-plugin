@@ -73,6 +73,11 @@ jacocoTestReport {
     }
 }
 
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+}
+
 task testStable(type: Test) {
     useJUnit {
         excludeCategories 'org.boozallen.plugins.jte.testcategories.Unstable'
