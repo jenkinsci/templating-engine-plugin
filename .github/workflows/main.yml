@@ -14,4 +14,4 @@ jobs:
         java-version: 8
     - uses: eskatos/gradle-command-action@v1
       with:
-        arguments: --no-daemon test jacocoTestReport --scan
+        arguments: --no-daemon test --scan
