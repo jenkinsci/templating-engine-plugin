@@ -14,4 +14,9 @@ jobs:
         java-version: 8
     - uses: eskatos/gradle-command-action@v1
       with:
-        arguments: --no-daemon test --scan
+        arguments: --no-daemon test jacocoTestReport
+    - uses: actions/upload-artifact@v1
+      with:
+        name: test-results
+        path: build/reports
+              
