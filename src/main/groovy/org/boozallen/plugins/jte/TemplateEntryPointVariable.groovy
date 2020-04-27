@@ -80,9 +80,7 @@ import org.apache.commons.io.FileUtils
     }
 
     PipelineConfig aggregateTemplateConfigurations(){
-
         PipelineConfig pipelineConfig = new PipelineConfig() 
-
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy()
        
         //  we get the configs in ascending order of governance
@@ -179,7 +177,8 @@ import org.apache.commons.io.FileUtils
             FileSystemWrapper fs = FileSystemWrapper.createFromJob()
             String repoJenkinsfile = fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false)
             if (repoJenkinsfile){
-                if (config.allow_scm_jenkinsfile){
+                Boolean allowScmJenkinsfile = config.containsKey("allow_scm_jenkinsfile") ? config.allow_scm_jenkinsfile : true 
+                if (allowScmJenkinsfile){
                     return repoJenkinsfile
                 }else{
                     TemplateLogger.printWarning "Repository provided Jenkinsfile that will not be used, per organizational policy."
