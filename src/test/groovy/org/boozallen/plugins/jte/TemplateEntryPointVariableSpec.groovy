@@ -383,7 +383,9 @@ class TemplateEntryPointVariableSpec extends Specification {
             logger.println(args[0]) 
         }
 
-        Map config = [:]
+        Map config = [
+            allow_scm_jenkinsfile: false
+        ]
 
         String result 
         
