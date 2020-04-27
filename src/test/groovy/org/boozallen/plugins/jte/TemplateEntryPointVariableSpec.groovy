@@ -65,9 +65,11 @@ class TemplateEntryPointVariableSpec extends Specification {
         GovernanceTier.getHierarchy() >> [ t2, t1 ]
 
         PipelineConfig pipelineConfig = Mock() 
+        GroovySpy(PipelineConfig, global: true)
+        new PipelineConfig() >> pipelineConfig
 
         when: 
-        tepv.aggregateTemplateConfigurations(pipelineConfig)
+        tepv.aggregateTemplateConfigurations()
 
         then: 
         1 * pipelineConfig.join(c1) 
@@ -94,10 +96,12 @@ class TemplateEntryPointVariableSpec extends Specification {
         GroovySpy(GovernanceTier, global: true)
         GovernanceTier.getHierarchy() >> [ t2, t1 ]
 
-        PipelineConfig pipelineConfig = Mock() 
+        PipelineConfig pipelineConfig = Mock()
+        GroovySpy(PipelineConfig, global: true)
+        new PipelineConfig() >> pipelineConfig
 
         when: 
-        tepv.aggregateTemplateConfigurations(pipelineConfig)
+        tepv.aggregateTemplateConfigurations()
 
         then: 
         1 * pipelineConfig.join(c1) 
@@ -117,10 +121,12 @@ class TemplateEntryPointVariableSpec extends Specification {
         tepv.metaClass.getJobPipelineConfiguration = { null }
         GroovySpy(GovernanceTier, global: true)
         GovernanceTier.getHierarchy() >> []
-        PipelineConfig pipelineConfig = Mock() 
+        PipelineConfig pipelineConfig = Mock()
+        GroovySpy(PipelineConfig, global: true)
+        new PipelineConfig() >> pipelineConfig
 
         when: 
-        tepv.aggregateTemplateConfigurations(pipelineConfig)
+        tepv.aggregateTemplateConfigurations()
 
         then: 
         0 * pipelineConfig.join(_)

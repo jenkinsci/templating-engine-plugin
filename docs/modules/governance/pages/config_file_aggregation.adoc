@@ -1,15 +1,67 @@
 = Configuration File Aggregation
 
-When creating Governance Tiers to define your governance hierarchy, you can create configuration files to consolidate common configurations while tuning which aspects can be modified or overwritten by suborganizations in the hierarchy.
+When using the Jenkins Templating Engine, pipeline configuration files provided by Governance Tiers are inherited, and changes to the pipeline configuration are governed by a series of rules. These rules and the process by which Pipeline Configurations are aggregated is called **Conditional Inheritance**. 
 
-JTE provides some https://github.com/jenkinsci/templating-engine-plugin/blob/master/src/main/resources/org/boozallen/plugins/jte/config/pipeline_config.groovy[common configurations] by default.  The first configuration file found in the hierarchy will automatically override keys in common between the default configuration and the configuration file being loaded.
+== Configuration Hierarchy 
 
-After the first configuration file, each subsequent file will only be able to *add new root configuration keys* and any configuration that overlaps with the existing configuration will be ignored *unless* the parent configuration has explicitly allowed a configuration block to be modified via the `merge` and `override` keys.
+The configuration hierarchy is determined by where the job is located on the Jenkins instance.  Through this mechanism, arbitrarily complex configuration hierarchies can be created based upon how jobs are laid out on the Jenkins instance. 
 
-Setting `merge = true` in a configuration block will allow the next configuration file in the hierarchy to append configuration keys to the block.
+Let's take a look at an example: 
 
-Setting `override = true` in a configuration block will allow the next configuration file to replace the existing configuration block.
+image::config_hierarchy.png[]
 
-You can see some examples of these keywords in action xref:conditional_inheritance.adoc[here]. 
+Each time Job B is run, if present, the Pipeline Configurations from the `Global Governance Tier`, `Folder 1`, and the job itself will be aggregated **in that order**. 
 
-Each configuration file in the Governance Tier hierarchy will be combined according to these rules until there is a resultant aggregated pipeline configuration. It is this aggregated pipeline configuration that gets used to populate the selected pipeline template for execution.
+[IMPORTANT]
+====
+* You can provide a Pipeline Configuration that applies to every pipeline on the Jenkins instance via `Manage Jenkins > Configure System > Jenkins Templating Engine` as part of the Global Governance Tier. 
+* Pipeline Configurations can also be provided on every **Folder** on the Jenkins instance as part of a Governance Tier.
+====
+
+== Limiting Customizations
+
+The first configuration file found in the hierarchy may always define whatever fields it likes. 
+
+Subsequent configuration files will be limited in which already configured blocks can be customized. 
+
+[NOTE]
+====
+Pipeline Configurations are free to add new blocks to the root of the pipeline configuration. 
+====
+
+== Merging
+
+When configuring Pipeline Configurations, you can control which blocks subsequent configurations will be able to customize. 
+
+If subsequent Pipeline Configurations are permitted to *add* configuration to a block, but **not** override pre-existing values, then `merge = true` should be added to the block. 
+
+[source, groovy]
+----
+someBlock{
+    merge = true
+    // subsequent Pipeline Configurations can not change the value of someField 
+    someField = true 
+
+    // subsequent Pipeline Configurations may add additional fields
+}
+----
+
+== Overriding 
+
+If subsequent Pipeline Configurations are permitted to override a block's configurations, then `override = true` should be added to the block. 
+
+[source, groovy]
+----
+someBlock{
+    override = true
+    // subsequent Pipeline Configurations can change the value of someField, or remove it completely by not declaring it. 
+    someField = true 
+    
+    // subsequent Pipeline Configurations may add additional fields
+}
+----
+
+
+== Additional Examples
+
+xref:conditional_inheritance.adoc[More examples of Conditional Inheritance can seen on the examples page.] 

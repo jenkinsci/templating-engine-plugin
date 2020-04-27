@@ -26,54 +26,42 @@ import jenkins.model.Jenkins
   stores the aggregated & immutable pipeline configuration. 
 */
 class PipelineConfig implements Serializable{
-    TemplateConfigObject currentConfigObject
-    Boolean firstJoin = true  
-
-    PipelineConfig(){
-      String defaultTemplateConfig = RunUtils.classLoader
-                                  .loadClass("org.boozallen.plugins.jte.config.PipelineConfig")
-                                  .getResource(ScmPipelineConfigurationProvider.CONFIG_FILE).text
-      
-      currentConfigObject = TemplateConfigDsl.parse(defaultTemplateConfig)
-    }
-
-    // for testing using any base config object
-    PipelineConfig(TemplateConfigObject tco){
-        this.currentConfigObject = tco
-    }
-
-
-    // for testing using the base pipeline config file contents
-    static String baseConfigContentsFromLoader(ClassLoader ldr){
-        ldr.loadClass("org.boozallen.plugins.jte.config.PipelineConfig")
-                .getResource(ScmPipelineConfigurationProvider.CONFIG_FILE).text
-    }
+    TemplateConfigObject configObject = null
 
     TemplateConfigObject getConfig(){
-      return currentConfigObject
+      return configObject ?: new TemplateConfigObject() 
     }
 
-    /*
-      
-    */
     void join(TemplateConfigObject child){
-      def pipeline_config
-      def argCopy = TemplateConfigDsl.parse(TemplateConfigDsl.serialize(child))
-      def prevCopy = TemplateConfigDsl.parse(TemplateConfigDsl.serialize(currentConfigObject))
-
       /*
-        for first join, you always override the default JTE config
-        for subsequent joins, the current configuration always wins out
-        unless a merge/override take over
+        If this is the first call to join, then there is no pre-existing
+        configuration to merge.  set the current pipeline configuration to 
+        the child and return 
       */
-      if (firstJoin){ 
-        pipeline_config = currentConfigObject.config + child.config 
-        firstJoin = false 
-      } else{
-        pipeline_config = child.config + currentConfigObject.config
+      if(!configObject){
+        configObject = child 
+        printJoin(child, child, new TemplateConfigObject(config: [:], merge: [], override: []))
+        return 
       }
 
-      currentConfigObject.override.each{ key ->
+      def pipeline_config
+      def argCopy = TemplateConfigDsl.parse(TemplateConfigDsl.serialize(child))
+      def prevCopy = TemplateConfigDsl.parse(TemplateConfigDsl.serialize(configObject))
+
+      /*
+        start out by wiping out any configurations that were
+        already defined by the previous configuration.. bc governance
+      */ 
+      pipeline_config = child.config + configObject.config
+
+      /*
+        if the current pipeline configuration allows children configurations 
+        to perform overrides for any block, then check the incoming pipeline 
+        configuration being joined to see if that block has been modified. 
+
+        If it has, overwrite the block with the child's. 
+      */
+      configObject.override.each{ key ->
         if (get_prop(child.config, key) != null){
           clear_prop(pipeline_config, key)
           if(get_prop(pipeline_config, key) instanceof Map){
@@ -85,13 +73,22 @@ class PipelineConfig implements Serializable{
         }
       }
 
-      currentConfigObject.merge.each{ key ->
+      /*
+        if the current pipeline configuration allows children configurations 
+        to perform merges for any block, then check the incoming pipeline 
+        configuration being joined to see if that block has been modified. 
+
+        If it has, add any new fields in the block but leave the already 
+        defined ones as is. 
+      */
+      configObject.merge.each{ key ->
         if (get_prop(child.config, key) != null){
           get_prop(pipeline_config, key) << (get_prop(child.config, key) + get_prop(pipeline_config, key))
         }
       }
 
       // trim merge and overrides that don't apply 
+      // see: https://github.com/jenkinsci/templating-engine-plugin/issues/48
       def r = getNested(pipeline_config)
       child.merge = child.merge.findAll{ m -> 
         r.keySet().collect{ it.startsWith(m) }.contains(true)
@@ -100,20 +97,19 @@ class PipelineConfig implements Serializable{
         r.keySet().collect{ it.startsWith(o) }.contains(true)
       }
 
-
       child.setConfig(pipeline_config)
       printJoin(child, argCopy, prevCopy)
-      currentConfigObject = child
+      configObject = child
 
     }
 
-    static def get_prop(o, p){
+    def get_prop(o, p){
       return p.tokenize('.').inject(o){ obj, prop ->       
         obj?."$prop"
       }   
     }
 
-    static void clear_prop(o, p){
+    void clear_prop(o, p){
       def last_token
       if (p.tokenize('.')){
         last_token = p.tokenize('.').last()
@@ -128,7 +124,7 @@ class PipelineConfig implements Serializable{
       }   
     }
 
-    static void set_prop(o, p, n){
+    void set_prop(o, p, n){
       def last_token
       if (p.tokenize('.')){
         last_token = p.tokenize('.').last()
@@ -143,7 +139,7 @@ class PipelineConfig implements Serializable{
       }   
     }
 
-    static def getNestedKeys(map, result = [], String keyPrefix = '') {
+    def getNestedKeys(map, result = [], String keyPrefix = '') {
       map.each { key, value ->
         if (value instanceof Map) {
             getNestedKeys(value, result, "${keyPrefix}${key}.")
@@ -154,7 +150,7 @@ class PipelineConfig implements Serializable{
       return result
     }
 
-    static def getNested(map, resultKeys = [], String keyPrefix = '') {
+    def getNested(map, resultKeys = [], String keyPrefix = '') {
         def ret = [:]
         map.each { key, value ->
           def pathKey = "${keyPrefix}${key}"
@@ -176,13 +172,11 @@ class PipelineConfig implements Serializable{
         return ret
     }
 
-    static printJoin(TemplateConfigObject outcome, TemplateConfigObject incoming, TemplateConfigObject prev){
-
+    void printJoin(TemplateConfigObject outcome, TemplateConfigObject incoming, TemplateConfigObject prev){
         // flatten each configuration for ease of delta analysis 
         def fOutcome = getNested(outcome.getConfig())
         def fIncoming = getNested(incoming.getConfig())
         def fPrevious = getNested(prev.getConfig())
-
 
         def output = ['Pipeline Configuration Modifications']
 
@@ -261,7 +255,6 @@ class PipelineConfig implements Serializable{
         }else{
           output << "Subsequent May Override: None" 
         }
-
 
         TemplateLogger.print( output.join("\n"), [ initiallyHidden: true, trimLines: false ])
     }

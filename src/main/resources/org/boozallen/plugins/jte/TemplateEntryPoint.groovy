@@ -31,11 +31,6 @@ def call(CpsClosure body = null){
     if(!body){
         template = TemplateEntryPointVariable.getTemplate(pipelineConfig)
     }
-    // checkout SCM and stash "workspace"
-    if (!pipelineConfig.skip_default_checkout) createWorkspaceStash()
-
-    // archive the current configuration
-    archiveConfig()
 
     // otherwise currentBuild.result defaults to null 
     currentBuild.result = "SUCCESS"
@@ -74,27 +69,5 @@ def call(CpsClosure body = null){
         */
         Hooks.invoke(CleanUp, getBinding(), context)
         Hooks.invoke(Notify, getBinding(), context)
-    }
-}
-
-void createWorkspaceStash(){
-    try{
-        if (scm){
-            node{
-                cleanWs()
-                checkout scm 
-                stash name: 'workspace', allowEmpty: true, useDefaultExcludes: false
-            }
-        }
-    }catch(any){
-
-    }
-}
-
-void archiveConfig(){
-    node{
-        // templateConfigObject variable injected from TemplateEntryPointVariable.groovy
-        writeFile text: TemplateConfigDsl.serialize(templateConfigObject), file: "pipeline_config.groovy"
-        archiveArtifacts "pipeline_config.groovy"
     }
 }

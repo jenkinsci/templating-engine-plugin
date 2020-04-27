@@ -39,10 +39,7 @@ import org.apache.commons.io.FileUtils
 @Extension public class TemplateEntryPointVariable extends GlobalVariable {
     final static public String NAME = "template"
 
-    public PipelineConfig newPipelineConfig(){
-        return new PipelineConfig()
-    }
-
+    // here for unit tests
     public TemplateBinding newTemplateBinding(){
         return new TemplateBinding()
     }
@@ -62,14 +59,12 @@ import org.apache.commons.io.FileUtils
             template = script.getBinding().getVariable(getName())
         } else {
             // aggregate the pipeline configurations
-            PipelineConfig pipelineConfig = newPipelineConfig()
-            aggregateTemplateConfigurations(pipelineConfig)
+            PipelineConfig pipelineConfig = aggregateTemplateConfigurations()
 
             // prepare the template environment by populating the binding
             Binding binding = newTemplateBinding()
             script.setBinding(binding)
             binding.setVariable("pipelineConfig", pipelineConfig.getConfig().getConfig())
-            binding.setVariable("templateConfigObject", pipelineConfig.getConfig())
             initializeBinding(pipelineConfig, script)
 
             // parse entrypoint and return 
@@ -84,8 +79,9 @@ import org.apache.commons.io.FileUtils
         return template
     }
 
+    PipelineConfig aggregateTemplateConfigurations(){
 
-    void aggregateTemplateConfigurations(PipelineConfig pipelineConfig){
+        PipelineConfig pipelineConfig = new PipelineConfig() 
 
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy()
        
@@ -103,7 +99,8 @@ import org.apache.commons.io.FileUtils
         if(jobConfig){
             pipelineConfig.join(jobConfig)
         }
-      
+
+        return pipelineConfig
     }
 
     TemplateConfigObject getJobPipelineConfiguration(){
@@ -235,15 +232,6 @@ import org.apache.commons.io.FileUtils
         @Override public boolean permitsConstructor(Constructor<?> constructor, Object[] args){
             return constructor.getDeclaringClass().equals(TemplateConfigBuilder) 
         }
-
-        /*
-        @Override public boolean permitsStaticMethod(Method method, Object[] args){
-            return (
-                method.getDeclaringClass().equals(Hooks)
-            )
-        }
-        */
-
     }
 
 }
