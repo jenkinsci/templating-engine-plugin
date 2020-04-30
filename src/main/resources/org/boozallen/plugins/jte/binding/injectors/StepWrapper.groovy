@@ -78,8 +78,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
             def result
             HookContext context = new HookContext(
                 step: name, 
-                library: library,
-                args: args
+                library: library
             )
             TemplateBinding binding = script.getBinding()
             try{

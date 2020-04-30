@@ -27,5 +27,4 @@ package org.boozallen.plugins.jte.hooks
 class HookContext implements Serializable{
     String library 
     String step 
-    Object[] args = []
 }   
