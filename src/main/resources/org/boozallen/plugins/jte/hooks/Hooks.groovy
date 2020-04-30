@@ -23,6 +23,8 @@ import org.boozallen.plugins.jte.binding.injectors.LibraryLoader
 import java.lang.annotation.Annotation
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.console.TemplateLogger
+import org.boozallen.plugins.jte.utils.RunUtils
+import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 class Hooks implements Serializable{
 
@@ -48,7 +50,7 @@ class Hooks implements Serializable{
         return discovered
     }
 
-    static void invoke(Class<? extends Annotation> annotation, TemplateBinding binding, Map context = [:]){
+    static void invoke(Class<? extends Annotation> annotation, TemplateBinding binding, HookContext context = new HookContext()){
         discover(annotation, binding).each{ hook -> 
             if(shouldInvoke(hook, context)){
                 hook.invoke(context)
@@ -56,12 +58,13 @@ class Hooks implements Serializable{
          }
     }
 
-    static def shouldInvoke(AnnotatedMethod hook, Map context){
+    static def shouldInvoke(AnnotatedMethod hook, HookContext context){
         def annotation = hook.getAnnotation()
         def stepWrapper = hook.getStepWrapper() 
         String configVar = stepWrapper.getClass().libraryConfigVariable
         Map config = stepWrapper.impl."get${configVar.capitalize()}"()
-        Binding invokeBinding = new Binding([context: context, config: config])
+        RunWrapper currentBuild = new RunWrapper(RunUtils.getRun(), true)
+        Binding invokeBinding = new Binding([context: context, config: config, currentBuild: currentBuild])
         def result
         try{
             result = annotation.value().newInstance(invokeBinding, invokeBinding).call()

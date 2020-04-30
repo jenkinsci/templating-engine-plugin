@@ -284,7 +284,7 @@ class StepWrapperSpec extends Specification{
             createStep("test_step", "def call(){ println 'testing' }")
             createStep("test_step2", """
             @BeforeStep
-            def call(Map Context){ 
+            def call(context){ 
                 println "before!" 
             }
             """)
@@ -305,10 +305,9 @@ class StepWrapperSpec extends Specification{
     def "@AfterStep executes after step"(){
         when: 
             createStep("test_step", "def call(){ println 'testing' }")
-            createStep("test_step2", """
-            
+            createStep("test_step2", """            
             @AfterStep
-            def call(Map Context){ 
+            def call(context){ 
                 println "after!" 
             }
             """)
@@ -331,7 +330,7 @@ class StepWrapperSpec extends Specification{
             createStep("test_step", "def call(){ println 'testing' }")
             createStep("test_step2", """
             @Notify
-            def call(Map Context){ 
+            def call(context){ 
                 println "notify!" 
             }
             """)

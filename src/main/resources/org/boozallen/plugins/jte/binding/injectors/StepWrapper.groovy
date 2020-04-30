@@ -76,22 +76,22 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
     def invoke(String methodName, Object... args){
         if(InvokerHelper.getMetaClass(impl).respondsTo(impl, methodName, args)){
             def result
-            def context = [
+            HookContext context = new HookContext(
                 step: name, 
                 library: library,
-                status: script.currentBuild.result
-            ]
+                args: args
+            )
+            TemplateBinding binding = script.getBinding()
             try{
-                Hooks.invoke(BeforeStep, script.getBinding(), context)
+                Hooks.invoke(BeforeStep, binding, context)
                 TemplateLogger.print "[Step - ${library}/${name}.${methodName}(${args.collect{ it.getClass().simpleName }.join(", ")})]"
                 result = InvokerHelper.getMetaClass(impl).invokeMethod(impl, methodName, args)
             } catch (Exception x) {
                 script.currentBuild.result = "Failure"
                 throw new InvokerInvocationException(x)
             } finally{
-                context.status = script.currentBuild.result
-                Hooks.invoke(AfterStep, script.getBinding(), context)
-                Hooks.invoke(Notify, script.getBinding(), context)
+                Hooks.invoke(AfterStep, binding, context)
+                Hooks.invoke(Notify, binding, context)
             }
             return result 
         }else{

@@ -32,9 +32,12 @@ The following lifecycle hook annotations are available:
 
 == Implementation
 
-In order to write a pipeline step leveraging one of these lifecycle hooks, you must annotate the step with the annotation and accept a context input parameter to the method.
+Lifecycle Hook annotations can be placed on any method inside a step. Hooks must accept a `context` parameter that is of type `HookContext` from the JTE plugin.  Because of Groovy's ducktyping functionality, you do not have to declare the Class of the context parameter. 
 
-This context parameter provides context so that the step can vary its behavior based on what just happened in the pipeline.
+[NOTE]
+====
+You can name the input parameter whatever you want to.  For ease of communication, it is assumed the parameter is named `context`
+====
 
 .JTE LifeCycle Hook Context Parameter
 |===
@@ -46,28 +49,20 @@ This context parameter provides context so that the step can vary its behavior b
 | `context.step`
 | The name of the Step associated with the hook
 
-| `context.status`
-| The current pipeline build status
- 
 |===
 
 [IMPORTANT]
 ====
-`context.library` and `context.step` will be `null` before and after pipeline execution and are only to be leveraged by `@BeforeStep`, `@AfterStep`, and `@Notify`
-====
-
-[NOTE]
-====
-The reference to the variable name `context` makes the assumption that you've named the input parameter to the step with the hook annotation `context`.  In practice, this variable name can be whatever you please
+`context.library` and `context.step` will be `null` before and after pipeline execution due to the fact that the hook is not in response to a particular pipeline step. 
 ====
 
 == Conditional Execution
 
 Sometimes you'll only want to invoke the Hook when certain conditions are met, such as a build failure or in relation to another step (like before static code analysis).
 
-Each annotation accepts a `Closure` parameter.  If the return object of this closure is `*true <http://www.groovy-lang.org/semantics.html#Groovy-Truth>*` then the hook will be executed.
+Each annotation accepts a `Closure` parameter.  If the return object of this closure is http://www.groovy-lang.org/semantics.html#Groovy-Truth[truthy] then the hook will be executed.
 
-While executing, the code within the `Closure` will be able to resolve the `context` variable described above as well as the library configuration variable `config`.
+While executing, the code within the `Closure` parameter will be able to resolve the `context` variable described, the library configuration of the library that loads the step via the `config` variable, and the `currentBuild` variable made available in Jenkins Pipelines. 
 
 Example Syntax:
 
@@ -75,16 +70,14 @@ Example Syntax:
 ----
 @BeforeStep({ context.step.equals("build") })
 void call(context){
-    /*
-        execute something right before the library step called
-        build is executed.
-    */
+    // execute something right before the library step called build is executed.
 }
 ----
 
 [IMPORTANT]
 ====
-The closure parameter is optional. If omitted, the hook will always be executed.
+* The closure parameter is optional. If omitted, the hook will always be executed.
+* The `context` variable is always called `context` within the Closure parameter, regardless of what the step's input parameter is named. 
 ====
 
 == Example Implementation
@@ -124,9 +117,7 @@ We must remember to annotate the method and pass the step a context input parame
 
 [source,groovy]
 ----
-@AfterStep({
-    context.step.equals("build") && context.status.equals("FAILURE")
-})
+@AfterStep({ context.step.equals("build") })
 void call(context){
     slackSend color: '#ff0000', message: "Build Failure: ${env.JOB_URL}"
 }

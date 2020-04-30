@@ -35,7 +35,7 @@ class AnnotatedMethod implements Serializable{
         this.stepWrapper = stepWrapper 
     } 
 
-    void invoke(Map context){
+    void invoke(HookContext context){
         try{
             String lib = stepWrapper.library
             String step = stepWrapper.name 
