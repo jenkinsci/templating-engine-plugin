@@ -17,6 +17,7 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
+import hudson.model.Item
 import hudson.model.ItemGroup
 import hudson.model.TaskListener
 import hudson.model.Action
