@@ -30,7 +30,7 @@ class PipelineConfigurationDsl {
   FlowExecutionOwner flowOwner
 
   PipelineConfigurationDsl(FlowExecutionOwner flowOwner){
-    this.flowOwner = flowOwner 
+    this.flowOwner = flowOwner
   }
 
   PipelineConfigurationObject parse(String script_text){

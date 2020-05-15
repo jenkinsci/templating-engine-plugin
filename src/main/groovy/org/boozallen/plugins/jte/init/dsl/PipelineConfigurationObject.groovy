@@ -21,12 +21,12 @@ import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
 class PipelineConfigurationObject implements Serializable{
-    // used for logging during aggregation 
+    // used for logging during aggregation
     FlowExecutionOwner flowOwner
     LinkedHashMap config = [:]
     Set<String> merge = []
     Set<String> override = []
-    boolean firstConfig = false 
+    boolean firstConfig = false
 
     PipelineConfigurationObject(FlowExecutionOwner flowOwner){
         this.flowOwner = flowOwner
@@ -40,7 +40,7 @@ class PipelineConfigurationObject implements Serializable{
       */
       if(firstConfig){
         printJoin(child, child, new PipelineConfigurationObject(flowOwner))
-        return child 
+        return child
       }
 
       LinkedHashMap pipeline_config

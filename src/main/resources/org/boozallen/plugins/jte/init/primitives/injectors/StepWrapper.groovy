@@ -132,5 +132,4 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
         impl.metaClass.getStageContext = {->  [ name: null, args: [:] ]}
         return new StepWrapper(binding: binding, impl: impl, name: name, library: library) 
     }
-
 }

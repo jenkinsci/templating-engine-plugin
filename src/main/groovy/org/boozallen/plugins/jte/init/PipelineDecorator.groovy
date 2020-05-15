@@ -1,22 +1,25 @@
 /*
- Copyright 2018 Booz Allen Hamilton
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+    Copyright 2018 Booz Allen Hamilton
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 package org.boozallen.plugins.jte.init
 
 import hudson.ExtensionList
 import hudson.model.InvisibleAction
 import hudson.model.TaskListener
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
@@ -28,13 +31,19 @@ import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
-/*
- The PipelineDecorator is responsible for augmenting a pipeline's runtime environment
- to "hydrate" a pipeline template by performing the Jenkins Templating Engine's
- initialization process, which consists of:
- 1. aggregate pipeline configurations
- 2. initialize the TemplateBinding with TemplatePrimitives
- 3. determining the pipeline template for this run
+/**
+ * Contains the top-level logic associated with initializing a pipeline for JTE
+ *
+ * Initialization follows 3 steps:
+ * 1. aggregate the pipeline configuration files
+ * 2. use the aggregated configuration to build the TemplatePrimitives and inject
+      into a TemplateBinding
+ * 3. determine the pipeline template for this run.
+ *
+ * Created from TemplateFlowDefinition
+ * Consumed by GroovyShellDecoratorImpl
+ *
+ * @author Steven Terrana
  */
 class PipelineDecorator extends InvisibleAction {
 
@@ -43,7 +52,7 @@ class PipelineDecorator extends InvisibleAction {
     TemplateBinding binding
     String template
 
-    PipelineDecorator(FlowExecutionOwner flowOwner){
+    PipelineDecorator(FlowExecutionOwner flowOwner) {
         this.flowOwner = flowOwner
     }
 
@@ -71,7 +80,7 @@ class PipelineDecorator extends InvisibleAction {
         // get job level configuration
         PipelineConfigurationObject jobConfig = getJobPipelineConfiguration(getJob())
         if(jobConfig){
-            pipelineConfig += jobConfig 
+            pipelineConfig += jobConfig
         }
 
         return pipelineConfig

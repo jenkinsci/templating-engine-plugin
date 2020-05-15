@@ -2,7 +2,6 @@ plugins {
   id 'groovy'
   id 'org.jenkins-ci.jpi' version '0.39.0'
   id 'jacoco'
-  id 'codenarc'
   id "com.diffplug.gradle.spotless" version "3.29.0"
 }
 
@@ -70,15 +69,6 @@ dependencies {
     testImplementation 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.19'
 }
 
-codenarc {
-    toolVersion = "1.5"
-    configFile = file("config/codenarc/rules.groovy")
-}
-
-tasks.codenarcTest {
-    configFile = file("config/codenarc/rules-test.groovy")
-}
-
 jacocoTestReport {
     reports {
         html.enabled true
@@ -90,5 +80,6 @@ spotless{
         trimTrailingWhitespace()
         indentWithSpaces()
         endWithNewline()
+        licenseHeaderFile 'groovy.header'
     }
 }

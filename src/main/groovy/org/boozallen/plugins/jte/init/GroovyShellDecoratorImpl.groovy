@@ -1,15 +1,18 @@
 /*
- Copyright 2018 Booz Allen Hamilton
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+    Copyright 2018 Booz Allen Hamilton
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 package org.boozallen.plugins.jte.init
 
 import groovy.lang.GroovyShell
@@ -59,8 +62,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
 public class GroovyShellDecoratorImpl extends GroovyShellDecorator {
 
     /**
-     * If the current pipeline run has a @see PipelineDecorator action then 
-     * fetch the already configured @see org.boozallen.plugins.jte.init.primitives.TemplateBinding 
+     * If the current pipeline run has a @see PipelineDecorator action then
+     * fetch the already configured @see org.boozallen.plugins.jte.init.primitives.TemplateBinding
      * and ensure the parsed scripts have this binding during execution.
      */
     @Override
@@ -85,13 +88,13 @@ public class GroovyShellDecoratorImpl extends GroovyShellDecorator {
     }
 
     /**
-     * For all scripts, adds a star import for Lifecycle Hooks so that library steps need not 
-     * import them explicitly to use them. 
-     * 
+     * For all scripts, adds a star import for Lifecycle Hooks so that library steps need not
+     * import them explicitly to use them.
+     *
      * For the JTE pipeline template, customizes the compiler so that the template is wrapped
-     * in a try-finally block so that the @Validation and @Init Lifecycle Hooks can be invoked 
-     * prior to template execution and @CleanUp and @Notify Lifecycle Hooks can be invoked post 
-     * template execution. 
+     * in a try-finally block so that the @Validation and @Init Lifecycle Hooks can be invoked
+     * prior to template execution and @CleanUp and @Notify Lifecycle Hooks can be invoked post
+     * template execution.
      */
     @Override
     public void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
@@ -155,8 +158,8 @@ public class GroovyShellDecoratorImpl extends GroovyShellDecorator {
     }
 
     /**
-     * determines if the current pipeline is using JTE 
-     */ 
+     * determines if the current pipeline is using JTE
+     */
     boolean isFromJTE(CpsFlowExecution execution){
         if(!execution){
             return false // no execution defined yet, still initializing
