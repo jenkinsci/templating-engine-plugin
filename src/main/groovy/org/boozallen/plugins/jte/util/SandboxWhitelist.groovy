@@ -24,6 +24,7 @@ import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
 class SandboxWhitelist extends AbstractWhitelist {
 
     private final ArrayList permittedReceivers = [
+        "org.boozallen.plugins.jte.init.primitives.injectors.ApplicationEnvironment",
         "org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper",
         "org.boozallen.plugins.jte.init.primitives.injectors.Stage",
         "org.boozallen.plugins.jte.init.primitives.hooks.Hooks"

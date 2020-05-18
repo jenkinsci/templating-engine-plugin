@@ -20,7 +20,6 @@ import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.*
-import org.jvnet.hudson.test.BuildWatcher
 import org.jvnet.hudson.test.JenkinsRule
 import org.jvnet.hudson.test.WithoutJenkins
 import spock.lang.*
@@ -28,7 +27,6 @@ import spock.lang.*
 class TemplateBindingSpec extends Specification{
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
-    @Shared @ClassRule BuildWatcher bw = new BuildWatcher()
 
     TemplateBinding binding = new TemplateBinding(Mock(FlowExecutionOwner))
 
@@ -229,5 +227,4 @@ class TemplateBindingSpec extends Specification{
         expect:
         jenkins.assertLogContains("hello", jenkins.buildAndAssertSuccess(job))
     }
-
 }
