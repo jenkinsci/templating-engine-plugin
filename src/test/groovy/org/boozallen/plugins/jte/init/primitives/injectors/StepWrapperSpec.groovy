@@ -96,6 +96,16 @@ class StepWrapperSpec extends Specification{
             println "the actual step" 
         }
         """)
+        libProvider.addStep("libA", "stepA", """
+        void call(){
+            println "step: A" 
+        }
+        """)
+        libProvider.addStep("libB", "stepB", """
+        void call(){
+            stepA() 
+        }
+        """)
         libProvider.addGlobally()
     }
 
@@ -113,6 +123,22 @@ class StepWrapperSpec extends Specification{
         then:
         jenkins.assertBuildStatusSuccess(run)
         jenkins.assertLogContains("step ran", run)
+    }
+
+    def "step logs invocation"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins, 
+            config: "libraries{ exampleLibrary }",
+            template: "callNoParam()"
+        )
+
+        when: 
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("[JTE][Step - exampleLibrary/callNoParam.call()]", run)
     }
 
     def "steps invocable via call shorthand with one param"(){
@@ -307,4 +333,24 @@ class StepWrapperSpec extends Specification{
         jenkins.assertBuildStatus(Result.FAILURE, run)
     }
 
+    def "Step can invoke another step"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins, 
+            config: """
+            libraries{ 
+                libA
+                libB
+            }
+            """,
+            template: 'stepB()'
+        )
+
+        when: 
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("step: A", run)
+    }
 }

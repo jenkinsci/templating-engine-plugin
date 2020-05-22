@@ -37,7 +37,7 @@ enum LogLevel{
 
 public class TemplateLogger {
 
-    private static final String CONSOLE_NOTE_PREFIX = "[JTE] "
+    private static final String CONSOLE_NOTE_PREFIX = "[JTE]"
     TaskListener listener
     PrintStream logger
 
@@ -48,6 +48,9 @@ public class TemplateLogger {
 
     void print(String message, LogLevel logType = LogLevel.INFO){
         message = message.trim()
+        if(!message.startsWith("[")){
+            message = message.split("\n").collect{ " ${it}" }.join("\n")
+        }
         Boolean isMultiline = message.contains("\n")
         String messageId = generateMessageId()
         message.eachLine{ line, i ->

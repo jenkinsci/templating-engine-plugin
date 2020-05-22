@@ -15,10 +15,11 @@
 */
 package org.boozallen.plugins.jte.init.dsl
 
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.boozallen.plugins.jte.util.TemplateLogger
-import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.boozallen.plugins.jte.util.TemplateLogger
+import org.codehaus.groovy.runtime.InvokerHelper
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 class PipelineConfigurationObject implements Serializable{
     // used for logging during aggregation
@@ -137,17 +138,6 @@ class PipelineConfigurationObject implements Serializable{
         }
         obj?."$prop"
       }
-    }
-
-    private def getNestedKeys(map, result = [], String keyPrefix = '') {
-      map.each { key, value ->
-        if (value instanceof Map) {
-            getNestedKeys(value, result, "${keyPrefix}${key}.")
-        } else {
-            result << "${keyPrefix}${key}"
-        }
-      }
-      return result
     }
 
     private def getNested(map, resultKeys = [], String keyPrefix = '') {

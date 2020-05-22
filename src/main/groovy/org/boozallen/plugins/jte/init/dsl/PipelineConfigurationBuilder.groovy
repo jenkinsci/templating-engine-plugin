@@ -27,6 +27,8 @@ package org.boozallen.plugins.jte.init.dsl
 abstract class PipelineConfigurationBuilder extends Script{
     ArrayList object_stack = []
     ArrayList node_stack = []
+    Boolean recordMergeKey = false 
+    Boolean recordOverrideKey = false 
 
     /*
         used purely to catch syntax errors such as:
@@ -55,10 +57,19 @@ abstract class PipelineConfigurationBuilder extends Script{
         String getName(){return name}
     }
 
+    void builderMerge(){
+        recordMergeKey = true
+    }
+
+    void builderOverride(){
+        recordOverrideKey = true
+    }
+
     BuilderMethod methodMissing(String name, args){
         object_stack.push([:])
         node_stack.push(name)
 
+        recordMergeOrOverride()
         args[0]()
 
         def node_config = object_stack.pop()
@@ -91,11 +102,8 @@ abstract class PipelineConfigurationBuilder extends Script{
             throw new TemplateConfigException(ex.join("\n"))
         }
 
-        if (name.equals("merge") && value.equals(true)){
-            pipelineConfig.merge << node_stack.join(".")
-        } else if (name.equals("override") && value.equals(true)){
-            pipelineConfig.override << node_stack.join(".")
-        } else if (object_stack.size()){
+        recordMergeOrOverride(name)
+        if (object_stack.size()){
             object_stack.last()[name] = value
         } else {
             pipelineConfig.config[name] = value
@@ -103,12 +111,32 @@ abstract class PipelineConfigurationBuilder extends Script{
     }
 
     BuilderMethod propertyMissing(String name){
+        recordMergeOrOverride(name)
         if (object_stack.size()){
             object_stack.last()[name] = [:]
         } else {
             pipelineConfig.config[name] = [:]
         }
         return BuilderMethod.PROPERTY_MISSING(name)
+    }
+
+    void recordMergeOrOverride(String name = null){
+        if(!recordMergeKey && !recordOverrideKey){
+            return 
+        }
+
+        String key = node_stack.join(".") 
+        if(name){
+            key += (key.length() ? ".${name}" : name)
+        }
+        if(recordMergeKey){
+            pipelineConfig.merge << key
+            recordMergeKey = false 
+        }
+        if(recordOverrideKey){
+            pipelineConfig.override << key
+            recordOverrideKey = false 
+        }
     }
 
 }

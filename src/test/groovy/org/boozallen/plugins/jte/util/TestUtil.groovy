@@ -47,10 +47,8 @@ class TestUtil{
      * in the @param log in the specified order
      */
     static void assertOrder(String log, ArrayList order){
-        def split = log.split("\n")
-        def idxs = order.collect{ split.findIndexOf{ line -> line.contains(it) } }
-        assert !idxs.contains(-1) : "At least 1 substring in ${order.inspect()} is not present in log:\n${log}"
-        assert idxs == idxs.sort(false) : "substrings ${order.inspect()} do not appear in this order in: \n ${log}"
+        assert log ==~ /(?s).*${order.join(".*")}.*/ : 
+        "Strings ${order.inspect()} do not appear in the order specified in:\n${log.trim()}"
     }
 
 
