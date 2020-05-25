@@ -16,11 +16,12 @@
 
 package org.boozallen.plugins.jte.init.primitives.hooks
 
+import org.boozallen.plugins.jte.binding.*
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.binding.* 
-import java.lang.annotation.Annotation
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.InvokerInvocationException
+
+import java.lang.annotation.Annotation
 
 class AnnotatedMethod implements Serializable{
     Annotation annotation
@@ -40,9 +41,9 @@ class AnnotatedMethod implements Serializable{
             String lib = stepWrapper.library
             String step = stepWrapper.name 
             TemplateLogger.createDuringRun().print "[@${annotationName} - ${lib}/${step}.${methodName}]"
-            InvokerHelper.getMetaClass(stepWrapper.impl).invokeMethod(stepWrapper.impl, methodName, context);
+            InvokerHelper.getMetaClass(stepWrapper.impl).invokeMethod(stepWrapper.impl, methodName, context)
         } catch (Exception x) {
-            throw new InvokerInvocationException(x);
+            throw new InvokerInvocationException(x)
         }
     }
 }   

@@ -15,41 +15,42 @@
 */
 package org.boozallen.plugins.jte.job
 
-import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import hudson.Extension
-import jenkins.branch.MultiBranchProject
-import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition
-import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
-import javax.annotation.Nonnull
 import hudson.model.TaskListener
+import jenkins.branch.MultiBranchProject
+import jenkins.scm.api.SCMFile
+import jenkins.scm.api.SCMProbeStat
 import jenkins.scm.api.SCMSource
 import jenkins.scm.api.SCMSourceCriteria
-import jenkins.scm.api.SCMProbeStat
-import jenkins.scm.api.SCMFile
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory
+import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
+import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowBranchProjectFactory
+import org.kohsuke.stapler.DataBoundConstructor
+import org.kohsuke.stapler.DataBoundSetter
 
-public class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
+import javax.annotation.Nonnull
+
+class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
 
     Boolean filterBranches
 
-    @DataBoundConstructor public TemplateBranchProjectFactory() {}
+    @DataBoundConstructor
+    TemplateBranchProjectFactory() {}
 
-    public Object readResolve() {
+    Object readResolve() {
         if (this.filterBranches == null) {
-            this.filterBranches = false;
+            this.filterBranches = false
         }
-        return this;
+        return this
     }
 
     @DataBoundSetter
-    public void setFilterBranches(Boolean filterBranches){
+    void setFilterBranches(Boolean filterBranches){
         this.filterBranches = filterBranches
     }
 
-    public Boolean getFilterBranches(){
+    Boolean getFilterBranches(){
         return filterBranches
     }
 
@@ -61,54 +62,55 @@ public class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
     @Override
     protected SCMSourceCriteria getSCMSourceCriteria(SCMSource source) {
         return new SCMSourceCriteria() {
-            @Override public boolean isHead(SCMSourceCriteria.Probe probe, TaskListener listener) throws IOException {
+            @Override
+            boolean isHead(SCMSourceCriteria.Probe probe, TaskListener listener) throws IOException {
                 // default behavior is to create jobs for each branch
                 if(!filterBranches){
                     return true
                 }
 
                 // if user chose to filter branches, check for pipeline config file
-                SCMProbeStat stat = probe.stat(ScmPipelineConfigurationProvider.CONFIG_FILE);
+                SCMProbeStat stat = probe.stat(ScmPipelineConfigurationProvider.CONFIG_FILE)
                 switch (stat.getType()) {
                     case SCMFile.Type.NONEXISTENT:
                         if (stat.getAlternativePath() != null) {
-                            listener.getLogger().format("      ‘%s’ not found (but found ‘%s’, search is case sensitive)%n", ScmPipelineConfigurationProvider.CONFIG_FILE, stat.getAlternativePath());
+                            listener.getLogger().format("      ‘%s’ not found (but found ‘%s’, search is case sensitive)%n", ScmPipelineConfigurationProvider.CONFIG_FILE, stat.getAlternativePath())
                         } else {
-                            listener.getLogger().format("      ‘%s’ not found%n", ScmPipelineConfigurationProvider.CONFIG_FILE);
+                            listener.getLogger().format("      ‘%s’ not found%n", ScmPipelineConfigurationProvider.CONFIG_FILE)
                         }
-                        return false;
+                        return false
                     case SCMFile.Type.DIRECTORY:
-                        listener.getLogger().format("      ‘%s’ found but is a directory not a file%n", ScmPipelineConfigurationProvider.CONFIG_FILE);
-                        return false;
+                        listener.getLogger().format("      ‘%s’ found but is a directory not a file%n", ScmPipelineConfigurationProvider.CONFIG_FILE)
+                        return false
                     default:
-                        listener.getLogger().format("      ‘%s’ found%n", ScmPipelineConfigurationProvider.CONFIG_FILE);
-                        return true;
+                        listener.getLogger().format("      ‘%s’ found%n", ScmPipelineConfigurationProvider.CONFIG_FILE)
+                        return true
                 }
             }
 
             @Override
-            public int hashCode() {
-                return getClass().hashCode();
+            int hashCode() {
+                return getClass().hashCode()
             }
 
             @Override
-            public boolean equals(Object obj) {
-                return getClass().isInstance(obj);
+            boolean equals(Object obj) {
+                return getClass().isInstance(obj)
             }
-        };
+        }
     }
 
     @Extension
-    public static class DescriptorDefaultImpl extends AbstractWorkflowBranchProjectFactory.AbstractWorkflowBranchProjectFactoryDescriptor {
+    static class DescriptorDefaultImpl extends AbstractWorkflowBranchProjectFactory.AbstractWorkflowBranchProjectFactoryDescriptor {
 
         @Override
-        public boolean isApplicable(Class<? extends MultiBranchProject> clazz) {
+        boolean isApplicable(Class<? extends MultiBranchProject> clazz) {
             return MultiBranchProject.class.isAssignableFrom(clazz)
         }
 
         @Nonnull
         @Override
-        public String getDisplayName() {
+        String getDisplayName() {
             return "Jenkins Templating Engine"
         }
 

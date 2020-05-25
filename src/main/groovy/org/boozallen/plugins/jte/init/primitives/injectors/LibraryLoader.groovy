@@ -17,22 +17,18 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
 import hudson.Extension
-import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.util.RunUtils
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
-@Extension public class LibraryLoader extends TemplatePrimitiveInjector {
+@Extension
+class LibraryLoader extends TemplatePrimitiveInjector {
 
     @NonCPS
     static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
@@ -80,8 +76,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             return true
         }.each{ stepName, stepConfig ->
             logger.print "Creating step ${stepName} from the default step implementation."
-            def stepWrapper = LibraryLoader.getPrimitiveClass()
-            binding.setVariable(stepName, stepWrapper.createDefaultStep(script, stepName, stepConfig))
+            binding.setVariable(stepName, StepWrapperFactory.createDefaultStep(binding, stepName, stepConfig))
         }
     }
 
@@ -90,16 +85,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         config.getConfig().template_methods.findAll{ step ->
             !(step.key in binding.registry)
         }.each{ step ->
-            def stepWrapper = LibraryLoader.getPrimitiveClass()
-            binding.setVariable(step.key, stepWrapper.createNullStep(step.key, script))
+            binding.setVariable(step.key, StepWrapperFactory.createNullStep(step.key, binding))
         }
-    }
-
-    static Class getPrimitiveClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("StepWrapper.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
     }
 
 }

@@ -17,11 +17,10 @@ package org.boozallen.plugins.jte.init
 
 import hudson.ExtensionList
 import hudson.model.InvisibleAction
-import hudson.model.TaskListener
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
+import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition

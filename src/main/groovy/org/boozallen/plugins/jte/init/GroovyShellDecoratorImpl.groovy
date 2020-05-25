@@ -15,43 +15,35 @@
 */
 package org.boozallen.plugins.jte.init
 
-import groovy.lang.GroovyShell
+
 import hudson.Extension
-import java.lang.reflect.Field
-import javax.annotation.CheckForNull
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
-import org.boozallen.plugins.jte.init.primitives.hooks.HookInjector
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
 import org.boozallen.plugins.jte.init.primitives.hooks.Notify
 import org.boozallen.plugins.jte.init.primitives.hooks.Validate
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
-import org.boozallen.plugins.jte.util.TemplateLogger
-import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.expr.ArgumentListExpression
-import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
-import org.codehaus.groovy.ast.GroovyCodeVisitor
 import org.codehaus.groovy.ast.ModuleNode
+import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.stmt.BlockStatement
-import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.CompilationFailedException
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.codehaus.groovy.control.SourceUnit
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+
+import javax.annotation.CheckForNull
+import java.lang.reflect.Field
 
 /**
  * Responsible for customizing the GroovyShell used to compile steps and the pipeline template.
@@ -59,7 +51,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
  * @author Steven Terrana
  */
 @Extension
-public class GroovyShellDecoratorImpl extends GroovyShellDecorator {
+class GroovyShellDecoratorImpl extends GroovyShellDecorator {
 
     /**
      * If the current pipeline run has a @see PipelineDecorator action then
@@ -83,7 +75,7 @@ public class GroovyShellDecoratorImpl extends GroovyShellDecorator {
     }
 
     @Override
-    public GroovyShellDecorator forTrusted() {
+    GroovyShellDecorator forTrusted() {
         return this
     }
 
@@ -97,7 +89,7 @@ public class GroovyShellDecoratorImpl extends GroovyShellDecorator {
      * template execution.
      */
     @Override
-    public void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
+    void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
         ImportCustomizer ic = new ImportCustomizer()
         ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
         cc.addCompilationCustomizers(ic)

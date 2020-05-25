@@ -15,10 +15,10 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
-import org.jenkinsci.plugins.workflow.cps.DSL
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.jenkinsci.plugins.workflow.cps.DSL
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 class TemplateBinding extends Binding implements Serializable{
     public final String STEPS_VAR = "steps"
@@ -29,12 +29,12 @@ class TemplateBinding extends Binding implements Serializable{
         setVariable(STEPS_VAR, new DSL(owner))
     }
 
-    public void lock(){
+    void lock(){
         locked = true
     }
 
     @Override
-    public void setVariable(String name, Object value) {
+    void setVariable(String name, Object value) {
         /*
          Library steps can access their config through
          a variable called "config".  as such, reject
@@ -61,14 +61,14 @@ class TemplateBinding extends Binding implements Serializable{
     }
 
     @Override
-    public Object getVariable(String name){
+    Object getVariable(String name){
         if (!variables)
-            throw new MissingPropertyException(name, this.getClass());
+            throw new MissingPropertyException(name, this.getClass())
 
         Object result = variables.get(name)
 
         if (!result && !variables.containsKey(name))
-            throw new MissingPropertyException(name, this.getClass());
+            throw new MissingPropertyException(name, this.getClass())
 
         if (result in TemplatePrimitive && InvokerHelper.getMetaClass(result).respondsTo(result, "getValue", (Object[]) null))
             result = result.getValue()
@@ -76,16 +76,16 @@ class TemplateBinding extends Binding implements Serializable{
         return result
     }
 
-    public Boolean hasStep(String stepName){
+    Boolean hasStep(String stepName){
         if (hasVariable(stepName)){
-            Class StepWrapper = LibraryLoader.getPrimitiveClass()
+            Class StepWrapper = StepWrapperFactory.getPrimitiveClass()
             return getVariable(stepName).getClass().getName().equals(StepWrapper.getName())
         } else{
             return false
         }
     }
 
-    public def getStep(String stepName){
+    def getStep(String stepName){
         if (hasStep(stepName)){
             return getVariable(stepName)
         } else {

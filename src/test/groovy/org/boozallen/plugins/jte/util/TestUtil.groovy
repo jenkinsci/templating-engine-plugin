@@ -16,8 +16,8 @@
 
 package org.boozallen.plugins.jte.util
 
-import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jvnet.hudson.test.JenkinsRule
 
 /**

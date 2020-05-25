@@ -16,41 +16,42 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
+import hudson.model.Action
 import hudson.model.ItemGroup
 import hudson.model.TaskListener
-import hudson.model.Action
+import jenkins.branch.MultiBranchProject
 import jenkins.branch.MultiBranchProjectFactory
 import jenkins.branch.MultiBranchProjectFactoryDescriptor
-import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
-import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
-import jenkins.branch.MultiBranchProject
 import jenkins.branch.OrganizationFolder
 import jenkins.model.TransientActionFactory
 import jenkins.scm.api.SCMSource
 import jenkins.scm.api.SCMSourceCriteria
 import org.jenkinsci.plugins.workflow.cps.Snippetizer
+import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
+import org.kohsuke.stapler.DataBoundConstructor
+import org.kohsuke.stapler.DataBoundSetter
 
-public class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMSourceCriteria {
+class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMSourceCriteria {
 
     Boolean filterBranches
 
-    @DataBoundConstructor public TemplateMultiBranchProjectFactory() { }
+    @DataBoundConstructor
+    TemplateMultiBranchProjectFactory() { }
 
-    public Object readResolve() {
+    Object readResolve() {
         if (this.filterBranches == null) {
-            this.filterBranches = false;
+            this.filterBranches = false
         }
-        return this;
+        return this
     }
 
     @DataBoundSetter
-    public void setFilterBranches(Boolean filterBranches){
+    void setFilterBranches(Boolean filterBranches){
         this.filterBranches = filterBranches
     }
 
-    public Boolean getFilterBranches(){
+    Boolean getFilterBranches(){
         return filterBranches
     }
 
@@ -71,7 +72,8 @@ public class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory
         return project
     }
 
-    @Override public final void updateExistingProject(MultiBranchProject<?, ?> project, Map<String, Object> attributes, TaskListener listener) throws IOException, InterruptedException {
+    @Override
+    final void updateExistingProject(MultiBranchProject<?, ?> project, Map<String, Object> attributes, TaskListener listener) throws IOException, InterruptedException {
         if (project instanceof WorkflowMultiBranchProject) {
             customize((WorkflowMultiBranchProject) project)
         } // otherwise got recognized by something else before, oh well
@@ -81,13 +83,16 @@ public class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory
         return newProjectFactory().getSCMSourceCriteria(source)
     }
 
-    @Extension public static class PerFolderAdder extends TransientActionFactory<OrganizationFolder> {
+    @Extension
+    static class PerFolderAdder extends TransientActionFactory<OrganizationFolder> {
 
-        @Override public Class<OrganizationFolder> type() {
+        @Override
+        Class<OrganizationFolder> type() {
             return OrganizationFolder.class
         }
 
-        @Override public Collection<? extends Action> createFor(OrganizationFolder target) {
+        @Override
+        Collection<? extends Action> createFor(OrganizationFolder target) {
             if (target.getProjectFactories().get(TemplateMultiBranchProjectFactory.class) != null && target.hasPermission(Item.EXTENDED_READ)) {
                 return Collections.singleton(new Snippetizer.LocalAction())
             } else {
@@ -97,17 +102,20 @@ public class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory
 
     }
 
-    @Extension public static class DescriptorImpl extends MultiBranchProjectFactoryDescriptor {
+    @Extension
+    static class DescriptorImpl extends MultiBranchProjectFactoryDescriptor {
 
         /*
             returning the factory will result in this option being
             selected by default in multibranch factory jobs (github org job)
         */
-        @Override public MultiBranchProjectFactory newInstance() {
+        @Override
+        MultiBranchProjectFactory newInstance() {
             return null
         }
 
-        @Override public String getDisplayName() {
+        @Override
+        String getDisplayName() {
             return "Jenkins Templating Engine"
         }
 

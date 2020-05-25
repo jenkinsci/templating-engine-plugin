@@ -1,13 +1,13 @@
 package org.boozallen.plugins.jte.init.primitives.hooks
 
-import spock.lang.*
-import org.junit.Rule
-import org.jvnet.hudson.test.JenkinsRule
-import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import hudson.model.Result
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.junit.Rule
+import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Specification
+import spock.lang.Unroll
 
 class HookSpec extends Specification{
 

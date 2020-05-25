@@ -15,36 +15,26 @@
 */
 package org.boozallen.plugins.jte.init.governance.libs
 
-import org.boozallen.plugins.jte.util.FileSystemWrapper
-import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
-import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
-import hudson.scm.SCM
-import jenkins.scm.api.SCMFileSystem
-import jenkins.scm.api.SCMFile
 import hudson.Extension
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import hudson.Util
-import org.jenkinsci.plugins.workflow.cps.CpsScript
-import hudson.ExtensionPoint
-import hudson.ExtensionList
-import jenkins.model.Jenkins
 import hudson.model.DescriptorVisibilityFilter
+import jenkins.model.Jenkins
+import org.kohsuke.stapler.DataBoundConstructor
 
-
-public class LibrarySource extends AbstractDescribableImpl<LibrarySource> {
+class LibrarySource extends AbstractDescribableImpl<LibrarySource> {
     private final LibraryProvider libraryProvider
 
-    @DataBoundConstructor public LibrarySource(LibraryProvider libraryProvider) {
-        this.libraryProvider = libraryProvider;
+    @DataBoundConstructor
+    LibrarySource(LibraryProvider libraryProvider) {
+        this.libraryProvider = libraryProvider
     }
 
-    public LibraryProvider getLibraryProvider(){ return libraryProvider }
+    LibraryProvider getLibraryProvider(){ return libraryProvider }
 
-    @Extension public static class DescriptorImpl extends Descriptor<LibrarySource> {
-        public static List<LibraryProvider.LibraryProviderDescriptor> getLibraryProviders(){
+    @Extension
+    static class DescriptorImpl extends Descriptor<LibrarySource> {
+        static List<LibraryProvider.LibraryProviderDescriptor> getLibraryProviders(){
             return DescriptorVisibilityFilter.apply(null, Jenkins.get().getExtensionList(LibraryProvider.LibraryProviderDescriptor))
         }
     }

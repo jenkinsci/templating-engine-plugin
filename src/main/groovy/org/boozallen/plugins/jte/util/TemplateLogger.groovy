@@ -15,18 +15,17 @@
 */
 package org.boozallen.plugins.jte.util
 
-import org.boozallen.plugins.jte.util.RunUtils
 import hudson.Extension
 import hudson.MarkupText
 import hudson.console.ConsoleAnnotationDescriptor
 import hudson.console.ConsoleAnnotator
 import hudson.console.ConsoleNote
 import hudson.model.TaskListener
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
-import  org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.flow.FlowExecution
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 enum LogLevel{
     INFO(tag: "info"),
@@ -35,7 +34,7 @@ enum LogLevel{
     String tag
 }
 
-public class TemplateLogger {
+class TemplateLogger {
 
     private static final String CONSOLE_NOTE_PREFIX = "[JTE]"
     TaskListener listener
@@ -109,7 +108,8 @@ public class TemplateLogger {
             return null
         }
 
-        @Extension public static final class DescriptorImpl extends ConsoleAnnotationDescriptor {}
+        @Extension
+        static final class DescriptorImpl extends ConsoleAnnotationDescriptor {}
     }
 
     static TemplateLogger createDuringRun(){

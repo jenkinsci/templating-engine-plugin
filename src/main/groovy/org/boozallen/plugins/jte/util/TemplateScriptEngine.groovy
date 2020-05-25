@@ -15,12 +15,6 @@
 */
 package org.boozallen.plugins.jte.util
 
-import java.lang.reflect.Field
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.jenkinsci.plugins.workflow.cps.CpsThreadGroup
-import java.lang.LinkageError
 import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
 
 /*

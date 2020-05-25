@@ -15,8 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.dsl
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner

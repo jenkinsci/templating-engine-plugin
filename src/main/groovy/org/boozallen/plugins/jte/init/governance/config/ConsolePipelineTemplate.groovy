@@ -15,41 +15,39 @@
 */
 package org.boozallen.plugins.jte.init.governance.config
 
-import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
 import hudson.Extension
+import hudson.Util
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import hudson.Util
-import jenkins.model.Jenkins
-import hudson.RelativePath
-import hudson.util.FormValidation
-import org.kohsuke.stapler.QueryParameter
+import org.kohsuke.stapler.DataBoundConstructor
+import org.kohsuke.stapler.DataBoundSetter
 
-public class ConsolePipelineTemplate extends AbstractDescribableImpl<ConsolePipelineTemplate> implements Serializable{
+class ConsolePipelineTemplate extends AbstractDescribableImpl<ConsolePipelineTemplate> implements Serializable{
 
     String name
     String template
 
-    @DataBoundConstructor public ConsolePipelineTemplate(){}
+    @DataBoundConstructor
+    ConsolePipelineTemplate(){}
 
     @DataBoundSetter
-    public void setName(String name){
+    void setName(String name){
         this.name = Util.fixEmptyAndTrim(name)
     }
 
-    public String getName(){
+    String getName(){
         return name
     }
 
     @DataBoundSetter
-    public void setTemplate(String template){
+    void setTemplate(String template){
         this.template = Util.fixEmptyAndTrim(template)
     }
 
-    public String getTemplate(){
+    String getTemplate(){
         return template
     }
 
-    @Extension public final static class DescriptorImpl extends Descriptor<ConsolePipelineTemplate> {}
+    @Extension
+    final static class DescriptorImpl extends Descriptor<ConsolePipelineTemplate> {}
 }

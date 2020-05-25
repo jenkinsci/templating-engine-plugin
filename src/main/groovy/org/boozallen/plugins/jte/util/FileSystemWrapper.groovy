@@ -15,24 +15,18 @@
 */
 package org.boozallen.plugins.jte.util
 
-
-import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
-import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty
-import jenkins.branch.Branch
 import hudson.model.ItemGroup
-import jenkins.scm.api.SCMHead
-import jenkins.scm.api.SCMRevision
-import jenkins.scm.api.SCMFileSystem
-import jenkins.scm.api.SCMSource
-import jenkins.scm.api.SCMFile
-import hudson.scm.SCM
 import hudson.model.TaskListener
+import hudson.scm.SCM
+import jenkins.branch.Branch
+import jenkins.scm.api.*
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 
 class FileSystemWrapper {
     SCM scm

@@ -15,9 +15,8 @@
 */
 package org.boozallen.plugins.jte.init.dsl
 
-import org.kohsuke.groovy.sandbox.GroovyInterceptor
-import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
+import org.kohsuke.groovy.sandbox.GroovyInterceptor
 
 /*
   our sandbox.  just block all the things except the creation of
@@ -47,7 +46,7 @@ class DslSandbox extends GroovyInterceptor {
         args -> ${args}
       """)
     }
-    return invoker.call(receiver,method,args);
+    return invoker.call(receiver,method,args)
   }
 
   @Override
@@ -62,7 +61,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public Object onNewInstance(Invoker invoker, Class receiver, Object... args) throws Throwable {
+  Object onNewInstance(Invoker invoker, Class receiver, Object... args) throws Throwable {
     if (!(receiver == script)){
       throw new SecurityException("""
         onNewInstance:
@@ -74,7 +73,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public void onSuperConstructor(Invoker invoker, Class receiver, Object... args) throws Throwable {
+  void onSuperConstructor(Invoker invoker, Class receiver, Object... args) throws Throwable {
     if (!(receiver == script)){
       throw new SecurityException("""
         onSuperConstructor:
@@ -86,7 +85,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public Object onSuperCall(Invoker invoker, Class senderType, Object receiver, String method, Object... args) throws Throwable {
+  Object onSuperCall(Invoker invoker, Class senderType, Object receiver, String method, Object... args) throws Throwable {
     throw new SecurityException("""
       onSuperCall:
       invoker -> ${invoker}
@@ -98,7 +97,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public Object onGetProperty(Invoker invoker, Object receiver, String property) throws Throwable {
+  Object onGetProperty(Invoker invoker, Object receiver, String property) throws Throwable {
     if (!(receiver == script || receiver == env)){
       throw new SecurityException("""
         onGetProperty:
@@ -107,11 +106,11 @@ class DslSandbox extends GroovyInterceptor {
         property -> ${property}
       """)
     }
-    return invoker.call(receiver,property);
+    return invoker.call(receiver,property)
   }
 
   @Override
-  public Object onSetProperty(Invoker invoker, Object receiver, String property, Object value) throws Throwable {
+  Object onSetProperty(Invoker invoker, Object receiver, String property, Object value) throws Throwable {
     if (!(receiver == script)){
       throw new SecurityException("""
         onSetProperty:
@@ -121,11 +120,11 @@ class DslSandbox extends GroovyInterceptor {
         args -> ${args}
       """)
     }
-    return invoker.call(receiver,property,value);
+    return invoker.call(receiver,property,value)
   }
 
   @Override
-  public Object onGetAttribute(Invoker invoker, Object receiver, String attribute) throws Throwable {
+  Object onGetAttribute(Invoker invoker, Object receiver, String attribute) throws Throwable {
     throw new SecurityException("""
       onGetAttribute:
       invoker -> ${invoker}
@@ -135,7 +134,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public Object onSetAttribute(Invoker invoker, Object receiver, String attribute, Object value) throws Throwable {
+  Object onSetAttribute(Invoker invoker, Object receiver, String attribute, Object value) throws Throwable {
     throw new SecurityException("""
       onSetAttribute:
       invoker -> ${invoker}
@@ -146,7 +145,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public Object onGetArray(Invoker invoker, Object receiver, Object index) throws Throwable {
+  Object onGetArray(Invoker invoker, Object receiver, Object index) throws Throwable {
     throw new SecurityException("""
       onGetArray:
       invoker -> ${invoker}
@@ -156,7 +155,7 @@ class DslSandbox extends GroovyInterceptor {
   }
 
   @Override
-  public Object onSetArray(Invoker invoker, Object receiver, Object index, Object value) throws Throwable {
+  Object onSetArray(Invoker invoker, Object receiver, Object index, Object value) throws Throwable {
     throw new SecurityException("""
       onSetArray:
       invoker -> ${invoker}

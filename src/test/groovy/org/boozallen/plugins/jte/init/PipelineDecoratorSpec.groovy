@@ -13,19 +13,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.primitives.hooks
+package org.boozallen.plugins.jte.init.primitives
 
-import java.lang.annotation.Retention
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME
+import org.junit.ClassRule
+import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Shared
+import spock.lang.Specification
 
-/*
- Will get triggered after the code has been checked out
- but before template execution
- TODO:
- maybe enhance to also after every Stage?
- */
-@Retention(RUNTIME)
-@interface Init{
-    Class value() default { true }
+class PipelineDecoratorSpec extends Specification{
+
+    @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
+
 }

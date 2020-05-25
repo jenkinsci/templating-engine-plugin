@@ -16,25 +16,24 @@
 package org.boozallen.plugins.jte.init.governance.config
 
 import hudson.Extension
-import hudson.scm.NullSCM
-import hudson.scm.SCM
-import hudson.Util
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
 
-public class NullPipelineConfigurationProvider extends PipelineConfigurationProvider{
+class NullPipelineConfigurationProvider extends PipelineConfigurationProvider{
 
-    @DataBoundConstructor public NullPipelineConfigurationProvider(){}
+    @DataBoundConstructor
+    NullPipelineConfigurationProvider(){}
 
-    public PipelineConfigurationObject getConfig(FlowExecutionOwner owner){ return null }
-    public String getJenkinsfile(FlowExecutionOwner owner){ return null }
-    public String getTemplate(FlowExecutionOwner owner, String template){ return null }
+    PipelineConfigurationObject getConfig(FlowExecutionOwner owner){ return null }
 
-    @Extension public static class DescriptorImpl extends PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor{
-        public String getDisplayName(){
+    String getJenkinsfile(FlowExecutionOwner owner){ return null }
+
+    String getTemplate(FlowExecutionOwner owner, String template){ return null }
+
+    @Extension
+    static class DescriptorImpl extends PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor{
+        String getDisplayName(){
             return "None"
         }
     }

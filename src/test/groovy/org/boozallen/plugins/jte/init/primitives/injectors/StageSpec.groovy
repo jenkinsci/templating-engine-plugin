@@ -13,15 +13,14 @@
 
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import spock.lang.*
-import org.junit.*
-import org.jvnet.hudson.test.JenkinsRule
-import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.jvnet.hudson.test.WithoutJenkins
-import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
-import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import hudson.model.Result
+import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.junit.ClassRule
+import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Shared
+import spock.lang.Specification
 
 class StageSpec extends Specification{
 

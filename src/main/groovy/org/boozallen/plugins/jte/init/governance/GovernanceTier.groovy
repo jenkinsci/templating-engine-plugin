@@ -19,33 +19,27 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolder
 import hudson.Extension
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import hudson.model.Descriptor.FormException
 import hudson.model.ItemGroup
-import hudson.scm.SCM
-import hudson.Util
 import jenkins.model.Jenkins
 import net.sf.json.JSONObject
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.NullPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.config.PipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
-import org.boozallen.plugins.jte.job.TemplateFlowDefinition
-import org.boozallen.plugins.jte.util.RunUtils
-import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 import org.kohsuke.stapler.StaplerRequest
-import org.boozallen.plugins.jte.init.governance.config.NullPipelineConfigurationProvider
 
-public class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> implements Serializable{
+class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> implements Serializable{
 
     PipelineConfigurationProvider configurationProvider = new NullPipelineConfigurationProvider()
     List<LibrarySource> librarySources
 
-    @DataBoundConstructor public GovernanceTier(){}
+    @DataBoundConstructor
+    GovernanceTier(){}
 
     protected Object readResolve(){
         if(configurationProvider == null){
@@ -55,34 +49,35 @@ public class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> impl
     }
 
     @DataBoundSetter
-    public void setConfigurationProvider(PipelineConfigurationProvider configurationProvider){
+    void setConfigurationProvider(PipelineConfigurationProvider configurationProvider){
         if(configurationProvider == null){
             configurationProvider = new NullPipelineConfigurationProvider()
         }
         this.configurationProvider = configurationProvider
     }
 
-    public PipelineConfigurationProvider getConfigurationProvider(){
+    PipelineConfigurationProvider getConfigurationProvider(){
         return configurationProvider
     }
 
     @DataBoundSetter
-    public void setLibrarySources(List<LibrarySource> librarySources){
+    void setLibrarySources(List<LibrarySource> librarySources){
         this.librarySources = librarySources
     }
-    public List<LibrarySource> getLibrarySources(){
+
+    List<LibrarySource> getLibrarySources(){
         return librarySources
     }
 
-    public PipelineConfigurationObject getConfig(FlowExecutionOwner owner) throws Exception{
+    PipelineConfigurationObject getConfig(FlowExecutionOwner owner) throws Exception{
         return configurationProvider.getConfig(owner)
     }
 
-    public String getJenkinsfile(FlowExecutionOwner owner) throws Exception {
+    String getJenkinsfile(FlowExecutionOwner owner) throws Exception {
         return configurationProvider.getJenkinsfile(owner)
     }
 
-    public String getTemplate(FlowExecutionOwner owner, String template) throws Exception {
+    String getTemplate(FlowExecutionOwner owner, String template) throws Exception {
         return configurationProvider.getTemplate(owner, template)
     }
 
@@ -112,21 +107,23 @@ public class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> impl
         return h
     }
 
-    @Extension public final static class DescriptorImpl extends Descriptor<GovernanceTier> {
-        @Override public GovernanceTier newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-            GovernanceTier tier = (GovernanceTier) super.newInstance(req, formData);
+    @Extension
+    final static class DescriptorImpl extends Descriptor<GovernanceTier> {
+        @Override
+        GovernanceTier newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+            GovernanceTier tier = (GovernanceTier) super.newInstance(req, formData)
             return tier.librarySources?.isEmpty() ? null : tier
         }
 
-        public static List<LibraryProvider.LibraryProviderDescriptor> getLibraryProviders(){
+        static List<LibraryProvider.LibraryProviderDescriptor> getLibraryProviders(){
             return Jenkins.getActiveInstance().getExtensionList(LibraryProvider.LibraryProviderDescriptor)
         }
 
-        public static List<PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor> getPipelineConfigurationProviders(){
+        static List<PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor> getPipelineConfigurationProviders(){
             return Jenkins.getActiveInstance().getExtensionList(PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor)
         }
 
-        public Descriptor getDefaultConfigurationProvider(){
+        Descriptor getDefaultConfigurationProvider(){
             return Jenkins.get().getDescriptor(NullPipelineConfigurationProvider)
         }
     }

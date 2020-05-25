@@ -15,14 +15,15 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.junit.*
+import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import org.jvnet.hudson.test.WithoutJenkins
-import spock.lang.*
+import spock.lang.Shared
+import spock.lang.Specification
 
 class TemplateBindingSpec extends Specification{
 
@@ -55,9 +56,7 @@ class TemplateBindingSpec extends Specification{
     /**
      * mock StepWrapper primitive for test
      */
-    class StepWrapper extends TestPrimitive{
-        static String libraryConfigVariable = "config"
-    }
+    class StepWrapper extends TestPrimitive{}
 
     @WithoutJenkins
     def "non-primitive variable set in binding maintains value"(){
@@ -145,7 +144,7 @@ class TemplateBindingSpec extends Specification{
     @WithoutJenkins
     def "can't overwrite library config variable"(){
         when:
-        binding.setVariable(StepWrapper.libraryConfigVariable, "test")
+        binding.setVariable(StepWrapperFactory.CONFIG_VAR, "test")
 
         then:
         thrown TemplateException
@@ -154,8 +153,8 @@ class TemplateBindingSpec extends Specification{
     @WithoutJenkins
     def "hasStep returns true when variable exists and is a StepWrapper"(){
         setup:
-        GroovySpy(LibraryLoader.class, global:true)
-        LibraryLoader.getPrimitiveClass() >> { return StepWrapper }
+        GroovySpy(StepWrapperFactory, global:true)
+        StepWrapperFactory.getPrimitiveClass() >> { return StepWrapper }
 
         when:
         StepWrapper s = new StepWrapper()
@@ -183,8 +182,8 @@ class TemplateBindingSpec extends Specification{
     @WithoutJenkins
     def "getStep returns step when variable exists and is StepWrapper"(){
         setup:
-        GroovySpy(LibraryLoader.class, global:true)
-        LibraryLoader.getPrimitiveClass() >> { return StepWrapper }
+        GroovySpy(StepWrapperFactory.class, global:true)
+        StepWrapperFactory.getPrimitiveClass() >> { return StepWrapper }
         StepWrapper step = new StepWrapper()
 
         when:
@@ -219,7 +218,7 @@ class TemplateBindingSpec extends Specification{
 
     def "validate TemplateBinding sets 'steps' var"(){
         given:
-        WorkflowJob job = jenkins.createProject(WorkflowJob);
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
         String template = "node{ sh 'echo hello' }"
         def definition = new AdHocTemplateFlowDefinition(true, template, false, null)
         job.setDefinition(definition)

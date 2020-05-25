@@ -16,11 +16,9 @@
 
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.primitives.TemplateException
-import org.jenkinsci.plugins.workflow.cps.CpsScript
-import hudson.Extension 
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 
 /*
     represents an immutable application environment. 

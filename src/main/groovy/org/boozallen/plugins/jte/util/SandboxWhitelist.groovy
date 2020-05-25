@@ -16,9 +16,9 @@
 package org.boozallen.plugins.jte.util
 
 import hudson.Extension
-import java.lang.reflect.Constructor
-import java.lang.reflect.Method
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
+
+import java.lang.reflect.Method
 
 @Extension
 class SandboxWhitelist extends AbstractWhitelist {

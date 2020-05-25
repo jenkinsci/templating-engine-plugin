@@ -15,33 +15,25 @@
 */
 package org.boozallen.plugins.jte.job
 
-import hudson.Extension
-import hudson.model.*
-import hudson.Util
+
+import hudson.model.Action
+import hudson.model.Item
+import hudson.model.Queue
+import hudson.model.TaskListener
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.cps.FlowHead
 import org.jenkinsci.plugins.workflow.cps.persistence.PersistIn
-import org.jenkinsci.plugins.workflow.flow.DurabilityHintProvider
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition
-import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
-import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
-import org.jenkinsci.plugins.workflow.flow.FlowExecution
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.flow.GlobalDefaultFlowDurabilityLevel
-import org.jenkinsci.plugins.workflow.graph.FlowStartNode
-import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.flow.*
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
-import org.kohsuke.stapler.DataBoundConstructor
-import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.*
+
+import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.JOB
 
 @PersistIn(JOB)
 abstract class TemplateFlowDefinition extends FlowDefinition {
 
     @Override
-    public FlowExecution create(FlowExecutionOwner owner, TaskListener listener, List<? extends Action> actions) throws Exception {
+    FlowExecution create(FlowExecutionOwner owner, TaskListener listener, List<? extends Action> actions) throws Exception {
         FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
         String template = initializeJTE(owner)
         return new CpsFlowExecution(template, true, owner, hint)

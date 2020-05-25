@@ -16,26 +16,13 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
-import hudson.model.*
 import hudson.Util
-import jenkins.model.Jenkins
-import org.boozallen.plugins.jte.init.PipelineDecorator
-import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.cps.FlowHead
-import org.jenkinsci.plugins.workflow.cps.persistence.PersistIn
-import org.jenkinsci.plugins.workflow.flow.DurabilityHintProvider
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition
+import hudson.model.Descriptor
+import hudson.model.DescriptorVisibilityFilter
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
-import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
-import org.jenkinsci.plugins.workflow.flow.FlowExecution
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.flow.GlobalDefaultFlowDurabilityLevel
-import org.jenkinsci.plugins.workflow.graph.FlowStartNode
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.kohsuke.stapler.DataBoundConstructor
-import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.*
 
 class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
 
@@ -44,30 +31,34 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
     private final boolean providePipelineConfig
     public String pipelineConfig
 
-    @DataBoundConstructor public AdHocTemplateFlowDefinition(boolean providePipelineTemplate, String template, boolean providePipelineConfig, String pipelineConfig){
+    @DataBoundConstructor
+    AdHocTemplateFlowDefinition(boolean providePipelineTemplate, String template, boolean providePipelineConfig, String pipelineConfig){
         this.providePipelineTemplate = providePipelineTemplate
         this.template = providePipelineTemplate ? Util.fixEmptyAndTrim(template) : null
         this.providePipelineConfig = providePipelineConfig
         this.pipelineConfig = providePipelineConfig ? Util.fixEmptyAndTrim(pipelineConfig) : null
     }
 
-    public boolean getProvidePipelineTemplate(){ return providePipelineTemplate }
-    public String getTemplate() { return template }
-    public boolean getProvidePipelineConfig(){ return providePipelineConfig }
-    public String getPipelineConfig(){ return pipelineConfig }
+    boolean getProvidePipelineTemplate(){ return providePipelineTemplate }
+
+    String getTemplate() { return template }
+
+    boolean getProvidePipelineConfig(){ return providePipelineConfig }
+
+    String getPipelineConfig(){ return pipelineConfig }
 
     @Extension
-    public static class DescriptorImpl extends FlowDefinitionDescriptor {
+    static class DescriptorImpl extends FlowDefinitionDescriptor {
         @Override
-        public String getDisplayName() {
+        String getDisplayName() {
             return "Jenkins Templating Engine"
         }
     }
 
     @Extension
-    public static class HideMeElsewhere extends DescriptorVisibilityFilter {
+    static class HideMeElsewhere extends DescriptorVisibilityFilter {
         @Override
-        public boolean filter(Object context, Descriptor descriptor) {
+        boolean filter(Object context, Descriptor descriptor) {
             if (descriptor instanceof DescriptorImpl) {
                 return context instanceof WorkflowJob && !(((WorkflowJob) context).getParent() instanceof WorkflowMultiBranchProject)
             }

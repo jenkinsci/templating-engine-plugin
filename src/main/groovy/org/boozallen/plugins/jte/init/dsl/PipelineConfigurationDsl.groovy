@@ -18,11 +18,9 @@ package org.boozallen.plugins.jte.init.dsl
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringEscapeUtils
-import org.boozallen.plugins.jte.util.RunUtils
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.kohsuke.groovy.sandbox.SandboxTransformer
 
 class PipelineConfigurationDsl {
@@ -50,17 +48,17 @@ class PipelineConfigurationDsl {
     cc.addCompilationCustomizers(new SandboxTransformer())
     cc.scriptBaseClass = PipelineConfigurationBuilder.class.name
 
-    GroovyShell sh = new GroovyShell(this.getClass().getClassLoader(), our_binding, cc);
+    GroovyShell sh = new GroovyShell(this.getClass().getClassLoader(), our_binding, cc)
     script_text = script_text.replaceAll("@merge", "builderMerge();")
     script_text = script_text.replaceAll("@override", "builderOverride();")
     Script script = sh.parse(script_text)
 
     DslSandbox sandbox = new DslSandbox(script, env)
-    sandbox.register();
+    sandbox.register()
     try {
       script.run()
     }finally {
-      sandbox.unregister();
+      sandbox.unregister()
     }
 
     return pipelineConfig

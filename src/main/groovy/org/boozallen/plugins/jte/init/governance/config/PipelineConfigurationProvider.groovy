@@ -19,16 +19,13 @@ import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
-
 
 abstract class PipelineConfigurationProvider extends AbstractDescribableImpl<PipelineConfigurationProvider>{
 
-    abstract public PipelineConfigurationObject getConfig(FlowExecutionOwner owner)
-    abstract public String getJenkinsfile(FlowExecutionOwner owner)
-    abstract public String getTemplate(FlowExecutionOwner owner, String template)
+    abstract PipelineConfigurationObject getConfig(FlowExecutionOwner owner)
+    abstract String getJenkinsfile(FlowExecutionOwner owner)
+    abstract String getTemplate(FlowExecutionOwner owner, String template)
 
-    public static class PipelineConfigurationProviderDescriptor extends Descriptor<PipelineConfigurationProvider> {}
+    static class PipelineConfigurationProviderDescriptor extends Descriptor<PipelineConfigurationProvider> {}
 
 }

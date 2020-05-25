@@ -15,20 +15,13 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import org.boozallen.plugins.jte.init.dsl.TemplateConfigException
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
-import org.boozallen.plugins.jte.init.primitives.TemplateException
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import hudson.model.Result
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.junit.*
+import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
-import hudson.model.Result
-import spock.lang.*
+import spock.lang.Shared
+import spock.lang.Specification
 
 class ApplicationEnvironmentSpec extends Specification{
 

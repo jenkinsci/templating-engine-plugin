@@ -17,9 +17,6 @@ package org.boozallen.plugins.jte.util
 
 import hudson.Extension
 import jenkins.security.CustomClassFilter
-import org.boozallen.plugins.jte.init.PipelineDecorator
-import org.jenkinsci.plugins.workflow.cps.CpsThread
-import org.boozallen.plugins.jte.util.TemplateLogger
 
 /*
     see: https://github.com/jenkinsci/jep/blob/master/jep/200/README.adoc#extensibility

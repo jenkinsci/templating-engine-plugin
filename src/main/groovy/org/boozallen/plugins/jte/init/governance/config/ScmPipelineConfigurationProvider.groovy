@@ -16,9 +16,9 @@
 package org.boozallen.plugins.jte.init.governance.config
 
 import hudson.Extension
+import hudson.Util
 import hudson.scm.NullSCM
 import hudson.scm.SCM
-import hudson.Util
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.FileSystemWrapper
@@ -27,26 +27,29 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 
-public class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
+class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
 
     static final String CONFIG_FILE = "pipeline_config.groovy"
     static final String PIPELINE_TEMPLATE_DIRECTORY = "pipeline_templates"
     String baseDir
     SCM scm
 
-    @DataBoundConstructor public ScmPipelineConfigurationProvider(){}
+    @DataBoundConstructor
+    ScmPipelineConfigurationProvider(){}
 
     @DataBoundSetter
-    public setBaseDir(String baseDir){
+    setBaseDir(String baseDir){
         this.baseDir = Util.fixEmptyAndTrim(baseDir)
     }
-    public String getBaseDir(){ return baseDir }
+
+    String getBaseDir(){ return baseDir }
 
     @DataBoundSetter
-    public setScm(SCM scm){ this.scm = scm }
-    public SCM getScm(){ return scm }
+    setScm(SCM scm){ this.scm = scm }
 
-    public PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
+    SCM getScm(){ return scm }
+
+    PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
         PipelineConfigurationObject configObject
         if (scm && !(scm instanceof NullSCM)){
             FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
@@ -64,7 +67,7 @@ public class ScmPipelineConfigurationProvider extends PipelineConfigurationProvi
         return configObject
     }
 
-    public String getJenkinsfile(FlowExecutionOwner owner){
+    String getJenkinsfile(FlowExecutionOwner owner){
         String jenkinsfile
         if(scm && !(scm instanceof NullSCM)){
             FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
@@ -74,7 +77,7 @@ public class ScmPipelineConfigurationProvider extends PipelineConfigurationProvi
         return jenkinsfile
     }
 
-    public String getTemplate(FlowExecutionOwner owner, String template){
+    String getTemplate(FlowExecutionOwner owner, String template){
         String pipelineTemplate
         if(scm && !(scm instanceof NullSCM)){
             FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
@@ -85,8 +88,9 @@ public class ScmPipelineConfigurationProvider extends PipelineConfigurationProvi
     }
 
 
-    @Extension public static class DescriptorImpl extends PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor{
-        public String getDisplayName(){
+    @Extension
+    static class DescriptorImpl extends PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor{
+        String getDisplayName(){
             return "From SCM"
         }
     }

@@ -16,14 +16,11 @@
 package org.boozallen.plugins.jte.init.governance.libs
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
+import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
-import hudson.Extension
-import hudson.model.Descriptor
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import jenkins.model.Jenkins
 
 class TestLibraryProvider extends LibraryProvider{
 
@@ -36,10 +33,9 @@ class TestLibraryProvider extends LibraryProvider{
     List loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         if(hasLibrary(flowOwner, libName)){
-            Class StepWrapper = LibraryLoader.getPrimitiveClass()
             TestLibrary library = libraries.find{ it.name == libName }
             library.steps.each{ name, text -> 
-                def s = StepWrapper.createFromString(text, binding, name, libName, libConfig)
+                def s = StepWrapperFactory.createFromString(text, binding, name, libName, libConfig)
                 binding.setVariable(name, s)
             }
         }

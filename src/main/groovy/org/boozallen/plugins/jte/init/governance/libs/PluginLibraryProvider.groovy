@@ -15,21 +15,19 @@
 */
 package org.boozallen.plugins.jte.init.governance.libs
 
+import hudson.Extension
+import hudson.model.Descriptor
+import hudson.model.DescriptorVisibilityFilter
+import jenkins.model.Jenkins
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
-import java.util.zip.ZipInputStream
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.kohsuke.stapler.DataBoundConstructor
+
+import java.nio.charset.StandardCharsets
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
-import java.io.BufferedReader
-import java.nio.charset.StandardCharsets
-import hudson.Extension
-import org.kohsuke.stapler.DataBoundConstructor
-import hudson.model.DescriptorVisibilityFilter
-import org.jenkinsci.plugins.workflow.cps.CpsScript
-import hudson.model.Descriptor
-import jenkins.model.Jenkins
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-
+import java.util.zip.ZipInputStream
 
 class PluginLibraryProvider extends LibraryProvider{
 
@@ -93,11 +91,11 @@ class PluginLibraryProvider extends LibraryProvider{
         return lines.join("\n")
     }
 
-    public Boolean hasLibrary(FlowExecutionOwner flowOwner, String libName){
+    Boolean hasLibrary(FlowExecutionOwner flowOwner, String libName){
         return libName in libraries.keySet()
     }
 
-    public List loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
+    List loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
 
         ArrayList msg = [
@@ -118,9 +116,8 @@ class PluginLibraryProvider extends LibraryProvider{
         }
 
         // load steps
-        def StepWrapper = LibraryLoader.getPrimitiveClass()
         libraries[libName].steps.each{ stepName, stepContents ->
-            def s = StepWrapper.createFromString(stepContents, script, stepName, libName, libConfig)
+            def s = StepWrapperFactory.createFromString(stepContents, script, stepName, libName, libConfig)
             binding.setVariable(stepName, s)
         }
         return libConfigErrors
@@ -130,18 +127,19 @@ class PluginLibraryProvider extends LibraryProvider{
         returns null if for some reason plugin descriptor can't be found
         -- this shouldn't technically be possible.
     */
-    public String getPluginDisplayName(){
+    String getPluginDisplayName(){
         List<LibraryProvidingPlugin> plugins = DescriptorImpl.getLibraryProvidingPlugins()
         Descriptor pluginDescriptor = Descriptor.findByDescribableClassName(plugins, plugin.getClass().getName())
         return pluginDescriptor?.getDisplayName()
     }
 
-    @Extension public static class DescriptorImpl extends LibraryProvider.LibraryProviderDescriptor{
-        public String getDisplayName(){
+    @Extension
+    static class DescriptorImpl extends LibraryProvider.LibraryProviderDescriptor{
+        String getDisplayName(){
             return "From a Library Providing Plugin"
         }
 
-        public static List<LibraryProvidingPlugin> getLibraryProvidingPlugins(){
+        static List<LibraryProvidingPlugin> getLibraryProvidingPlugins(){
             return Jenkins.get().getExtensionList(LibraryProvidingPlugin.LibraryProvidingPluginDescriptor)
         }
     }
@@ -150,9 +148,10 @@ class PluginLibraryProvider extends LibraryProvider{
         hide this plugin as an option if there aren't any plugin providing libraries
         installed on the jenkins instance
     */
-    @Extension public static class FilterImpl extends DescriptorVisibilityFilter {
+    @Extension
+    static class FilterImpl extends DescriptorVisibilityFilter {
         @Override
-        public boolean filter(Object context, Descriptor descriptor) {
+        boolean filter(Object context, Descriptor descriptor) {
             if (descriptor instanceof DescriptorImpl){
                 return !DescriptorImpl.getLibraryProvidingPlugins().isEmpty()
             }

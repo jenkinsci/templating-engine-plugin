@@ -17,17 +17,12 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
-import jenkins.model.Jenkins
-import jenkins.scm.api.SCMFile 
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.util.RunUtils
+import org.boozallen.plugins.jte.init.primitives.hooks.*
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.InvokerInvocationException
-import org.jenkinsci.plugins.workflow.cps.CpsScript
-import org.boozallen.plugins.jte.init.primitives.hooks.*
 
 /*
     represents a library step. 
@@ -38,7 +33,6 @@ import org.boozallen.plugins.jte.init.primitives.hooks.*
     2. To provide a means to do LifeCycle Hooks before/after step execution
 */
 class StepWrapper extends TemplatePrimitive implements Serializable{
-    public static final String libraryConfigVariable = "config" 
     private Object impl
     private Binding binding
     private String name
@@ -101,35 +95,5 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
 
     void throwPostLockException(){
         throw new TemplateException ("Library Step Collision. The variable ${name} is reserved as a library step via the ${library} library.")
-    }
-
-    @NonCPS
-    static StepWrapper createFromFile(SCMFile file, String library, Binding binding, Map libConfig){
-        String name = file.getName() - ".groovy" 
-        String stepText = file.contentAsString()
-        return createFromString(stepText, binding, name, library, libConfig)
-    }
-
-    @NonCPS
-    static StepWrapper createDefaultStep(Binding binding, String name, Map stepConfig){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String defaultImpl = uberClassLoader.loadClass(self).getResource("defaultStepImplementation.groovy").text
-        if (!stepConfig.name) stepConfig.name = name 
-        return createFromString(defaultImpl, binding, name, "Default Step Implementation", stepConfig) 
-    }
-
-    @NonCPS
-    static StepWrapper createNullStep(String stepName, Binding binding){
-        String nullImpl = "def call(){ println \"Step ${stepName} is not implemented.\" }"
-        return createFromString(nullImpl, binding, stepName, "Null Step", [:])
-    }
-
-    @NonCPS
-    static StepWrapper createFromString(String stepText, Binding binding, String name, String library, Map libConfig){
-        Script impl = TemplateScriptEngine.parse(stepText, binding)
-        impl.metaClass."get${StepWrapper.libraryConfigVariable.capitalize()}" << { return libConfig }
-        impl.metaClass.getStageContext = {->  [ name: null, args: [:] ]}
-        return new StepWrapper(binding: binding, impl: impl, name: name, library: library) 
     }
 }

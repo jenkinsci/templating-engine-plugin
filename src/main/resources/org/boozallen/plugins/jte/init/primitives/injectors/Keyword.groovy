@@ -16,11 +16,9 @@
 
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import hudson.Extension 
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /*
     represents a protected variable in the jenkinsfile

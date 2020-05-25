@@ -16,7 +16,7 @@
 package org.boozallen.plugins.jte.init.primitives.hooks
 
 import java.lang.annotation.Retention
-import static java.lang.annotation.ElementType.*
+
 import static java.lang.annotation.RetentionPolicy.RUNTIME
 
 /*
@@ -25,6 +25,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME
  maybe enhance to also after every Stage?
  */
 @Retention(RUNTIME)
-public @interface AfterStep{
+@interface AfterStep{
     Class value() default { true }
 }

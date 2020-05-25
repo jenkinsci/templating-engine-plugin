@@ -22,24 +22,24 @@ import jenkins.model.GlobalConfiguration
  * Example of Jenkins global configuration.
  */
 @Extension
-public class TemplateGlobalConfig extends GlobalConfiguration {
+class TemplateGlobalConfig extends GlobalConfiguration {
 
     private GovernanceTier tier
 
-    public static TemplateGlobalConfig get() {
+    static TemplateGlobalConfig get() {
         return GlobalConfiguration.all().get(TemplateGlobalConfig)
     }
 
-    public TemplateGlobalConfig() {
+    TemplateGlobalConfig() {
         load()
     }
 
-    public void setTier(GovernanceTier tier){
+    void setTier(GovernanceTier tier){
         this.tier = tier
         save()
     }
 
-    public GovernanceTier getTier(){
+    GovernanceTier getTier(){
         return tier
     }
 

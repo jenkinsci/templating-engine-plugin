@@ -15,25 +15,12 @@
 */
 package org.boozallen.plugins.jte.init.governance.libs
 
-import hudson.Extension
-import hudson.ExtensionList
-import hudson.ExtensionPoint
+
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import hudson.scm.SCM
-import hudson.Util
-import jenkins.model.Jenkins
-import jenkins.scm.api.SCMFile
-import jenkins.scm.api.SCMFileSystem
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
-import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
-
 
 abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
     public static final String CONFIG_FILE = "library_config.groovy"
@@ -42,20 +29,20 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
         implementing methods return true if library is present
         and false if not.
     */
-    abstract public Boolean hasLibrary(FlowExecutionOwner flowOwner, String libraryName)
+    abstract Boolean hasLibrary(FlowExecutionOwner flowOwner, String libraryName)
 
     /*
         implementing methods should check for the existence of
         CONFIG_FILE in the library and pass file contents as string to
         doLibraryConfigValidation
     */
-    abstract public List loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig)
+    abstract List loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig)
 
-    public Map libConfigToMap(String configFile) {
+    Map libConfigToMap(String configFile) {
         return
     }
 
-    public List doLibraryConfigValidation(FlowExecutionOwner flowOwner, String configFile, Map libConfig){
+    List doLibraryConfigValidation(FlowExecutionOwner flowOwner, String configFile, Map libConfig){
 
         PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(flowOwner)
         Map allowedConfig = dsl.parse(configFile).getConfig()
@@ -115,13 +102,13 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
         return libConfigErrors
     }
 
-    public def getProp(o, p){
+    def getProp(o, p){
         return p.tokenize('.').inject(o){ obj, prop ->
             obj?."$prop"
         }
     }
 
-    public def getNestedKeys(map, result = [], String keyPrefix = '') {
+    def getNestedKeys(map, result = [], String keyPrefix = '') {
         map.each { key, value ->
             if (value instanceof Map) {
                 getNestedKeys(value, result, "${keyPrefix}${key}.")
@@ -140,7 +127,7 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
         JTE configuration file and we should strive to avoid
         confusion when people specify a validation.
     */
-    public Boolean validateType(logger, actual, expected){
+    Boolean validateType(logger, actual, expected){
         switch(expected){
             case [ boolean, Boolean ]:
                 return actual.getClass() in [ boolean, Boolean ]
@@ -174,6 +161,6 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
     }
 
 
-    public static class LibraryProviderDescriptor extends Descriptor<LibraryProvider> {}
+    static class LibraryProviderDescriptor extends Descriptor<LibraryProvider> {}
 
 }

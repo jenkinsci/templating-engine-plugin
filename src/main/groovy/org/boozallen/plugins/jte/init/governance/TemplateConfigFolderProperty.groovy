@@ -15,32 +15,33 @@
 */
 package org.boozallen.plugins.jte.init.governance
 
-import hudson.Extension
 import com.cloudbees.hudson.plugins.folder.AbstractFolder
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty
 import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor
+import hudson.Extension
 import org.kohsuke.stapler.DataBoundConstructor
 
 /*
     Adds a folder property to store the Governance Tiers via the
     job hierarchy
 */
-public class TemplateConfigFolderProperty extends AbstractFolderProperty<AbstractFolder<?>> {
+class TemplateConfigFolderProperty extends AbstractFolderProperty<AbstractFolder<?>> {
     private GovernanceTier tier
 
-    @DataBoundConstructor public TemplateConfigFolderProperty(GovernanceTier tier){
+    @DataBoundConstructor
+    TemplateConfigFolderProperty(GovernanceTier tier){
         this.tier = tier
     }
 
-    public GovernanceTier getTier(){
+    GovernanceTier getTier(){
         return tier
     }
 
     @Extension
-    public final static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
+    final static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
 
         @Override
-        public String getDisplayName() {
+        String getDisplayName() {
             return "Jenkins Templating Engine"
         }
 

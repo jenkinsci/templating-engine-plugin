@@ -17,14 +17,10 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
-import hudson.Extension 
-import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /*
     represents a group of library steps to be called. 

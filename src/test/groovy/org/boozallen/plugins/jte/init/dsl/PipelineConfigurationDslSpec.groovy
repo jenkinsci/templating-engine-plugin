@@ -16,12 +16,10 @@
 
 package org.boozallen.plugins.jte.init.dsl
 
-import spock.lang.*
-import org.junit.*
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
-import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Specification
 
 class PipelineConfigurationDslSpec extends Specification {
 

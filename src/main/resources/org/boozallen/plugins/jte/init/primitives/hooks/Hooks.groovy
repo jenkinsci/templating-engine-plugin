@@ -17,16 +17,13 @@
 package org.boozallen.plugins.jte.init.primitives.hooks
 
 import com.cloudbees.groovy.cps.NonCPS
-import java.lang.annotation.Annotation
-import jenkins.model.Jenkins
-import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
-import org.boozallen.plugins.jte.util.RunUtils
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
+import java.lang.annotation.Annotation
 
 class Hooks implements Serializable{
 
@@ -35,7 +32,7 @@ class Hooks implements Serializable{
         List<AnnotatedMethod> discovered = new ArrayList() 
 
         TemplateLogger logger = TemplateLogger.createDuringRun() 
-        Class StepWrapper = LibraryLoader.getPrimitiveClass()
+        Class StepWrapper = StepWrapperFactory.getPrimitiveClass()
         ArrayList stepWrappers = binding.getVariables().collect{ it.value }.findAll{
             StepWrapper.getName().equals(it.getClass().getName())
         }
@@ -64,7 +61,7 @@ class Hooks implements Serializable{
     static def shouldInvoke(AnnotatedMethod hook, HookContext context){
         def annotation = hook.getAnnotation()
         def stepWrapper = hook.getStepWrapper() 
-        String configVar = stepWrapper.getClass().libraryConfigVariable
+        String configVar = StepWrapperFactory.CONFIG_VAR
         Map config = stepWrapper.impl."get${configVar.capitalize()}"()
         RunWrapper currentBuild = getRunWrapper()
         Binding invokeBinding = new Binding([context: context, config: config, currentBuild: currentBuild])
