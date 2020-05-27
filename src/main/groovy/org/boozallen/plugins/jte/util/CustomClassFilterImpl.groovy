@@ -24,7 +24,7 @@ import jenkins.security.CustomClassFilter
 @Extension
 class CustomClassFilterImpl implements CustomClassFilter {
     @Override Boolean permits(Class<?> c){
-        if(c.getName().startsWith("org.boozallen.plugins.jte") || c.getName().startsWith("script")){
+        if(c.getName().startsWith("org.boozallen.plugins.jte") || c.getName().startsWith("WorkflowScript")){
             return true
         }
         return null

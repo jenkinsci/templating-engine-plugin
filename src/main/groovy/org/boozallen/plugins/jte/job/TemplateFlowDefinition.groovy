@@ -49,7 +49,7 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         return template
     }
 
-    private FlowDurabilityHint determineFlowDurabilityHint(FlowExecutionOwner owner){
+    static FlowDurabilityHint determineFlowDurabilityHint(FlowExecutionOwner owner){
         Queue.Executable exec = owner.getExecutable()
         if (!(exec instanceof WorkflowRun)) {
             throw new IllegalStateException("inappropriate context")

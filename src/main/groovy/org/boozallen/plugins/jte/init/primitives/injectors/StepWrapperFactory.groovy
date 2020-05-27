@@ -20,8 +20,8 @@ import jenkins.scm.api.SCMFile
 import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
-import org.jenkinsci.plugins.workflow.cps.CpsGroovyShell
+import org.boozallen.plugins.jte.job.TemplateFlowDefinition
+import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  * Produces StepWrappers from a variety of input sources
@@ -45,10 +45,12 @@ class StepWrapperFactory{
      * @return an invocable Script object representing the step
      */
     private Script parse(String scriptText, Binding b){
-        CpsFlowExecution execution = new CpsFlowExecution(scriptText, flowOwner)
-        Script script = execution.parseScript()
-//        GroovyShell shell = new CpsGroovyShellFactory(execution).forTrusted().build()
-//        Class clazz = shell.getClassLoader().parseClass(scriptText)
+        CpsScript script = new CpsFlowExecution(
+                scriptText,
+                false,
+                flowOwner,
+                TemplateFlowDefinition.determineFlowDurabilityHint(flowOwner)
+        ).parseScript()
         script.setBinding(b)
         return script
     }
