@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
@@ -25,7 +24,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 @Extension class ApplicationEnvironmentInjector extends TemplatePrimitiveInjector {
 
-    @NonCPS
     static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class ApplicationEnvironment = getPrimitiveClass()
         ArrayList createdEnvs = []

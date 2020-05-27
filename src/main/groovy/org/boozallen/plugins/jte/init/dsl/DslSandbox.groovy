@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.init.dsl
 
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.kohsuke.groovy.sandbox.GroovyInterceptor
+import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
 
 /*
   our sandbox.  just block all the things except the creation of

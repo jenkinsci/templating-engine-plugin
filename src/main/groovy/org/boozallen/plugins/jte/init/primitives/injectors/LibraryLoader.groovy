@@ -15,13 +15,13 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import hudson.Extension
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -30,8 +30,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 @Extension
 class LibraryLoader extends TemplatePrimitiveInjector {
 
-    @NonCPS
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
         // 1. Inject steps from loaded libraries
         WorkflowJob job = flowOwner.run().getParent()
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)
@@ -63,7 +62,8 @@ class LibraryLoader extends TemplatePrimitiveInjector {
             throw new TemplateConfigException("There were library configuration errors.")
         }
 
-        // 2. Inject steps with default step implementation for configured steps
+        // 2. Inject steps with default step implementation for configured step
+        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         config.getConfig().steps.findAll{ stepName, stepConfig ->
             if (binding.hasStep(stepName)){
                 ArrayList msg = [
@@ -76,16 +76,17 @@ class LibraryLoader extends TemplatePrimitiveInjector {
             return true
         }.each{ stepName, stepConfig ->
             logger.print "Creating step ${stepName} from the default step implementation."
-            binding.setVariable(stepName, StepWrapperFactory.createDefaultStep(binding, stepName, stepConfig))
+            binding.setVariable(stepName, stepFactory.createDefaultStep(binding, stepName, stepConfig))
         }
     }
 
     static void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         // 3. Inject a passthrough step for steps not defined (either as steps or other primitives)
+        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         config.getConfig().template_methods.findAll{ step ->
             !(step.key in binding.registry)
         }.each{ step ->
-            binding.setVariable(step.key, StepWrapperFactory.createNullStep(step.key, binding))
+            binding.setVariable(step.key, stepFactory.createNullStep(step.key, binding))
         }
     }
 

@@ -17,31 +17,10 @@ package org.boozallen.plugins.jte.util
 
 import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
 
-/*
-    We do a lot of executing the code inside files and JTE is
-    dependent on the binding being preserved.
-
-    The default CpsGroovyShell leveraged in CpsScript's evaluate method
-    is insufficient for our needs because it instantiates each shell with
-    a new Binding() instead of using getBinding().
-
-    </rant>
-*/
 class TemplateScriptEngine implements Serializable{
-
-    static GroovyShell createShell(){
-        return new CpsGroovyShellFactory(null).forTrusted().build()
-    }
-
-    static Script parse(String scriptText, Binding b){
-        String fileName = "jte" + System.currentTimeMillis() + Math.abs(scriptText.hashCode()) + ".groovy"
-        Script script = createShell().getClassLoader().parseClass(scriptText).newInstance()
-        script.setBinding(b)
-        return script
-    }
-
     static Class parseClass(String classText){
-        GroovyClassLoader classLoader = createShell().getClassLoader()
+        GroovyShell shell = new CpsGroovyShellFactory(null).forTrusted().build()
+        GroovyClassLoader classLoader = shell.getClassLoader()
         GroovyClassLoader tempLoader = new GroovyClassLoader(classLoader)
         /*
             Creating a new, short-lived class loader that inherits the

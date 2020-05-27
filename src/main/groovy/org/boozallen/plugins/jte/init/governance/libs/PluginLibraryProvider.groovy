@@ -116,8 +116,9 @@ class PluginLibraryProvider extends LibraryProvider{
         }
 
         // load steps
+        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         libraries[libName].steps.each{ stepName, stepContents ->
-            def s = StepWrapperFactory.createFromString(stepContents, script, stepName, libName, libConfig)
+            def s = stepFactory.createFromString(stepContents, script, stepName, libName, libConfig)
             binding.setVariable(stepName, s)
         }
         return libConfigErrors

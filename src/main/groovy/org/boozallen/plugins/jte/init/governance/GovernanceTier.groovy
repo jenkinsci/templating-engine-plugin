@@ -32,6 +32,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 import org.kohsuke.stapler.StaplerRequest
+import hudson.model.Descriptor.FormException
 
 class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> implements Serializable{
 
@@ -116,11 +117,11 @@ class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> implements 
         }
 
         static List<LibraryProvider.LibraryProviderDescriptor> getLibraryProviders(){
-            return Jenkins.getActiveInstance().getExtensionList(LibraryProvider.LibraryProviderDescriptor)
+            return Jenkins.get().getExtensionList(LibraryProvider.LibraryProviderDescriptor)
         }
 
         static List<PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor> getPipelineConfigurationProviders(){
-            return Jenkins.getActiveInstance().getExtensionList(PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor)
+            return Jenkins.get().getExtensionList(PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor)
         }
 
         Descriptor getDefaultConfigurationProvider(){

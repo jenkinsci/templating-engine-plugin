@@ -20,7 +20,6 @@ import hudson.model.Action
 import hudson.model.Item
 import hudson.model.Queue
 import hudson.model.TaskListener
-import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.persistence.PersistIn
@@ -51,14 +50,11 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
     }
 
     private FlowDurabilityHint determineFlowDurabilityHint(FlowExecutionOwner owner){
-        Jenkins jenkins = Jenkins.getInstance()
-        if (jenkins == null) {
-            throw new IllegalStateException("inappropriate context")
-        }
         Queue.Executable exec = owner.getExecutable()
         if (!(exec instanceof WorkflowRun)) {
             throw new IllegalStateException("inappropriate context")
         }
         FlowDurabilityHint hint = (exec instanceof Item) ? DurabilityHintProvider.suggestedFor((Item)exec) : GlobalDefaultFlowDurabilityLevel.getDefaultDurabilityHint()
+        return hint
     }
 }

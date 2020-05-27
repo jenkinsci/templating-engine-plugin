@@ -80,11 +80,12 @@ class ScmLibraryProvider extends LibraryProvider{
             logger.printWarning("Library ${libName} does not have a configuration file.")
         }
 
+        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         lib.children().findAll{
             it.getName().endsWith(".groovy") &&
             !it.getName().endsWith("library_config.groovy") // exclude lib config file
         }.each{ stepFile ->
-            def s = StepWrapperFactory.createFromFile(stepFile, libName, binding, libConfig)
+            def s = stepFactory.createFromFile(stepFile, libName, binding, libConfig)
             binding.setVariable(s.getName(), s)
         }
 
