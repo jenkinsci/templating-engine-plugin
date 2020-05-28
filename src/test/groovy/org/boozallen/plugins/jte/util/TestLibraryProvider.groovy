@@ -34,8 +34,9 @@ class TestLibraryProvider extends LibraryProvider{
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         if(hasLibrary(flowOwner, libName)){
             TestLibrary library = libraries.find{ it.name == libName }
+            StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
             library.steps.each{ name, text -> 
-                def s = StepWrapperFactory.createFromString(text, binding, name, libName, libConfig)
+                def s = stepFactory.createFromString(text, binding, name, libName, libConfig)
                 binding.setVariable(name, s)
             }
         }

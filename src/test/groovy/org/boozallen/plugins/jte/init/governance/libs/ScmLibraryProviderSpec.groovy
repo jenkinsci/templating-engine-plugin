@@ -112,10 +112,11 @@ class ScmLibraryProviderSpec extends Specification{
         p.setScm(scm)
 
         GroovySpy(StepWrapperFactory, global:true)
-        StepWrapperFactory.getPrimitiveClass() >> StepWrapper
-        StepWrapperFactory.createFromFile(*_) >> { args ->
-            String name = args[0].getName() - ".groovy"
-            return new StepWrapper(name)
+        new StepWrapperFactory(_) >> Mock(StepWrapperFactory){
+            createFromFile(*_) >> { args ->
+                String name = args[0].getName() - ".groovy"
+                return new StepWrapper(name)
+            }
         }
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
@@ -144,10 +145,11 @@ class ScmLibraryProviderSpec extends Specification{
         p.setScm(scm)
 
         GroovySpy(StepWrapperFactory, global:true)
-        StepWrapperFactory.getPrimitiveClass() >> StepWrapper
-        StepWrapperFactory.createFromFile(*_) >> { args ->
-            String name = args[0].getName() - ".groovy"
-            return new StepWrapper(name)
+        new StepWrapperFactory(_) >> Mock(StepWrapperFactory){
+            createFromFile(*_) >> { args ->
+                String name = args[0].getName() - ".groovy"
+                return new StepWrapper(name)
+            }
         }
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
@@ -176,10 +178,11 @@ class ScmLibraryProviderSpec extends Specification{
         p.setScm(scm)
 
         GroovySpy(StepWrapperFactory, global:true)
-        StepWrapperFactory.getPrimitiveClass() >> StepWrapper
-        StepWrapperFactory.createFromFile(*_) >> { args ->
-            String name = args[0].getName() - ".groovy"
-            return new StepWrapper(name)
+        new StepWrapperFactory(_) >>  Mock(StepWrapperFactory){
+            createFromFile(*_) >> { args ->
+                String name = args[0].getName() - ".groovy"
+                return new StepWrapper(name)
+            }
         }
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
