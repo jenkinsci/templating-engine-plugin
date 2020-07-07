@@ -35,28 +35,20 @@ class TemplateBinding extends Binding implements Serializable{
 
     @Override
     void setVariable(String name, Object value) {
-        /*
-         Library steps can access their config through
-         a variable called "config".  as such, reject
-         attempts to override this in the binding.
-         */
-        /*
-         TODO: get this value from class
-         */
-        String reservedConfigVar = "config"
-        if (name.equals(reservedConfigVar)){
-            throw new TemplateException("Cannot set ${reservedConfigVar}. Reserved for use by library steps.")
-        }
-
-        if (name in registry){
-            if (locked){
-                variables.get(name).throwPostLockException()
+        if (name in registry || ReservedVariableName.byName(name)){
+            def thrower = ReservedVariableName.byName(name) ?: variables.get(name)
+            if(!thrower){
+                throw new Exception("Something weird happened. Unable to determine source of binding collision.")
             }
-            else{
-                variables.get(name).throwPreLockException()
+            if (!locked){
+                thrower.throwPreLockException()
+            }else{
+                thrower.throwPostLockException()
             }
         }
-        if (value in TemplatePrimitive) registry << name
+        if (value in TemplatePrimitive){
+            registry << name
+        }
         super.setVariable(name, value)
     }
 

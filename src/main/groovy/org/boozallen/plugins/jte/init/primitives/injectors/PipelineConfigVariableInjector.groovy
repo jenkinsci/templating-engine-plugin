@@ -16,24 +16,21 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
-@Extension class KeywordInjector extends TemplatePrimitiveInjector {
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
-        Class Keyword = getPrimitiveClass()
-        config.getConfig().keywords.each{ key, value ->
-            binding.setVariable(key, Keyword.newInstance(var_name: key, value: value))
-        }
-    }
+@Extension class PipelineConfigVariableInjector extends TemplatePrimitiveInjector {
+    static final String VARIABLE = "pipelineConfig"
 
-    static Class getPrimitiveClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("Keyword.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+        Class Keyword = KeywordInjector.getPrimitiveClass()
+        def pipelineConfig = Keyword.newInstance(
+            var_name: VARIABLE,
+            value: config.getConfig(),
+            preLockException: "Variable ${VARIABLE} reserved for accessing the aggregated pipeline configuration",
+            postLockException: "Variable ${VARIABLE} reserved for accessing the aggregated pipeline configuration"
+        )
+        binding.setVariable(VARIABLE, pipelineConfig)
     }
 }

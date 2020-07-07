@@ -147,7 +147,7 @@ class TemplateBindingSpec extends Specification{
         binding.setVariable(StepWrapperFactory.CONFIG_VAR, "test")
 
         then:
-        thrown TemplateException
+        thrown Exception
     }
 
     @WithoutJenkins

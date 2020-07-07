@@ -18,6 +18,8 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import jenkins.model.Jenkins
 import jenkins.scm.api.SCMFile
 import org.boozallen.plugins.jte.util.TemplateScriptEngine
+import org.boozallen.plugins.jte.init.primitives.ReservedVariableName
+import hudson.Extension
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
@@ -30,6 +32,16 @@ import org.jenkinsci.plugins.workflow.cps.CpsScript
  */
 class StepWrapperFactory{
     static final String CONFIG_VAR = "config"
+
+    @Extension static class ReservedVariableNameImpl extends ReservedVariableName{
+        static String getName(){ return CONFIG_VAR }
+        static void throwPreLockException(){
+            throw new Exception("Variable name ${CONFIG_VAR} is reserved for steps to access their library configuration")
+        }
+        static void throwPostLockException(){
+            throw new Exception("Variable name ${CONFIG_VAR} is reserved for steps to access their library configuration")
+        }
+    }
 
     private FlowExecutionOwner flowOwner
 

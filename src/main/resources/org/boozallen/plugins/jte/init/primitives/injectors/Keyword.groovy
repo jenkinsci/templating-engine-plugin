@@ -26,24 +26,18 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 class Keyword extends TemplatePrimitive implements Serializable{
     String var_name
     Object value
-
-    Keyword(){}
+    String preLockException = "Variable ${var_name} already exists as a Keyword."
+    String postLockException = "Variable ${var_name} is reserved as a template Keyword."
 
     Object getValue(){
         return value
     }
 
-    Keyword(String var_name, Object value){ 
-        this.var_name = var_name 
-        this.value = value
-    }
-
     void throwPreLockException(){
-        throw new TemplateException ("Keyword ${var_name} already defined.")
+        throw new TemplateException(preLockException)
     }
 
     void throwPostLockException(){
-        throw new TemplateException ("Variable ${var_name} is reserved as a template Keyword.")
+        throw new TemplateException(postLockException)
     }
-
 }
