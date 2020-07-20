@@ -115,12 +115,12 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                     */
                     BlockStatement wrapper = (new AstBuilder().buildFromCode(CompilePhase.SEMANTIC_ANALYSIS){
                         try{
-                            Hooks.invoke(Validate, this.getBinding())
-                            Hooks.invoke(Init, this.getBinding())
+                            Hooks.invoke(Validate)
+                            Hooks.invoke(Init)
                             // <-- this is where the template AST statements get injected
                         }finally{
-                            Hooks.invoke(CleanUp, this.getBinding())
-                            Hooks.invoke(Notify, this.getBinding())
+                            Hooks.invoke(CleanUp)
+                            Hooks.invoke(Notify)
                         }
                     }).first()
 

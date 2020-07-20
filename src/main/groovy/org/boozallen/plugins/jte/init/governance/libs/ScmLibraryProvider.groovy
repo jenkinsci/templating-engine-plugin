@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init.governance.libs
 
 import hudson.Extension
+import hudson.FilePath
 import hudson.Util
 import hudson.scm.SCM
 import jenkins.scm.api.SCMFile
@@ -84,8 +85,11 @@ class ScmLibraryProvider extends LibraryProvider{
         lib.children().findAll{
             it.getName().endsWith(".groovy") &&
             !it.getName().endsWith("library_config.groovy") // exclude lib config file
-        }.each{ stepFile ->
-            def s = stepFactory.createFromFile(stepFile, libName, binding, libConfig)
+        }.each{ scmFile ->
+            FilePath rootDir = new FilePath(flowOwner.getRootDir())
+            FilePath stepFile = rootDir.child("jte/${libName}/${scmFile.getName()}")
+            stepFile.write(scmFile.contentAsString(), "UTF-8")
+            def s = stepFactory.createFromFilePath(stepFile, binding, libName, libConfig)
             binding.setVariable(s.getName(), s)
         }
 

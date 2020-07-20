@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init.governance.libs
 
 import hudson.Extension
+import hudson.FilePath
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
 import jenkins.model.Jenkins
@@ -118,7 +119,9 @@ class PluginLibraryProvider extends LibraryProvider{
         // load steps
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         libraries[libName].steps.each{ stepName, stepContents ->
-            def s = stepFactory.createFromString(stepContents, script, stepName, libName, libConfig)
+            FilePath stepFile = new FilePath(flowOwner.getRootDir()).child("jte/${libName}/${stepName}.groovy")
+            stepFile.write(stepContents, "UTF-8")
+            def s = stepFactory.createFromFilePath(stepFile, binding, libName, libConfig)
             binding.setVariable(stepName, s)
         }
         return libConfigErrors

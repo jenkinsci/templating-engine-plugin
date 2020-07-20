@@ -13,6 +13,7 @@
 
 package org.boozallen.plugins.jte.init.governance.libs
 
+import hudson.FilePath
 import hudson.model.TaskListener
 import hudson.plugins.git.BranchSpec
 import hudson.plugins.git.GitSCM
@@ -43,7 +44,7 @@ class ScmLibraryProviderSpec extends Specification{
     PrintStream logger = Mock()
 
     def setup(){
-        WorkflowJob job = GroovyMock()
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
         job.asBoolean() >> true
         WorkflowRun run = GroovyMock()
         run.getParent() >> job
@@ -111,16 +112,20 @@ class ScmLibraryProviderSpec extends Specification{
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        owner.getRootDir() >> new File(f.getRemote())
+
         GroovySpy(StepWrapperFactory, global:true)
         new StepWrapperFactory(_) >> Mock(StepWrapperFactory){
-            createFromFile(*_) >> { args ->
-                String name = args[0].getName() - ".groovy"
+            createFromFilePath(*_) >> { args ->
+                String name = args[0].getBaseName()
                 return new StepWrapper(name)
             }
         }
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
-        fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
+        fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
         FileSystemWrapper.createFromSCM(owner, scm) >> fsw
 
@@ -144,16 +149,20 @@ class ScmLibraryProviderSpec extends Specification{
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        owner.getRootDir() >> new File(f.getRemote())
+
         GroovySpy(StepWrapperFactory, global:true)
         new StepWrapperFactory(_) >> Mock(StepWrapperFactory){
-            createFromFile(*_) >> { args ->
-                String name = args[0].getName() - ".groovy"
+            createFromFilePath(*_) >> { args ->
+                String name = args[0].getBaseName()
                 return new StepWrapper(name)
             }
         }
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
-        fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
+        fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
         FileSystemWrapper.createFromSCM(owner, scm) >> fsw
         
@@ -177,16 +186,20 @@ class ScmLibraryProviderSpec extends Specification{
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        owner.getRootDir() >> new File(f.getRemote())
+
         GroovySpy(StepWrapperFactory, global:true)
         new StepWrapperFactory(_) >>  Mock(StepWrapperFactory){
-            createFromFile(*_) >> { args ->
-                String name = args[0].getName() - ".groovy"
+            createFromFilePath(*_) >> { args ->
+                String name = args[0].getBaseName()
                 return new StepWrapper(name)
             }
         }
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
-        fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
+        fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
         FileSystemWrapper.createFromSCM(owner, scm) >> fsw
         

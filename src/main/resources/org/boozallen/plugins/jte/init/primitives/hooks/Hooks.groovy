@@ -17,9 +17,12 @@
 package org.boozallen.plugins.jte.init.primitives.hooks
 
 import com.cloudbees.groovy.cps.NonCPS
+import org.boozallen.plugins.jte.init.PipelineDecorator
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsThread
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
@@ -30,15 +33,13 @@ class Hooks implements Serializable{
     @NonCPS
     static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, Binding binding){
         List<AnnotatedMethod> discovered = new ArrayList() 
-
-        TemplateLogger logger = TemplateLogger.createDuringRun() 
         Class StepWrapper = StepWrapperFactory.getPrimitiveClass()
         ArrayList stepWrappers = binding.getVariables().collect{ it.value }.findAll{
             StepWrapper.getName().equals(it.getClass().getName())
         }
 
         stepWrappers.each{ step ->
-            step.impl.class.methods.each{ method ->
+            step.getImpl().class.methods.each{ method ->
                 def annotation = method.getAnnotation(hookType)
                 if (annotation){
                     AnnotatedMethod am = new AnnotatedMethod(annotation, hookType.getSimpleName(), method.name, step)
@@ -50,8 +51,19 @@ class Hooks implements Serializable{
         return discovered
     }
 
-    static void invoke(Class<? extends Annotation> annotation, Binding binding, HookContext context = new HookContext()){
-        discover(annotation, binding).each{ hook -> 
+    static void invoke(Class<? extends Annotation> annotation, HookContext context = new HookContext()){
+        CpsThread thread = CpsThread.current()
+        if(!thread){
+            throw new IllegalStateException("CpsThread not present.")
+        }
+        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
+        WorkflowRun run = flowOwner.run()
+        PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
+        if(!pipelineDecorator){
+            throw new IllegalStateException("PipelineDecorator action missing")
+        }
+        TemplateBinding binding = pipelineDecorator.getBinding()
+        discover(annotation, binding).each{ hook ->
             if(shouldInvoke(hook, context)){
                 hook.invoke(context)
             }
@@ -69,7 +81,7 @@ class Hooks implements Serializable{
         try{
             result = annotation.value().newInstance(invokeBinding, invokeBinding).call()
         }catch(any){
-            TemplateLogger.printWarning "Exception thrown while evaluating @${hook.annotationName} on ${hook.methodName} in ${hook.stepWrapper.getName()} from ${hook.stepWrapper.getLibrary()} library."
+            TemplateLogger.createDuringRun().printWarning "Exception thrown while evaluating @${hook.annotationName} on ${hook.methodName} in ${hook.stepWrapper.getName()} from ${hook.stepWrapper.getLibrary()} library."
             throw any 
         }
         return result

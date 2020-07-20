@@ -16,7 +16,6 @@
 
 package org.boozallen.plugins.jte.init.primitives.hooks
 
-import org.boozallen.plugins.jte.binding.*
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.InvokerInvocationException

@@ -15,8 +15,10 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import hudson.FilePath
 import jenkins.model.Jenkins
 import jenkins.scm.api.SCMFile
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.boozallen.plugins.jte.init.primitives.ReservedVariableName
 import hudson.Extension
@@ -31,8 +33,15 @@ import org.jenkinsci.plugins.workflow.cps.CpsScript
  * @auther Steven Terrana
  */
 class StepWrapperFactory{
+    /**
+     * the variable to autowire to expose the library
+     * configuration to the step
+     */
     static final String CONFIG_VAR = "config"
 
+    /**
+     * reserves ${CONFIG_VAR} as a protected variable name in the TemplateBinding
+     */
     @Extension static class ReservedVariableNameImpl extends ReservedVariableName{
         static String getName(){ return CONFIG_VAR }
         static void throwPreLockException(){
@@ -50,20 +59,35 @@ class StepWrapperFactory{
     }
 
     /**
-     * Parses a step's text and produces an invocable Script
+     *  Parses source code and turns it into a CPS transformed executable
+     *  script that's been autowired appropriately for JTE.
      *
-     * @param scriptText the source code text of the step to be parsed
-     * @param b the template binding
-     * @return an invocable Script object representing the step
+     * @param library the library contributing the step
+     * @param name the name of the step
+     * @param source the source code text
+     * @param binding the TemplateBinding resolvable during invocation
+     * @param config the library configuration
+     * @return an executable and wired executable script
      */
-    private Script parse(String scriptText, Binding b){
-        CpsScript script = new CpsFlowExecution(
-                scriptText,
+    Script prepareScript(String library, String name, String source, Binding binding, Map config){
+        CpsScript script
+        try{
+            script = new CpsFlowExecution(
+                source,
                 false,
                 flowOwner,
                 TemplateFlowDefinition.determineFlowDurabilityHint(flowOwner)
-        ).parseScript()
-        script.setBinding(b)
+            ).parseScript()
+        }catch(any){
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            logger.printError("Failed to parse step text. Library: ${library}. Step: ${name}.")
+            throw any
+        }
+
+        script.metaClass."get${CONFIG_VAR.capitalize()}" << { return config }
+        script.metaClass.getStageContext = {->  [ name: null, args: [:] ]}
+        script.setBinding(binding)
+
         return script
     }
 
@@ -77,27 +101,40 @@ class StepWrapperFactory{
      * @param libConfig the library configuration that will be resolvable via #CONFIG during execution
      * @return a StepWrapper representing the stepText
      */
-    def createFromString(String stepText, Binding binding, String name, String library, Map libConfig){
+    def createFromString(String sourceText, Binding binding, String name, String library, Map config){
         Class StepWrapper = getPrimitiveClass()
-        Script impl = parse(stepText, binding)
-        impl.metaClass."get${CONFIG_VAR.capitalize()}" << { return libConfig }
-        impl.metaClass.getStageContext = {->  [ name: null, args: [:] ]}
-        return StepWrapper.newInstance(binding: binding, impl: impl, name: name, library: library)
+        return StepWrapper.newInstance(
+            name: name,
+            library: library,
+            config: config,
+            sourceText: sourceText,
+            // parse to fail fast for step compilation issues
+            impl: prepareScript(library, name, sourceText, binding, config)
+        )
     }
 
     /**
-     * Takes an SCMFile and produces a StepWrapper
+     * takes a FilePath holding the source text for the step and
+     * creates a StepWrapper instance
      *
-     * @param file the SCMFile containing the step's code
+     * @param filePath the FilePath where the source file can be found
+     * @param binding the TemplateBinding context to attach to the StepWrapper
      * @param library the library contributing the step
-     * @param binding the template binding
-     * @param libConfig the library configuration that will be resolvable via #CONFIG during execution
-     * @return a StepWrapper respresenting the step in SCMFile
+     * @param config the library configuration for the step
+     * @return a StepWrapper instance
      */
-    def createFromFile(SCMFile file, String library, Binding binding, Map libConfig){
-        String name = file.getName() - ".groovy" 
-        String stepText = file.contentAsString()
-        return createFromString(stepText, binding, name, library, libConfig)
+    def createFromFilePath(FilePath filePath, Binding binding, String library, Map config){
+        Class StepWrapper = getPrimitiveClass()
+        String name = filePath.getBaseName()
+        String sourceText = filePath.readToString()
+        return StepWrapper.newInstance(
+            name: name,
+            library: library,
+            config: config,
+            sourceFile: filePath.absolutize().getRemote(),
+            // parse to fail fast for step compilation issues
+            impl: prepareScript(library, name, sourceText, binding, config)
+        )
     }
 
     /**
@@ -106,7 +143,7 @@ class StepWrapperFactory{
      * @param the template binding
      * @param name
      * @param stepConfig
-     * @return
+     * @return a StepWrapper instance
      */
     def createDefaultStep(Binding binding, String name, Map stepConfig){
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
