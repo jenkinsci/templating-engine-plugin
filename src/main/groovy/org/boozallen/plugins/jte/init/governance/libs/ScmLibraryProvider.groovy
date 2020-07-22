@@ -67,6 +67,7 @@ class ScmLibraryProvider extends LibraryProvider{
         ]
         logger.print(msg.join("\n"))
 
+        // we already know this exists from hasLibrary()
         SCMFile lib = fs.child(prefixBaseDir(libName))
 
         // do validation if the library configuration file is present
@@ -81,19 +82,53 @@ class ScmLibraryProvider extends LibraryProvider{
             logger.printWarning("Library ${libName} does not have a configuration file.")
         }
 
+
+        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
+        FilePath rootDir = buildRootDir.child("jte/${libName}")
+        rootDir.mkdirs()
+
+        /*
+         * recurse through the steps directory in the remote repository
+         * for each groovy file, copy to the build's directory represented
+         * by a FilePath
+         */
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
-        lib.children().findAll{
-            it.getName().endsWith(".groovy") &&
-            !it.getName().endsWith("library_config.groovy") // exclude lib config file
-        }.each{ scmFile ->
-            FilePath rootDir = new FilePath(flowOwner.getRootDir())
-            FilePath stepFile = rootDir.child("jte/${libName}/${scmFile.getName()}")
-            stepFile.write(scmFile.contentAsString(), "UTF-8")
-            def s = stepFactory.createFromFilePath(stepFile, binding, libName, libConfig)
-            binding.setVariable(s.getName(), s)
+        SCMFile steps = lib.child("steps")
+        recurseChildren(steps){ file ->
+            if(file.getName().endsWith(".groovy")) {
+                String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
+                FilePath stepFile = rootDir.child(relativePath)
+                stepFile.write(file.contentAsString(), "UTF-8")
+                def s = stepFactory.createFromFilePath(stepFile, binding, libName, libConfig)
+                binding.setVariable(s.getName(), s)
+            }
+        }
+
+        /*
+         * For each resource file in the remote repository, copy it into the
+         * build dir maintaining the file structure
+         */
+        SCMFile resources = lib.child("resources")
+        recurseChildren(resources){ file ->
+            String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
+            FilePath resourceFile = rootDir.child(relativePath)
+            resourceFile.write(file.contentAsString(), "UTF-8")
         }
 
         return libConfigErrors
+    }
+
+    void recurseChildren(SCMFile file, Closure action){
+        if(file.exists()){
+            file.children().each{ child ->
+                if(child.isDirectory()){
+                    recurseChildren(child, action)
+                }
+                if(child.isFile()){
+                    action(child)
+                }
+            }
+        }
     }
 
     String prefixBaseDir(String s){

@@ -106,7 +106,7 @@ class ScmLibraryProviderSpec extends Specification{
         ScmLibraryProvider p = new ScmLibraryProvider() 
         String libraryName = "someLibrary"
         repo.init() 
-        repo.write("${libraryName}/someStep.groovy", "void call(){ println 'the step' }")
+        repo.write("${libraryName}/steps/someStep.groovy", "void call(){ println 'the step' }")
         repo.git("add", "*")
         repo.git("commit", "--message=init")
         GitSCM scm = createSCM(repo)

@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import hudson.AbortException
 import hudson.FilePath
 import jenkins.model.Jenkins
 import jenkins.scm.api.SCMFile
@@ -86,6 +87,21 @@ class StepWrapperFactory{
 
         script.metaClass."get${CONFIG_VAR.capitalize()}" << { return config }
         script.metaClass.getStageContext = {->  [ name: null, args: [:] ]}
+
+        script.metaClass.resource = { String resource ->
+            if(resource.startsWith("/")){
+                throw new AbortException("JTE: The ${name} step from the ${library} library requested a resource '${resource}' that is not a relative path.  Must not begin with /.")
+            }
+            FilePath rootDir = new FilePath(flowOwner.getRootDir())
+            FilePath resourceFile = rootDir.child("jte/${library}/resources/${resource}")
+            if(!resourceFile.exists()){
+                throw new AbortException("JTE: The ${name} step from the ${library} library requested a resource '${resource}' that does not exist")
+            } else if(resourceFile.isDirectory()){
+                throw new AbortException("JTE: The ${name} step from the ${library} library requested a resource '${resource}' that is a directory. Must be a file.")
+            }
+            return resourceFile.readToString()
+        }
+
         script.setBinding(binding)
 
         return script

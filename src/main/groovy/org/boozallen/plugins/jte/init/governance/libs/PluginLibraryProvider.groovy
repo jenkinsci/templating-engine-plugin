@@ -53,27 +53,28 @@ class PluginLibraryProvider extends LibraryProvider{
         ZipFile zipFile = new ZipFile(new File(jar.toURI()))
         ZipInputStream zipStream = new ZipInputStream(jar.openStream())
         ZipEntry zipEntry
-        while( (zipEntry = zipStream.getNextEntry()) != null   ){
+        while( (zipEntry = zipStream.getNextEntry()) != null ){
             String path = zipEntry.getName().toString()
             ArrayList parts = path.split("/")
-            if(path.startsWith("libraries/") && path.endsWith(".groovy") && parts.size() >= 3){
+            if(path.startsWith("libraries/") && parts.size() >= 3){
                 String libName = parts.getAt(1)
-                // create new library entry
+                // create new library entry if we haven't seen this before
                 if(!libraries[libName]){
                     libraries[libName] = [
                         steps: [:],
+                        resources: [:],
                         config: null
                     ]
                 }
-                // store config or step
-                String fileName = parts.last()
-                String fileContents = getFileContents(zipFile, zipEntry)
-                if(parts.size() == 3 && fileName.equals(CONFIG_FILE)){
-                    libraries[libName].config = fileContents
-                }else{
-                    libraries[libName].steps["${fileName - ".groovy"}"] = fileContents
+
+                String thing = parts.getAt(2)
+                if(thing == CONFIG_FILE){
+                    libraries[libName] = getFileContents(zipFile, zipEntry)
+                } else if (thing in [ "steps", "resources"]){
+                    String relativePath = path - "libraries/${libName}/"
+                    libraries[libName][thing][relativePath] = getFileContents(zipFile, zipEntry)
                 }
-            }
+             }
         }
     }
 
@@ -107,7 +108,7 @@ class PluginLibraryProvider extends LibraryProvider{
 
         // do library configuration
         ArrayList libConfigErrors = []
-        if(libraries[libName].config){
+        if(libraries[libName]?.config){
             libConfigErrors = doLibraryConfigValidation(flowOwner, libraries[libName].config, libConfig)
             if(libConfigErrors){
                 return [ "${libName}:" ] + libConfigErrors.collect{ " - ${it}" }
@@ -116,12 +117,20 @@ class PluginLibraryProvider extends LibraryProvider{
             logger.printWarning("Library ${libName} does not have a configuration file.")
         }
 
-        // load steps
+        // copy the library contents into the build dir
+        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
+        FilePath rootDir = buildRootDir.child("jte/${libName}")
+        rootDir.mkdirs()
+        (libraries[libName].steps + libraries[libName].resources).each { filePath, fileContents ->
+            FilePath file = rootDir.child(filePath)
+            file.write(fileContents, "UTF-8")
+        }
+
+        // create StepWrappers and inject
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
-        libraries[libName].steps.each{ stepName, stepContents ->
-            FilePath stepFile = new FilePath(flowOwner.getRootDir()).child("jte/${libName}/${stepName}.groovy")
-            stepFile.write(stepContents, "UTF-8")
-            def s = stepFactory.createFromFilePath(stepFile, binding, libName, libConfig)
+        libraries[libName].steps.each{ stepPath, stepContents ->
+            String stepName = stepPath.split("/").last() - ".groovy"
+            def s = stepFactory.createFromFilePath(rootDir.child(stepPath), binding, libName, libConfig)
             binding.setVariable(stepName, s)
         }
         return libConfigErrors
