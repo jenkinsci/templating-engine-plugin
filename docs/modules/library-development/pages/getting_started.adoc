@@ -1,10 +1,36 @@
 = Getting Started
 
-Within the Jenkins Templating Engine framework, the technical implementation of different actions is done via libraries composed of one or more steps.
+== Library File Structure
 
-Libraries are configured as xref:library_sources/library_sources.adoc[Library Sources] either globally as part of the Global Jenkins Templating Engine configuration or within a particular xref:governance:governance_tier.adoc[Governance Tier].
+Each library
+----
+libraryName
+├── steps
+│   └── step1.groovy
+│   └── step2.groovy
+├── resources
+│   ├── someResoure.txt
+│   └── nested
+│       └── anotherResource.json
+└── library_config.groovy
+----
 
-Once a SCM repository has been set as a Library Source, you can begin creating libraries.
+* talk about directory name == library name
+* file basename == step name
+* steps directory
+* resources directory
+
+== Creating a step
+
+talk about call method
+reference multi-step method
+
+=== Accessing Library Configuration
+
+=== Accessing Stage Context
+
+== Referencing Library Resources
+
 
 == Creating a Library
 
@@ -14,7 +40,6 @@ An example repository structure could be:
 
 [source,]
 ----
-README.rst
 example_library/
 ----
 

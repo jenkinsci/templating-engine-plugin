@@ -1,0 +1,55 @@
+= The Value of Pipeline Templating
+
+== Challenges Associated With Current Models
+
+Almost every CI/CD tool today focuses on building pipelines _for a single application_. This results in needing an artifact in every source code repository that defines the pipeline end to end. Jenkins is no different (when not using JTE) - requiring a Jenkinsfile in every source code repository.
+
+This results in a few challenges, outlined below.
+
+=== Time
+
+Creating a pipeline for each application individually results in an extra step during onboarding. Creating a mature DevSecOps or CI/CD pipeline often requires learning a new set of tools.
+
+For each new tool that a team wants to incorporate into their automated software development lifecycle, they have to write the integration with their pipeline tool.
+
+These different integrations are largely undifferentiated and can be reused by different teams.
+
+=== Complexity
+
+Different types of applications leverage different tools to perform the same activities (build, test, scan, deploy, etc). There are also typically many different options to choose from for any one of these pipeline activities.
+
+For example, a frontend application might use npm, Yarn, or Gulp to package their application while a Java application could use Maven, Gradle, or Ant.  Some teams in an organization might be using SonarQube for static code analysis whereas other teams might be using something like Fortify.
+
+Despite the differences in the choice of tooling, the _flow_ of a pipeline is often the same between these teams. Unit test, build, static code analysis, deploy to an environment, etc.
+
+=== Compliance
+
+Some organizations take this idea further and _require_ that teams implement certain quality thresholds or security scans into their pipeline. With a pipeline definition in each source code repository, it's very difficult to know that these steps have been implemented for each team.
+
+Worse still, there's nothing to stop a rogue developer from modifying the pipeline to bypass these checks and deploy directly to production!
+
+=== Sustainment
+
+No one gets the pipeline right on the first try - and that's okay! A pipeline is a continuously evolving system. Along the way, teams or organizations often want to incorporate lessons learned into their pipeline to better suit the business.
+
+With a pipeline definition in each source code repository, updating the pipeline to change what types of tests get run during a Pull Request or adding a new type of test into the pipeline means _opening a Pull Request to each repository to update the pipeline_.
+
+This technical debt often makes it "not worth it" to optimize the pipeline when operating on a large scale.
+
+== How JTE addresses these Challenges
+
+The root cause of these challenges is the fact that pipelines are created on a per-application basis. The Jenkins Templating Engine changes that through reusable pipeline templates shared across teams.
+
+=== Optimize Code Reuse
+
+There's no reason that every DevOps engineer should have to reinvent the wheel when creating pipeline tool integrations. Through reusable pipeline libraries, organizations can now maintain a portfolio of tool integrations that can be collectively developed and maintained.
+
+=== Organizational Governance
+
+The Jenkins Templating Engine allows organizations to centralize, and therefore govern, the business processes associated with software delivery automated through the pipeline. These pipeline templates can be collaboratively built with input from every stakeholder to ensure everyone's requirements are represented.
+
+There's a huge difference between an organization mandating that every team needs to perform static code analysis in their DevSecOps pipeline and then relying on each team to implement that requirement versus an organization being able to define a common pipeline that teams inherit.
+
+=== Simplify Pipeline Maintainability
+
+Building and maintaining DevOps pipelines for many teams simultaneously can be incredibly time-consuming.  It is simpler to maintain a catalog of pipeline templates and a portfolio of reusable pipeline libraries than it is to update an arbitrary number of pipeline definitions across every source code repository.

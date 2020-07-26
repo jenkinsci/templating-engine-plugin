@@ -1,21 +1,6 @@
 = Library Sources
 
-The Jenkins Templating Engine provides a mechanism for using the same pipeline across multiple applications, regardless of what tools they are using.
-
-To do this, there has to be a way to organize different implementations of the same step.  For example, if two teams are using gradle and maven to build their respective applications via a `build` step invoked from a template - then there must be a way of storing and labeling these different implementations.
-
-That's where libraries come in.  In this example, we would create a `maven` and `gradle` library, each contributing a `build` step via a file called `build.groovy`.
-
-[NOTE]
-====
-As this example illustrates, you can think of the pipeline templates you create as an api that libraries and xref:primitives:what_is_a_primitive_in_jte.adoc[primitives] implement. Therefore, libraries that are meant to be interchangeable should contribute steps with the same name. This way, multiple teams can use the same pipeline template by specifying different libraries to load in their pipeline configuration file.
-====
-
-A *Library Source* is a reference to a place from which libraries can be found for loading.
-
-Following the governance model JTE lays out, Library Sources can be defined globally under `Manage Jenkins >> Configure System >> Jenkins Templating Engine` and become available to every pipeline on the Jenkins instance.
-
-Alternatively, access to libraries can be scoped to jobs within a Folder in Jenkins by defining the Library Source on the Folder.
+As the name implies, a Library Source is a location from which a library can be loaded.
 
 == Library Source Structure
 

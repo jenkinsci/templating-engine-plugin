@@ -1,2 +1,3 @@
-* xref:index.adoc[Overview]
+* xref:index.adoc[Welcome!]
+* xref:templating-value.adoc[The Value of Pipeline Templating]
 * xref:ADOPTERS.adoc[Adopters]
