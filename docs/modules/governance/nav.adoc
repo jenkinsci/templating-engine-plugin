@@ -3,6 +3,5 @@
 * xref:governance_tier.adoc[Governance Tier]
 * xref:hierarchical_governance.adoc[Hierarchical Governance]
 * xref:config_file_aggregation.adoc[Configuration File Aggregation]
-* xref:conditional_inheritance.adoc[Conditional Inheritance Examples]
 * xref:pipeline_template_selection.adoc[Pipeline Template Selection]
 * xref:library_selection.adoc[Library Selection]

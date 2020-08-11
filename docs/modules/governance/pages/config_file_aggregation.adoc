@@ -26,42 +26,50 @@ Subsequent configuration files will be limited in which already configured block
 
 [NOTE]
 ====
-Pipeline Configurations are free to add new blocks to the root of the pipeline configuration. 
+Pipeline Configurations are free to add new fields or blocks to the root of the pipeline configuration.
 ====
 
 == Merging
 
-When configuring Pipeline Configurations, you can control which blocks subsequent configurations will be able to customize. 
+When configuring Pipeline Configurations, you can control which blocks subsequent configurations will be able to extend.
 
-If subsequent Pipeline Configurations are permitted to *add* configuration to a block, but **not** override pre-existing values, then `merge = true` should be added to the block. 
+If subsequent Pipeline Configurations are permitted to *add* configuration to a block, but **not** override pre-existing values, then `@merge` should be added to the block.
 
 [source, groovy]
 ----
-someBlock{
-    merge = true
-    // subsequent Pipeline Configurations can not change the value of someField 
-    someField = true 
-
-    // subsequent Pipeline Configurations may add additional fields
+@merge someBlock{ <1>
+  someField = true <2>
+  // <-- subsequent Pipeline Configurations may add additional fields
 }
 ----
+<1> Subsequent pipeline configurations will be able to add additional fields to `someBlock`
+<2> Subsequent pipeline configurations *can not* modify the value of `someField`
 
 == Overriding 
 
-If subsequent Pipeline Configurations are permitted to override a block's configurations, then `override = true` should be added to the block. 
+If subsequent Pipeline Configurations are permitted to override a block's configurations, then `@override` should be added to the block.
 
 [source, groovy]
 ----
-someBlock{
-    override = true
-    // subsequent Pipeline Configurations can change the value of someField, or remove it completely by not declaring it. 
-    someField = true 
-    
-    // subsequent Pipeline Configurations may add additional fields
+@override someBlock{ <1>
+  someField = true <2>
+  // <-- subsequent Pipeline Configurations may add additional fields
 }
 ----
+<1> By setting `@override` on the block level, subsequent configurations of the block will be substituted for what's currently set.
+<2> Subsequent pipeline configurations can override the value of `someField` by setting the value to something new. Subsequent configurations could also unset the value of `someField` by not declaring it all.
 
+=== Field-Level Governance
 
-== Additional Examples
+If there is a configuration block that should enforce certain default values to be inherited but allow subsequent pipeline configurations to override other fields, a combination of `@merge` at the block-level and `@override` at the field-level can be used.
 
-xref:conditional_inheritance.adoc[More examples of Conditional Inheritance can seen on the examples page.] 
+[source,groovy]
+----
+@merge someBlock{ <1>
+  parameterA = 11 <2>
+  @override parameterB = 12 <3>
+}
+----
+<1> Subsequent configurations will be able to add additional configurations to `someBlock` but not override existing configurations unless it is explicitely allowed.
+<2> The existing value of `parameterA` will be inherited and *can not* be overridden by subsequent configurations
+<3> Subsequent configurations can override the value of `parameterB` because it is annotated with `@override`
