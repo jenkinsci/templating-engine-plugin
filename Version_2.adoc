@@ -37,28 +37,28 @@ image::docs/modules/ROOT/images/jte_init.png[]
 
 Some users rely on the resumability of Jenkins Pipelines promised by Jenkins.  Because of how JTE currently works, there is a bug preventing Jenkins from resuming a pipeline managed by JTE. 
 
-As part of https://github.com/jenkinsci/templating-engine-plugin/issues/44[#44], we will be fixing this bug. 
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/44[Allow Jenkins pipelines to resume after an ungraceful restart of Jenkins]
 
 == Code Cleanliness 
 
-As JTE grows in adoption, there is plenty that can be done to improve our ability to collaborate on the code base.  The following tickets are internal-facing changes that will help remediate technical debt, standardize coding styles, and better communicate the software architecture. 
+As JTE grows in adoption, there is plenty that can be done to improve our ability to collaborate on the code base.  The following tickets are internal-facing changes that will help remediate technical debt, standardize coding styles, and better communicate the software architecture.
 
-* https://github.com/jenkinsci/templating-engine-plugin/issues/86[Integrate CodeNarc for common styling]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/85[Refactor JTE's package structure more logically]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/82[Use a Factory pattern for creating StepWrappers]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/81[Add JavaDocs throughout the codebase to better communicate the purpose of different classes]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/80[Pull Primitive class defintiions out of the resources directory and determine how to recompile with CPS so they work in the pipeline]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/79[Standardize on autowired variables - remove the Lifecycle Hook context parameter in favor of an autowired variable]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/85[Refactor JTE's package structure more logically]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/82[Use a Factory pattern for creating StepWrappers]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/86[Integrate CodeNarc for common styling]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/81[Add JavaDocs throughout the codebase to better communicate the purpose of different classes]
 
 == Feature Development
 
-* https://github.com/jenkinsci/templating-engine-plugin/issues/72[Document the StageContext functionality to pass arguments to steps run as part of a Stage]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/66[Make it possible to exclude steps during library loading if configured by the user]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/62[Introduce step namespacing so that multiple steps with the same name can be loaded via a less-strict initialization process configurable by the user]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/83[Support arbitrary SCM's by falling back to a heavyweight checkout if the SCM API 2.0 spec is not fully implemented]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/84[Improve overall initialization logging for JTE to help users debug issues]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/23[Investigate whether or not JTE can integrate with Jenkins Pipeline's Declarative Syntax]
-* https://github.com/jenkinsci/templating-engine-plugin/issues/46[Add support for Library Resources]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/46[Add support for Library Resources]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/97[Field-level pipeline configuration governance]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/79[Standardize on autowired variables - remove the Lifecycle Hook context parameter in favor of an autowired variable]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/72[Document the StageContext functionality to pass arguments to steps run as part of a Stage]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/66[Make it possible to exclude steps during library loading if configured by the user]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/62[Introduce step namespacing so that multiple steps with the same name can be loaded via a less-strict initialization process configurable by the user]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/84[Improve overall initialization logging for JTE to help users debug issues]
+* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/23[Investigate whether or not JTE can integrate with Jenkins Pipeline's Declarative Syntax]
+
 
 == Get Involved
 
