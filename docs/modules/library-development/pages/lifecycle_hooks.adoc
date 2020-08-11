@@ -2,7 +2,7 @@
 
 Sometimes it is necessary to trigger specific pipeline actions at certain times during pipeline execution. For example, if you wanted to send multiple notification types after a particular pipeline step or at the conclusion of a pipeline if the build was failure.
 
-JTE supports this type of Aspect Oriented Programming style event handling through annotation markers that can be placed on library steps.
+JTE supports this type of Aspect Oriented Programming style event handling through annotation markers that can be placed on methods defined within library steps.
 
 The following lifecycle hook annotations are available:
 
@@ -29,6 +29,8 @@ The following lifecycle hook annotations are available:
 | Will get executed after every pipeline step invocation as well as at the end of the pipeline run
 
 |===
+
+image::lifecycle_hook.png[Lifecycle Hook Flow Diagram]
 
 == Implementation
 
@@ -79,64 +81,3 @@ void call(context){
 * The closure parameter is optional. If omitted, the hook will always be executed.
 * The `context` variable is always called `context` within the Closure parameter, regardless of what the step's input parameter is named. 
 ====
-
-== Example Implementation
-
-Let's say we wanted to print to the console log a specific message when the `build` step fails to execute successfully.
-
-=== Step 1: Create a Library
-
-Within one of your configured xref:library_sources/library_sources.adoc[library sources], create a new directory.  For this example, let's call the library `slack`
-
-*Repository Structure*:
-
-[source,]
-----
-README.rst
-slack/
-----
-
-=== Step 2: Create the Step
-
-When creating steps whose only purpose is to be invoked at a particular stage of the pipeline, the name of the step does not matter because it is not being called via a pipeline template.  These steps are discovered by JTE and invoked dynamically.
-
-This means that if there are multiple steps with the same annotation they will all be executed. This is useful for situations such as creating pipeline templates to be used by multiple teams all using different tools to receive pipeline notifications - or using multiple notification tools (email, slack, sms, etc).
-
-For this example, we'll call the step `sendSlackNotification`.
-
-[source,groovy]
-----
-README.rst
-slack/
-    sendSlackNotification.groovy
-----
-
-We must remember to annotate the method and pass the step a context input parameter.  Remember, our goal is to create a step that sends a message when the `build` step fails.
-
-*sendSlackNotification.groovy*:
-
-[source,groovy]
-----
-@AfterStep({ context.step.equals("build") })
-void call(context){
-    slackSend color: '#ff0000', message: "Build Failure: ${env.JOB_URL}"
-}
-----
-
-[NOTE]
-====
-This example assumes you've installed and appropriately configured the https://plugins.jenkins.io/slack[Slack Notification Plugin].
-====
-
-=== Step 3: Load the Library
-
-With the library created and slack notification step written all you haveto do to send a slack notification after the `build` step fails is load the `slack` library in your pipeline configuration file.
-
-[source,groovy]
-----
-libraries{
-    slack
-}
-----
-
-JTE will automatically pick up that a library has been loaded that contributes steps with lifecycle hook annotations.

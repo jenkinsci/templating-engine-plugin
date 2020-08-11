@@ -124,6 +124,8 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                         }
                     }).first()
 
+                    // x = 1
+
                     wrapper.getStatements().first().getTryStatement().addStatements(statements)
 
                     statements.clear()

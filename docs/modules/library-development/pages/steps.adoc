@@ -1,0 +1,42 @@
+= Create a Step
+
+Each groovy file within a library's `steps` directory will be loaded as a *step*.
+
+The basename of the groovy file is the name of the step object. For example, a step file `build.groovy` would be invoked using `build()` (assuming the step has implemented a call method, more on that later).
+
+== The Call Method
+
+Most steps should implement a `call` method in order to be invoked via `stepName()` from a pipeline template or other library step.
+
+For example, if a library had a `build.groovy` file as follows:
+
+.build.groovy
+[source, groovy]
+----
+void call(){
+  println "hey from the build step"
+}
+----
+
+then the `build()` could be invoked from a pipeline template or other library step.
+
+[NOTE]
+====
+In groovy, objects that have a `call` method can leverage the https://groovy-lang.org/operators.html#_call_operator[call operator] for invoking the `call` method implicitly. This is why when a *step* implements the `call` method, it can be invoked via `step()` in addition to `step.call()`.
+====
+
+== Multi-Method Steps
+
+While the call method is the default, there is nothing preventing a step from defining multiple methods. These other methods would be invoked with their default notation of `stepName.methodName()`.
+
+For example:
+
+.test_step.groovy
+[source,groovy]
+----
+def printMessage(String message){
+  println "the message is ${message}"
+}
+----
+
+creates a step `test_step` that can be invoked via `test_step.printMessage("example!")`.

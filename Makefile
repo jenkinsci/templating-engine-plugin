@@ -1,24 +1,24 @@
 # Minimal makefile to build Antora documentation
 BUILDDIR = docs/html
-PLAYBOOK = antora-playbook-local.yml 
+PLAYBOOK = docs/antora-playbook-local.yml 
 
 # Put it first so that "make" without argument is like "make help".
 help: ## Show target options
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 clean: ## removes remote documentation and compiled documentation
-	rm -rf $(BUILDDIR)/**
-
-.ONESHELL:
-install:  ## installs the project's npm dependencies
-	[ ! -d node_modules ] && npm i || true
+	rm -rf $(BUILDDIR)
 
 .PHONY: docs
-docs: clean install ## builds the antora documentation 
-	$(shell npm bin)/antora generate --fetch --to-dir $(BUILDDIR) $(PLAYBOOK)
-
-preview: clean install ## runs a local preview server to view changes to the documentation
-	$(shell npm bin)/gulp preview 
+docs: clean ## builds the antora documentation 
+	docker run \
+	-t --rm \
+	-v ~/.git-credentials:/home/antora/.git-credentials \
+	-v $(shell pwd):/app -w /app \
+	docker.pkg.github.com/boozallen/sdp-docs/builder \
+	generate --generator booz-allen-site-generator \
+	--to-dir $(BUILDDIR) \
+	$(PLAYBOOK)
 
 jpi: ## builds the jpi via gradle
 	./gradlew clean jpi 

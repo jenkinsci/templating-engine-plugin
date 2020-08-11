@@ -1,120 +1,38 @@
 = Getting Started
 
-== Library File Structure
+Pipeline templates allow you to define a common workflow across teams. These workflows rely on libraries to provide functionality to the steps being invoked from the template.
 
-Each library
-----
-libraryName
-├── steps
-│   └── step1.groovy
-│   └── step2.groovy
-├── resources
-│   ├── someResoure.txt
-│   └── nested
-│       └── anotherResource.json
-└── library_config.groovy
-----
+Configure xref:library_sources/library_sources.adoc[Library Sources] to expose libraries to pipeline jobs using the Jenkins Templating Engine.
 
-* talk about directory name == library name
-* file basename == step name
-* steps directory
-* resources directory
+The `libraries` block lists each library to be loaded and the library's configuration.
 
-== Creating a step
-
-talk about call method
-reference multi-step method
-
-=== Accessing Library Configuration
-
-=== Accessing Stage Context
-
-== Referencing Library Resources
-
-
-== Creating a Library
-
-Creating a Library is as easy as creating a root level directory within your configured Library Source's source code repository.
-
-An example repository structure could be:
-
-[source,]
-----
-example_library/
-----
-
-The library is named and is referenceable by the directory name.
-
-== Creating a Step
-
-To create a step, create a `.groovy` file within the library directory. The step name will be that of the basename of the file.
-
-For example, to create a `build` step, add a `build.groovy` file:
-
-[source,]
-----
-README.rst
-example_library/
-    build.groovy
-----
-
-In most cases, writing a step is done by defining a `call` method within the groovy step file created. This `call` method can take input arguments and return objects.  Within the step you can execute any old regular Jenkins pipeline code, including invoking other steps defined by loaded libraries.
-
-Let's say you wanted this build step to run `mvn clean verify`, your `build.groovy` file could be:
-
-[source,groovy]
-----
-void call(){
-    node{
-        sh "mvn clean verify"
-    }
-}
-----
-
-[NOTE]
-====
-Steps, like regular global variables in Jenkins Shared Libraries, can define methods other than ``call``. See an example xref:multimethod_steps.adoc[here].
-====
-
-== Load the Library
-
-With a directory created called `example_library` within your Library Source, you can now load this library from your pipeline configuration to make the steps contained therein accessible from your pipeline template.
-
-*pipeline_config.groovy*:
-
-[source,groovy]
+.pipeline configuration
+[source, groovy]
 ----
 libraries{
-    example_library
+  // a list of library names goes here
 }
 ----
 
-== Invoking the Step From a Template
-
-With the `example_library` library loaded via your pipeline configuration file, you can then invoke the `build` step from a pipeline template via:
-
-[source,groovy]
-----
-build()
-----
-
-which will execute the shell command defined in the step.
-
-== Advanced Considerations
-
-Now that you know the basics of how to create a library, populate the library with steps, reference them from your pipeline configuration file, and invoke the step from a pipeline template you can now move on to some of the more advanced library development concepts:
-
-.Advanced JTE Library Development
 |===
-| *Concept* | *Description*
+| Topic | Description
 
-| Externalizing Library Configuration
-| Learn how to build reusable libraries by externalizing configurations to the pipeline configuration file
+| xref:library_sources/library_sources.adoc[Library Sources]
+| Learn how to configure JTE to know where to find pipeline libraries
 
-| Validate Library Parameters 
-| Learn how to validate library input parameters as part of your steps.
+| xref:library_structure.adoc[Library Structure]
+| Learn how files are organized within a library
 
-| Leverage Lifecycle Hooks
-| Learn how to register steps for automatic invocation through annotation based registration
+| xref:steps.adoc[Create a Step]
+| Learn how to create steps in JTE
+
+| xref:lifecycle_hooks.adoc[Lifecycle Hooks]
+| Learn how to create library steps that are automatically invoked in response to pipeline events
+
+| xref:parameterizing_libraries.adoc[Parameterizing Libraries]
+| Learn how to make pipeline libraries configurable from the pipeline configuration
+
+| xref:library_resources.adoc[Accessing Library Resources]
+| Learn how to use static assets within library steps
 
 |===

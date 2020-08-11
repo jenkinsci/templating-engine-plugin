@@ -4,24 +4,20 @@ As the name implies, a Library Source is a location from which a library can be 
 
 == Library Source Structure
 
-In general, individual libraries are just directories within the configured library source.
-
-The library is referenceable in your `pipeline_config.groovy` file via the directory name.
-
-Each groovy file within a library directory (besides the library configuration file) will be loaded as a step invokable from a pipeline template where the step name is equal to the base file name.
+A library is a directory within a library source. The name of the directory is the name of the library that would be declared in the `libraries{}` block of the pipeline configuration.
 
 == Library Providers
 
-Libraries can come from different sources.  The current two storage mechanisms for libraries are Source Code Repositories and packaging libraries into a separate Jenkins plugin. Both of these options have benefits and draw backs that are outlined on their respective pages.
+There are different providers capable of serving as a Library Source.
 
 .Library Providers
 |===
 | Type | Description
 
 | xref:library_sources/scm_library_provider.adoc[SCM Library Provider]
-| Find libraries in a Source Code Repository
+| fetch libraries from a remote source code repository
 
 | xref:library_sources/plugin_library_provider.adoc[Library Providing Plugin]
-| Package libraries into a Jenkins Plugin
+| package libraries into a separate Jenkins plugin
 
 |===
