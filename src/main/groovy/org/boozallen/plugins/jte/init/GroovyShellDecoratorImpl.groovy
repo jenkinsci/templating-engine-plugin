@@ -50,7 +50,7 @@ import java.lang.reflect.Field
  *
  * @author Steven Terrana
  */
-@Extension
+@Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
 class GroovyShellDecoratorImpl extends GroovyShellDecorator {
 
     /**
