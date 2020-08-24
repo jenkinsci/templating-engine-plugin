@@ -93,11 +93,12 @@ class PluginLibraryProvider extends LibraryProvider{
         return lines.join("\n")
     }
 
-    @SuppressWarnings('UnusedMethodParameter')
+    @Override
     Boolean hasLibrary(FlowExecutionOwner flowOwner, String libName){
         return libName in libraries.keySet()
     }
 
+    @Override
     List loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
 

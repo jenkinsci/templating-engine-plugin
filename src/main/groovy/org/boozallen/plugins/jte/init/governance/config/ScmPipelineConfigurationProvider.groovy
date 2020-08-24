@@ -51,6 +51,7 @@ class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
 
     SCM getScm(){ return scm }
 
+    @Override
     PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
         PipelineConfigurationObject configObject = null
         if (scm && !(scm instanceof NullSCM)){
@@ -69,6 +70,7 @@ class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
         return configObject
     }
 
+    @Override
     String getJenkinsfile(FlowExecutionOwner owner){
         String jenkinsfile = null
         if(scm && !(scm instanceof NullSCM)){
@@ -79,6 +81,7 @@ class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
         return jenkinsfile
     }
 
+    @Override
     String getTemplate(FlowExecutionOwner owner, String template){
         String pipelineTemplate = null
         if(scm && !(scm instanceof NullSCM)){

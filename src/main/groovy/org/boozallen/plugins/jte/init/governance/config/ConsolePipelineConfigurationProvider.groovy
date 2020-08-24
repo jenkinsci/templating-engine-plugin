@@ -61,16 +61,17 @@ class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider
         return pipelineCatalog
     }
 
+    @Override
     PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
         return pipelineConfig ? new PipelineConfigurationDsl(owner).parse(pipelineConfig) : null
     }
 
-    @SuppressWarnings('UnusedMethodParameter')
+    @Override
     String getJenkinsfile(FlowExecutionOwner owner){
         return defaultTemplate
     }
 
-    @SuppressWarnings('UnusedMethodParameter')
+    @Override
     String getTemplate(FlowExecutionOwner owner, String templateName){
         ConsolePipelineTemplate template = pipelineCatalog.find{ item -> item.getName() == templateName }
         return template ? template.getTemplate() : null
