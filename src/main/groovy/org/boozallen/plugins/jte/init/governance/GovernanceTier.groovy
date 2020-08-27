@@ -22,7 +22,7 @@ import hudson.model.Descriptor
 import hudson.model.ItemGroup
 import jenkins.model.Jenkins
 import net.sf.json.JSONObject
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.config.NullPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.config.PipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider

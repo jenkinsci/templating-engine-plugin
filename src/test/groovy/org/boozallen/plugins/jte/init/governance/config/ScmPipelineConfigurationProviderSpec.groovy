@@ -23,7 +23,7 @@ import hudson.plugins.git.extensions.GitSCMExtension
 import hudson.scm.NullSCM
 import jenkins.plugins.git.GitSampleRepoRule
 import jenkins.scm.api.SCMFileSystem
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TestFlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl

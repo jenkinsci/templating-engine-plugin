@@ -16,7 +16,7 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 

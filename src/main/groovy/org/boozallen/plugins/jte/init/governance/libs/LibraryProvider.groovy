@@ -17,7 +17,7 @@ package org.boozallen.plugins.jte.init.governance.libs
 
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 

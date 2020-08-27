@@ -13,7 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.dsl
+package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner

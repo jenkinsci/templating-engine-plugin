@@ -15,7 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.governance.config
 
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun

@@ -16,8 +16,8 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.dsl.TemplateConfigException
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource

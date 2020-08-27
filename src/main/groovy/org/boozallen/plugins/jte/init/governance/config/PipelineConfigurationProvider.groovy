@@ -17,7 +17,7 @@ package org.boozallen.plugins.jte.init.governance.config
 
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 abstract class PipelineConfigurationProvider extends AbstractDescribableImpl<PipelineConfigurationProvider>{
