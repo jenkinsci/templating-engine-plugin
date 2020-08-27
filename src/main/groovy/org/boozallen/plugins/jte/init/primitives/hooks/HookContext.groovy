@@ -15,17 +15,24 @@
 */
 package org.boozallen.plugins.jte.init.primitives.hooks
 
-/*
- stores contextual information a hook might need to
- respond accordingly.
- step: the step that's triggering the hook
- library: library that contributed the step triggering the hook
- args: any arguments passed to the step triggering the hook
+/**
+ * encapsulates the runtime context to inform lifecycle hook annotated library step methods
  */
 class HookContext implements Serializable{
 
     private static final long serialVersionUID = 1L
+
+    /**
+     * the library contributing the step that triggered the lifecycle hook
+     * <p>
+     * {@code null} prior to and post pipeline template execution
+     */
     String library
+    /**
+     * the name of the step that triggered the lifecycle hook
+     * <p>
+     * {@code null} prior to and post pipeline template execution
+     */
     String step
 
 }

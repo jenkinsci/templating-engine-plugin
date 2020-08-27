@@ -28,6 +28,9 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 
+/**
+ * fetches libraries from a source code repository
+ */
 class ScmLibraryProvider extends LibraryProvider{
 
     SCM scm

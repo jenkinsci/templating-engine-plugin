@@ -29,8 +29,6 @@ import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  * Produces StepWrappers from a variety of input sources
- *
- * @auther Steven Terrana
  */
 @SuppressWarnings(['NoDef', 'MethodReturnTypeRequired'])
 class StepWrapperFactory{

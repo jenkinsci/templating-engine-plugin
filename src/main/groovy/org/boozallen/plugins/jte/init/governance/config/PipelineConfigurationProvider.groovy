@@ -20,6 +20,10 @@ import hudson.model.Descriptor
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * abstract base clase defining the interface for different methods to
+ * provide a pipeline configuration to a {@link org.boozallen.plugins.jte.init.governance.GovernanceTier}
+ */
 abstract class PipelineConfigurationProvider extends AbstractDescribableImpl<PipelineConfigurationProvider>{
 
     abstract PipelineConfigurationObject getConfig(FlowExecutionOwner owner)

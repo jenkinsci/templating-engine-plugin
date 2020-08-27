@@ -27,6 +27,9 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 
+/**
+ * Fetches pipeline configuration from a source code repository
+ */
 class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
 
     static final String CONFIG_FILE = "pipeline_config.groovy"

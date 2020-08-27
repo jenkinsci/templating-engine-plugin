@@ -20,6 +20,9 @@ import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
 import jenkins.model.Jenkins
 
+/**
+ * extended by third party plugins that package a set of libraries
+ */
 abstract class LibraryProvidingPlugin extends AbstractDescribableImpl<LibraryProvidingPlugin>{
 
     static class LibraryProvidingPluginDescriptor extends Descriptor<LibraryProvidingPlugin> {

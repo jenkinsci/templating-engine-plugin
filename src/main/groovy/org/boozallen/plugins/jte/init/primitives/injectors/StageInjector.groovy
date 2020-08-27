@@ -22,6 +22,9 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * creates Stages and populates the binding
+ */
 @Extension class StageInjector extends TemplatePrimitiveInjector {
 
     @SuppressWarnings('UnusedMethodParameter')

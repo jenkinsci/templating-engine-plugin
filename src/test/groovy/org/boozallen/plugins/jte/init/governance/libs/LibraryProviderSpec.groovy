@@ -22,6 +22,7 @@ import spock.lang.Unroll
 
 class LibraryProviderSpec extends Specification{
 
+    @SuppressWarnings('UnusedMethodParameter')
     class LibraryProviderImpl extends LibraryProvider{
         @Override Boolean hasLibrary(FlowExecutionOwner owner, String library){ return false }
         @Override ArrayList loadLibrary(FlowExecutionOwner owner, Binding binding, String s, Map c){

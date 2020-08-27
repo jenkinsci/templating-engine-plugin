@@ -34,6 +34,20 @@ import org.kohsuke.stapler.DataBoundSetter
 import org.kohsuke.stapler.StaplerRequest
 import hudson.model.Descriptor.FormException
 
+/**
+ * stores hierarchical configurations for JTE
+ * <p>
+ * The GovernanceTier optionally holds:
+ * <ul>
+ *     <li> pipeline configuration provided by a {@link PipelineConfigurationProvider} which provides:
+ *     <ul>
+ *         <li> a pipeline configuration
+ *         <li> a default pipeline template
+ *         <li> a pipeline catalog of named pipeline templates
+ *     </ul>
+ *     <li> a list of {@link LibrarySource(s)} to provide libraries
+ * </ul>
+ */
 class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> implements Serializable{
 
     private static final long serialVersionUID = 1L

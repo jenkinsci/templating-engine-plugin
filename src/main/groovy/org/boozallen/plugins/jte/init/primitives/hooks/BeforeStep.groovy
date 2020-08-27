@@ -18,8 +18,8 @@ package org.boozallen.plugins.jte.init.primitives.hooks
 import static java.lang.annotation.RetentionPolicy.RUNTIME
 import java.lang.annotation.Retention
 
-/*
- Will get triggered before every StepWrapper
+/**
+ * Annotation marking a library step method to potentially execute before other step executions
  */
 @Retention(RUNTIME)
 @interface BeforeStep{

@@ -98,3 +98,16 @@ task codenarc {
     description = "Evaluate code against CodeNarc"
     dependsOn = [ 'codenarcMain', 'codenarcTest' ]
 }
+
+sourceSets {
+    main{
+        groovy {
+            srcDirs = ["src/main/groovy"]
+            exclude "**/package-info.groovy"
+        }
+    }
+}
+
+groovydoc{
+    source fileTree("src/main/groovy")
+}

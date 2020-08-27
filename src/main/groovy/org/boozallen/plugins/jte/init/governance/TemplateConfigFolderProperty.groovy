@@ -21,10 +21,9 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor
 import hudson.Extension
 import org.kohsuke.stapler.DataBoundConstructor
 
-/*
-    Adds a folder property to store the Governance Tiers via the
-    job hierarchy
-*/
+/**
+ * stores a {@link GovernanceTier} on Folders in Jenkins
+ */
 class TemplateConfigFolderProperty extends AbstractFolderProperty<AbstractFolder<?>> {
 
     private final GovernanceTier tier

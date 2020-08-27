@@ -19,6 +19,12 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * The parsed representation of a pipeline configuration
+ * <p>
+ *  Overrides the {@code plus} operator to implement the
+ * aggregation logic when merging pipeline configurations.
+ */
 class PipelineConfigurationObject implements Serializable{
 
     private static final long serialVersionUID = 1L
