@@ -15,6 +15,6 @@
 */
 
 /**
- * everything involved in initializing a pipeline prior to execution
+ * framework for using pipeline primitives that will be available during template execution
  */
-package org.boozallen.plugins.jte.init
+package org.boozallen.plugins.jte.init.primitives

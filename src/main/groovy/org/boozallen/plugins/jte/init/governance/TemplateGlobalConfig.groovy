@@ -19,7 +19,7 @@ import hudson.Extension
 import jenkins.model.GlobalConfiguration
 
 /**
- * Example of Jenkins global configuration.
+ * Stores a {@link GovernanceTier} for the entire Jenkins instance
  */
 @Extension
 class TemplateGlobalConfig extends GlobalConfiguration {

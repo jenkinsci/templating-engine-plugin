@@ -22,6 +22,9 @@ import hudson.model.DescriptorVisibilityFilter
 import jenkins.model.Jenkins
 import org.kohsuke.stapler.DataBoundConstructor
 
+/**
+ * generic holder for a {@link LibraryProvider} used to fetch libraries from a source
+ */
 class LibrarySource extends AbstractDescribableImpl<LibrarySource> {
 
     private final LibraryProvider libraryProvider

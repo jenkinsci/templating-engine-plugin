@@ -15,6 +15,6 @@
 */
 
 /**
- * everything involved in initializing a pipeline prior to execution
+ * pipeline configurations
  */
-package org.boozallen.plugins.jte.init
+package org.boozallen.plugins.jte.init.governance.config

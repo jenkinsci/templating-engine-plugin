@@ -13,7 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.dsl
+package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -23,6 +23,9 @@ import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.groovy.sandbox.SandboxTransformer
 
+/**
+ * Parses the pipeline configuration DSL into a {@link PipelineConfigurationObject}
+ */
 class PipelineConfigurationDsl {
 
     FlowExecutionOwner flowOwner

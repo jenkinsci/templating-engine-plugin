@@ -16,10 +16,13 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * injects the aggregated pipeline configuration as a variable called pipelineConfig
+ */
 @Extension class PipelineConfigVariableInjector extends TemplatePrimitiveInjector {
 
     static final String VARIABLE = "pipelineConfig"

@@ -15,6 +15,7 @@
 */
 
 /**
- * everything involved in initializing a pipeline prior to execution
+ * responsible for parsing the pipeline configuration, instantiating pipeline primitives, and storing them
+ * in the script binding
  */
-package org.boozallen.plugins.jte.init
+package org.boozallen.plugins.jte.init.primitives.injectors

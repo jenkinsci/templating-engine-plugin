@@ -18,10 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.hooks
 import static java.lang.annotation.RetentionPolicy.RUNTIME
 import java.lang.annotation.Retention
 
-/*
- Will get triggered after every StepWrapper execution and
- at the end of the pipeline template execution regardless
- of build status
+/**
+ * Annotation marking a library step method to potentially execute after other
+ * step executions and after the pipeline template execution
  */
 @Retention(RUNTIME)
 @interface Notify{

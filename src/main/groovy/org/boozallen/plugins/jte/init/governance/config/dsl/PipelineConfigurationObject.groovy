@@ -13,12 +13,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.dsl
+package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * The parsed representation of a pipeline configuration
+ * <p>
+ *  Overrides the {@code plus} operator to implement the
+ * aggregation logic when merging pipeline configurations.
+ */
 class PipelineConfigurationObject implements Serializable{
 
     private static final long serialVersionUID = 1L

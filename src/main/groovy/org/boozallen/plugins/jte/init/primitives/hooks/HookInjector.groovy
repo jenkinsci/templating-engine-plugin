@@ -17,16 +17,14 @@ package org.boozallen.plugins.jte.init.primitives.hooks
 
 import hudson.Extension
 import jenkins.model.Jenkins
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
-/*
- Hooks invoke other pipeline code so the class that gets called needs to be CPS
- transformed.  This injector just gets used as a hook to insert the Hooks and
- AnnotatedMethod class into the ClassLoader after being CPS Transformed via
- TemplateScriptEngine.parseClass
+/**
+ * registers the CpsTransformed classes used during pipeline execution related
+ * to lifecycle hook invocation
  */
 @Extension class HookInjector extends TemplatePrimitiveInjector {
 

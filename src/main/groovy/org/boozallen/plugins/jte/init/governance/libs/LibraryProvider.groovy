@@ -17,10 +17,13 @@ package org.boozallen.plugins.jte.init.governance.libs
 
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * base class for different mechanisms to load a library
+ */
 abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
 
     public static final String CONFIG_FILE = "library_config.groovy"

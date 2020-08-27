@@ -31,6 +31,9 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
+/**
+ * fetches libraries from a {@link LibraryProvidingPlugin} that packages them
+ */
 class PluginLibraryProvider extends LibraryProvider{
 
     private final LibraryProvidingPlugin plugin

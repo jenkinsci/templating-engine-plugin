@@ -19,14 +19,17 @@ import hudson.Extension
 import hudson.Util
 import hudson.scm.NullSCM
 import hudson.scm.SCM
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 
+/**
+ * Fetches pipeline configuration from a source code repository
+ */
 class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
 
     static final String CONFIG_FILE = "pipeline_config.groovy"

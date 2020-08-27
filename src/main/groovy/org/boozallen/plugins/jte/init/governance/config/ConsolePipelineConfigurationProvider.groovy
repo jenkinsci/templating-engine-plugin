@@ -17,11 +17,17 @@ package org.boozallen.plugins.jte.init.governance.config
 
 import hudson.Extension
 import hudson.Util
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationDsl
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 
+/**
+ * Defines a pipeline configuration repository from the Jenkins console.
+ * <p>
+ * Allows users to define a pipeline configuration, default pipeline template, and named
+ * pipeline templates via a pipeline catalog.
+ */
 class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider{
 
     boolean providePipelineConfig

@@ -15,6 +15,6 @@
 */
 
 /**
- * everything involved in initializing a pipeline prior to execution
+ * Governance Tiers: hierarchical pipeline configurations and library sources
  */
-package org.boozallen.plugins.jte.init
+package org.boozallen.plugins.jte.init.governance

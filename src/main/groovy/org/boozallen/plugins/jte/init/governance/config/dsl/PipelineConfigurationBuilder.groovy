@@ -13,17 +13,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.dsl
+package org.boozallen.plugins.jte.init.governance.config.dsl
 
-/*
-    Base class during Config File DSL execution.
-    Basically just turns the nested closure syntax
-    into a nested hash map while recognizing the keys
-    "merge" and "override" to put onto the PipelineConfigurationObject
-
-    the pipelineConfig variable here comes from the instance
-    being created and is instantiated in PipelineConfigurationDsl
-*/
+/**
+ * Script base class used during execution of the pipeline configuration DSL.
+ * <p>
+ * Uses groovy runtime-metaprogramming to translate the nested structure of the
+ * configuration into a LinkedHashMap and populate a {@link PipelineConfigurationObject}
+ * that has been injected into the binding by {@link PipelineConfigurationDsl}.
+ */
 abstract class PipelineConfigurationBuilder extends Script{
 
     List objectStack = []

@@ -13,19 +13,16 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.dsl
+package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.kohsuke.groovy.sandbox.GroovyInterceptor
 import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
 
-/*
-  our sandbox.  just block all the things except the creation of
-  the PipelineConfigurationBuilder base class and methods associated with that.
-
-  The sandbox is having trouble recognizing the receiver as type PipelineConfigurationBuilder
-  so backed off to checking if it's a Script object.
-*/
+/**
+ * Groovy Interceptor that throws an exception if a user tries to do anything beyond
+ * what is allowed from the pipeline configuration DSL.
+ */
 class DslSandbox extends GroovyInterceptor {
 
     Script script

@@ -16,7 +16,7 @@
 package org.boozallen.plugins.jte.init.governance
 
 import com.cloudbees.hudson.plugins.folder.Folder
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.config.NullPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.governance.config.PipelineConfigurationProvider
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner

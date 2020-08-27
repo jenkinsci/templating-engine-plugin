@@ -16,10 +16,14 @@
 package org.boozallen.plugins.jte.init.governance.config
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 
+/**
+ * A null configuration provider when not defining a pipeline configuration on a
+ * {@link org.boozallen.plugins.jte.init.governance.GovernanceTier}
+ */
 @SuppressWarnings(['UnnecessaryConstructor', 'UnusedMethodParameter'])
 class NullPipelineConfigurationProvider extends PipelineConfigurationProvider{
 

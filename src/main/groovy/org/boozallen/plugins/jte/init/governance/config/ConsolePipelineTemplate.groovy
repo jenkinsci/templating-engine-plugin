@@ -22,6 +22,12 @@ import hudson.model.Descriptor
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 
+/**
+ * A named pipeline template defined in the Jenkins console.
+ * <p>
+ * The {@link ConsolePipelineConfigurationProvider} maintains a list of {@code ConsolePipelineTemplates}
+ * that act as named templates in the pipeline catalog.
+ */
 class ConsolePipelineTemplate extends AbstractDescribableImpl<ConsolePipelineTemplate> implements Serializable{
 
     private static final long serialVersionUID = 1L

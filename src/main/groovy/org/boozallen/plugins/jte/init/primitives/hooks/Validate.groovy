@@ -18,11 +18,12 @@ package org.boozallen.plugins.jte.init.primitives.hooks
 import static java.lang.annotation.RetentionPolicy.RUNTIME
 import java.lang.annotation.Retention
 
-/*
- Will get triggered after the code has been checked out
- but before template execution and @Init
+/**
+ * Annotation marking a library step method to potentially execute prior to pipeline template execution
+ * <p>
+ * Semantically, this is used to indicate the method annotated will be used to validate the providing
+ * library's configuration
  */
-
 @Retention(RUNTIME)
 @interface Validate {
 
