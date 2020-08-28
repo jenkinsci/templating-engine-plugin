@@ -25,3 +25,20 @@ and then in your template:
 continuous_integration()
 deploy_to dev
 ----
+
+== Stage Context
+
+It can be helpful for steps to understand if they are being executed as part of a stage and if so, which stage and what parameters, if any, were passed to the stage.
+
+Steps are autowired with a `stageContext` variable that can be used to access this information.
+
+|===
+| Property | Description
+
+| `stageContext.name`
+| The name of the stage being executed. Is `null` if the step is not being executed as part of a stage.
+
+| `stageContext.args`
+| A map of named parameters passed to the stage. Is an empty map if not being executed as part of a stage or if no parameters were passed to the stage.
+
+|===
