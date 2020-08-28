@@ -88,10 +88,6 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
      */
     @Override
     void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
-        ImportCustomizer ic = new ImportCustomizer()
-        ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-        cc.addCompilationCustomizers(ic)
-
         if(isFromJTE(execution)){
             cc.addCompilationCustomizers(new CompilationCustomizer(CompilePhase.SEMANTIC_ANALYSIS) {
 

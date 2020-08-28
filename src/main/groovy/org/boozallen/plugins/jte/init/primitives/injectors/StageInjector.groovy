@@ -41,4 +41,10 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         return TemplateScriptEngine.parseClass(classText)
     }
 
+    static class StageContext implements Serializable {
+        private static final long serialVersionUID = 1L
+        String name
+        Map args = [:]
+    }
+
 }
