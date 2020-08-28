@@ -464,7 +464,7 @@ class StepWrapperSpec extends Specification{
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains("hello, world", run)
-        jenkins.assertLogContains("JTE: The fetchCrossLibrary step from the resourcesB library requested a resource 'nested/somethingElse.txt' that does not exist", run)
+        jenkins.assertLogContains("JTE: library step requested a resource 'nested/somethingElse.txt' that does not exist", run)
     }
 
     def "step fetching non-existent resource throws exception"(){
@@ -484,7 +484,7 @@ class StepWrapperSpec extends Specification{
 
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains("JTE: The doesNotExist step from the resourcesB library requested a resource 'nope.txt' that does not exist", run)
+        jenkins.assertLogContains("JTE: library step requested a resource 'nope.txt' that does not exist", run)
     }
 
     def "step fetching resource with absolute path throws exception"(){
@@ -504,7 +504,7 @@ class StepWrapperSpec extends Specification{
 
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains("JTE: The absolutePath step from the resourcesB library requested a resource '/nope.txt' that is not a relative path.  Must not begin with /.", run)
+        jenkins.assertLogContains("JTE: library step requested a resource that is not a relative path.", run)
     }
 
 }
