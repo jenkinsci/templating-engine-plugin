@@ -37,10 +37,11 @@ class AnnotatedMethod implements Serializable{
 
     void invoke(HookContext context){
         try{
-            def script = stepWrapper.getScript()
+            def step = stepWrapper.clone()
+            def script = step.getScript()
             script.setHookContext(context)
-            String lib = stepWrapper.library
-            String step = stepWrapper.name 
+            String lib = step.library
+            String step = step.name
             TemplateLogger.createDuringRun().print "[@${annotationName} - ${lib}/${step}.${methodName}]"
             InvokerHelper.getMetaClass(script).invokeMethod(script, methodName, null)
         } catch (Exception x) {
