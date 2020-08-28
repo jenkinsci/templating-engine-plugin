@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import hudson.AbortException
 import hudson.FilePath
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
@@ -30,7 +29,6 @@ import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 import javax.annotation.CheckForNull
 
