@@ -25,15 +25,15 @@ import java.lang.annotation.Annotation
 class AnnotatedMethod implements Serializable{
     Annotation annotation
     String annotationName
-    def stepWrapper 
+    def stepWrapper
     String methodName
 
     AnnotatedMethod(Annotation annotation, String annotationName, String methodName, def stepWrapper){
         this.annotation = annotation
         this.annotationName = annotationName
         this.methodName = methodName
-        this.stepWrapper = stepWrapper 
-    } 
+        this.stepWrapper = stepWrapper
+    }
 
     void invoke(HookContext context){
         try{
@@ -41,8 +41,8 @@ class AnnotatedMethod implements Serializable{
             def script = step.getScript()
             script.setHookContext(context)
             String lib = step.library
-            String step = step.name
-            TemplateLogger.createDuringRun().print "[@${annotationName} - ${lib}/${step}.${methodName}]"
+            String stepName = step.name
+            TemplateLogger.createDuringRun().print "[@${annotationName} - ${lib}/${stepName}.${methodName}]"
             InvokerHelper.getMetaClass(script).invokeMethod(script, methodName, null)
         } catch (Exception x) {
             throw new InvokerInvocationException(x)

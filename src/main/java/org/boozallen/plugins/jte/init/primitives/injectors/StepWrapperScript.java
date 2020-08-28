@@ -51,31 +51,15 @@ public abstract class StepWrapperScript extends CpsScript {
     private FilePath resourcesBaseDir;
 
     public StepWrapperScript() throws IOException { super(); }
-
     public void setConfig(LinkedHashMap config){
         this.config = config;
     }
-
-    public LinkedHashMap getConfig(){
-        return config;
-    }
-
     public void setHookContext(HookContext hookContext){
         this.hookContext = hookContext;
     }
-
-    public HookContext getHookContext(){
-        return hookContext;
-    }
-
     public void setStageContext(StageContext stageContext){
         this.stageContext = stageContext;
     }
-
-    public StageContext getStageContext() {
-        return stageContext;
-    }
-
     public void setResourcesBaseDir(FilePath resourcesBaseDir) {
         this.resourcesBaseDir = resourcesBaseDir;
     }

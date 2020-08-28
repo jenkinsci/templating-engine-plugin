@@ -44,7 +44,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         steps.each{ step ->
             def clone = binding.getStep(step).clone()
             clone.setStageContext(stageContext)
-            clone()
+            clone.call()
         }
     }
 
