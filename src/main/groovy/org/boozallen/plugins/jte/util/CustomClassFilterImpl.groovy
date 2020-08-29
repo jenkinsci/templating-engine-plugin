@@ -18,8 +18,10 @@ package org.boozallen.plugins.jte.util
 import hudson.Extension
 import jenkins.security.CustomClassFilter
 
-/*
-    see: https://github.com/jenkinsci/jep/blob/master/jep/200/README.adoc#extensibility
+/**
+ * Permits JTE classes to be stored on a {@link org.jenkinsci.plugins.workflow.job.WorkflowRun} via the
+ * {@link org.boozallen.plugins.jte.init.PipelineDecorator}
+ * @see <a href="https://github.com/jenkinsci/jep/blob/master/jep/200/README.adoc#extensibility">JEP-200</a>
 */
 @Extension
 class CustomClassFilterImpl implements CustomClassFilter {

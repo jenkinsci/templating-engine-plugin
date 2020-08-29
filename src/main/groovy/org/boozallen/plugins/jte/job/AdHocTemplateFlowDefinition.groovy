@@ -24,6 +24,9 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.kohsuke.stapler.DataBoundConstructor
 
+/**
+ * Allows JTE to be used in a Pipeline Job
+ */
 class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
 
     private final boolean providePipelineTemplate

@@ -15,20 +15,22 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-/*
- A base class for objects that will be stored in the
- script binding.  Extending this base class will protect
- these objects from being overridden during initialization,
- by library developers, or by pipeline templates.
+/**
+ * Objects whose class extends TemplatePrimitive will be protected in the {@link TemplateBinding} from
+ * being inadvertently overridden
  */
 abstract class TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
 
-    // gets called during template initialization
+    /**
+     * Invoked if an object with this class were to be overridden in the {@link TemplateBinding} during initialization
+     */
     abstract void throwPreLockException()
 
-    //gets called after template initialization
+    /**
+     * Invoked if an object with this class were to be overridden in the {@link TemplateBinding} after initialization
+     */
     abstract void throwPostLockException()
 
 }

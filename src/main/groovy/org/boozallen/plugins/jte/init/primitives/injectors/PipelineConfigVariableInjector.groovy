@@ -21,7 +21,8 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
- * injects the aggregated pipeline configuration as a variable called pipelineConfig
+ * injects the aggregated pipeline configuration as a variable called pipelineConfig into the
+ * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
  */
 @Extension class PipelineConfigVariableInjector extends TemplatePrimitiveInjector {
 

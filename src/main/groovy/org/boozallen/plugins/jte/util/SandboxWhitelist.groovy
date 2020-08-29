@@ -20,8 +20,10 @@ import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
 
 import java.lang.reflect.Method
 
-@Extension
-class SandboxWhitelist extends AbstractWhitelist {
+/**
+ * Whitelists JTE primitives as permitted within the Jenkins pipeline sandbox.
+ */
+@Extension class SandboxWhitelist extends AbstractWhitelist {
 
     private final ArrayList permittedReceivers = [
         "org.boozallen.plugins.jte.init.primitives.injectors.ApplicationEnvironment",

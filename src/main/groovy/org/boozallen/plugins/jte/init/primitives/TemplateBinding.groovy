@@ -20,6 +20,15 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
+/**
+ * Stores a run's primitives
+ * <p>
+ * A common TemplateBinding is used throughout the pipeline run. The same TemplateBinding instance is attached to the
+ * pipeline template and each library step.
+ * <p>
+ * This binding implementation tracks the {@link org.boozallen.plugins.jte.init.primitives.TemplatePrimitive's} that
+ * have been stored and prevents them from being overridden.
+ */
 class TemplateBinding extends Binding implements Serializable{
 
     private static final long serialVersionUID = 1L

@@ -44,7 +44,11 @@ import javax.annotation.CheckForNull
 import java.lang.reflect.Field
 
 /**
- * Responsible for customizing the GroovyShell used to compile steps and the pipeline template.
+ * Decorates the pipeline template during compilation
+ * <p>
+ * Attaches the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding} to the pipeline template
+ * prior to execution and modifies the template at compile time to invoke lifecycle hooks prior to and after
+ * template execution
  *
  * @author Steven Terrana
  */

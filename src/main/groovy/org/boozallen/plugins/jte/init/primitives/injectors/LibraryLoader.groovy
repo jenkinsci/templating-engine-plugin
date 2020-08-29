@@ -28,7 +28,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
 /**
- * Loads libraries from the pipeline configuration
+ * Loads libraries from the pipeline configuration and injects StepWrapper's into the
+ * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
  */
 @Extension class LibraryLoader extends TemplatePrimitiveInjector {
 

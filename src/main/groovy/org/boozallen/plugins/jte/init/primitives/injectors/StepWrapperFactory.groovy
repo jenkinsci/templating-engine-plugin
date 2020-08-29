@@ -18,8 +18,8 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.AbortException
 import hudson.FilePath
 import jenkins.model.Jenkins
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.boozallen.plugins.jte.init.primitives.ReservedVariableName
 import hudson.Extension
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -28,7 +28,7 @@ import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
- * Produces StepWrappers from a variety of input sources
+ * Produces StepWrappers
  */
 @SuppressWarnings(['NoDef', 'MethodReturnTypeRequired'])
 class StepWrapperFactory{
@@ -66,7 +66,7 @@ class StepWrapperFactory{
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("StepWrapper.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+        return TemplatePrimitiveInjector.parseClass(classText)
     }
 
     /**

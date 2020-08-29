@@ -17,7 +17,7 @@ package org.boozallen.plugins.jte.init.primitives
 
 import groovy.transform.InheritConstructors
 
-/*
- to be used when a TemplatePrimitive is going to be overridden
+/**
+ * An exception
  */
 @InheritConstructors class TemplateException extends Exception{}

@@ -15,18 +15,9 @@
 */
 package org.boozallen.plugins.jte.util
 
-class JTEException extends Exception {
+import groovy.transform.InheritConstructors
 
-    JTEException(String message){
-        super(message)
-    }
-
-    JTEException(String message, Throwable t){
-        super(message, t)
-    }
-
-    JTEException(Throwable t){
-        super(t)
-    }
-
-}
+/**
+ * A generic exception to mark an exception as coming from JTE
+ */
+@InheritConstructors class JTEException extends Exception {}

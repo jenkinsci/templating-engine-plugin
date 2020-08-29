@@ -32,6 +32,11 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.kohsuke.stapler.DataBoundConstructor
 import org.kohsuke.stapler.DataBoundSetter
 
+/**
+ * registers {@link MultibranchTemplateFlowDefinition} as an option for Organization jobs
+ * <p>
+ * Organization jobs typically represent a group of source code repositories
+ */
 class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMSourceCriteria {
 
     Boolean filterBranches

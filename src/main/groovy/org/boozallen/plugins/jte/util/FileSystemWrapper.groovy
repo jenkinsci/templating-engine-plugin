@@ -31,6 +31,10 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.BranchJobProperty
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 
+/**
+ * Utility class to simplify fetching files from remote source code repositories, if the SCM plugin has
+ * implemented the <a href="https://github.com/jenkinsci/scm-api-plugin">Jenkins SCM API</a>
+ */
 class FileSystemWrapper {
 
     SCM scm

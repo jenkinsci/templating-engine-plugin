@@ -19,11 +19,10 @@ import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
- * creates Stages and populates the binding
+ * creates Stages and populates the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
  */
 @Extension class StageInjector extends TemplatePrimitiveInjector {
 
@@ -41,7 +40,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("Stage.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+        return parseClass(classText)
     }
 
 }

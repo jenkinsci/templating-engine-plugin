@@ -31,6 +31,9 @@ import org.kohsuke.stapler.DataBoundSetter
 
 import javax.annotation.Nonnull
 
+/**
+ * Registers {@link MultibranchTemplateFlowDefinition} as an option for use with Multibranch Projects
+ */
 class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
 
     Boolean filterBranches

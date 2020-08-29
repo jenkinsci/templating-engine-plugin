@@ -32,6 +32,10 @@ import org.jenkinsci.plugins.workflow.flow.DurabilityHintProvider
 import org.jenkinsci.plugins.workflow.flow.GlobalDefaultFlowDurabilityLevel
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
+/**
+ * A custom {@link FlowDefinition} that initializes the pipeline using the {@link PipelineDecorator} prior to returning
+ * a {@link CpsFlowExecution} representing the pipeline template
+ */
 @PersistIn(JOB)
 abstract class TemplateFlowDefinition extends FlowDefinition {
 

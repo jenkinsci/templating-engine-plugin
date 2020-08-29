@@ -19,6 +19,11 @@ import hudson.ExtensionList
 import hudson.ExtensionPoint
 import jenkins.model.Jenkins
 
+/**
+ * Extension point to register particular variable names within the run's
+ * {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}, preventing
+ * them from being overridden by other primitives or during runtime execution
+ */
 @SuppressWarnings(['EmptyMethodInAbstractClass'])
 abstract class ReservedVariableName implements ExtensionPoint{
 

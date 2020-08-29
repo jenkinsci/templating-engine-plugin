@@ -28,15 +28,30 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import java.security.SecureRandom
 
+/**
+ * Different log levels used within the {@link TemplateLogger} to change log color
+ */
 enum LogLevel{
 
+    /**
+     * grey
+     */
     INFO(tag: "info"),
+    /**
+     * orange
+     */
     WARN(tag: "warn"),
+    /**
+     * red
+     */
     ERROR(tag: "error")
     String tag
 
 }
 
+/**
+ * A utility for logging to a run's console output.
+ */
 class TemplateLogger {
 
     private static final String CONSOLE_NOTE_PREFIX = "[JTE]"

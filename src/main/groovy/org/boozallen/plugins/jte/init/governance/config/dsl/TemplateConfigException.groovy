@@ -17,4 +17,7 @@ package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import groovy.transform.InheritConstructors
 
+/**
+ * thrown when there's an issue during pipeline configuration parsing
+ */
 @InheritConstructors class TemplateConfigException extends Exception{}

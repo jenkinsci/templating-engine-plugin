@@ -31,18 +31,18 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
 /**
- * Contains the top-level logic associated with initializing a pipeline for JTE
- *
+ * Initializes a JTE pipeline
+ * <p>
  * Initialization follows 3 steps:
- * 1. aggregate the pipeline configuration files
- * 2. use the aggregated configuration to build the TemplatePrimitives and inject
-      into a TemplateBinding
- * 3. determine the pipeline template for this run.
- *
- * Created from TemplateFlowDefinition
- * Consumed by GroovyShellDecoratorImpl
- *
- * @author Steven Terrana
+ * <ol>
+ * <li> aggregate pipeline configurations
+ * <li> pass the aggregated pipeline configuration to every {@link org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector}
+ * <li> determine the pipeline template for this run
+ * </ol>
+ * <p>
+ * Created from {@link org.boozallen.plugins.jte.job.TemplateFlowDefinition}
+ * <p>
+ * Action consumed by {@link GroovyShellDecoratorImpl} to attach the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding} to template execution
  */
 class PipelineDecorator extends InvisibleAction {
 

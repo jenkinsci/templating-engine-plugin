@@ -22,6 +22,9 @@ import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 
+/**
+ * Allows JTE to be used in a MultiBranch Pipeline
+ */
 class MultibranchTemplateFlowDefinition extends TemplateFlowDefinition {
 
     @Extension

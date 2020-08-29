@@ -19,7 +19,6 @@ import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.util.TemplateScriptEngine
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -49,14 +48,14 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("Hooks.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+        return parseClass(classText)
     }
 
     static Class getAnnotatedMethodClass(){
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("AnnotatedMethod.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+        return parseClass(classText)
     }
 
 }
