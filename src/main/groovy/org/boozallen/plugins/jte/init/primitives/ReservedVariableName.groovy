@@ -22,10 +22,6 @@ import jenkins.model.Jenkins
 @SuppressWarnings(['EmptyMethodInAbstractClass'])
 abstract class ReservedVariableName implements ExtensionPoint{
 
-    static String getName(){ return null }
-    static void throwPreLockException(){}
-    static void throwPostLockException(){}
-
     static ReservedVariableName byName(String name){
         return all().find{ reservedVar -> reservedVar.getName() == name }
     }
@@ -33,5 +29,9 @@ abstract class ReservedVariableName implements ExtensionPoint{
     static ExtensionList<ReservedVariableName> all() {
         return Jenkins.get().getExtensionList(ReservedVariableName)
     }
+
+    abstract String getName()
+    abstract void throwPreLockException() throws Exception
+    abstract void throwPostLockException() throws Exception
 
 }
