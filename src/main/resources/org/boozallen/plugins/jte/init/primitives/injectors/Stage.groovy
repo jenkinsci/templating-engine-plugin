@@ -1,19 +1,18 @@
 /*
-   Copyright 2018 Booz Allen Hamilton
+    Copyright 2018 Booz Allen Hamilton
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+        http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
-
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import org.boozallen.plugins.jte.init.primitives.TemplateException
@@ -24,8 +23,10 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 /**
  *  represents a group of library steps to be called.
  */
+@SuppressWarnings("NoDef")
 class Stage extends TemplatePrimitive implements Serializable{
 
+    private static final long serialVersionUID = 1L
     Binding binding
     String name
     ArrayList<String> steps
@@ -38,6 +39,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         this.steps = steps
     }
 
+    @SuppressWarnings("MethodParameterTypeRequired")
     void call(args) {
         TemplateLogger.createDuringRun().print "[Stage - ${name}]"
         StageContext stageContext = new StageContext(name: name, args: args)

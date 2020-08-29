@@ -1,19 +1,18 @@
 /*
-   Copyright 2018 Booz Allen Hamilton
+    Copyright 2018 Booz Allen Hamilton
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+        http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 */
-
 package org.boozallen.plugins.jte.init.primitives.hooks
 
 import com.cloudbees.groovy.cps.NonCPS
@@ -28,14 +27,17 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 import java.lang.annotation.Annotation
 
+@SuppressWarnings("NoDef")
 class Hooks implements Serializable{
+
+    private static final long serialVersionUID = 1L
 
     @NonCPS
     static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, Binding binding){
-        List<AnnotatedMethod> discovered = new ArrayList()
-        Class StepWrapper = StepWrapperFactory.getPrimitiveClass()
-        ArrayList stepWrappers = binding.getVariables().collect{ it.value }.findAll{
-            StepWrapper.getName().equals(it.getClass().getName())
+        List<AnnotatedMethod> discovered = []
+        Class stepWrapper = StepWrapperFactory.getPrimitiveClass()
+        ArrayList stepWrappers = binding.getVariables().collect{ var -> var.value }.findAll{ var ->
+            stepWrapper.getName() == var.getClass().getName()
         }
 
         stepWrappers.each{ step ->
@@ -43,8 +45,8 @@ class Hooks implements Serializable{
                 def annotation = method.getAnnotation(hookType)
                 if (annotation){
                     AnnotatedMethod am = new AnnotatedMethod(annotation, hookType.getSimpleName(), method.name, step)
-                    discovered.push(am) 
-                }            
+                    discovered.push(am)
+                }
             }
         }
 
@@ -70,7 +72,8 @@ class Hooks implements Serializable{
          }
     }
 
-    static def shouldInvoke(AnnotatedMethod hook, HookContext context){
+    @SuppressWarnings("MethodReturnTypeRequired")
+    static shouldInvoke(AnnotatedMethod hook, HookContext context){
         def annotation = hook.getAnnotation()
         def stepWrapper = hook.getStepWrapper()
         Map config = stepWrapper.getScript().getConfig()
@@ -79,9 +82,9 @@ class Hooks implements Serializable{
         def result
         try{
             result = annotation.value().newInstance(invokeBinding, invokeBinding).call()
-        }catch(any){
+        } catch(any){
             TemplateLogger.createDuringRun().printWarning "Exception thrown while evaluating @${hook.annotationName} on ${hook.methodName} in ${hook.stepWrapper.getName()} from ${hook.stepWrapper.getLibrary()} library."
-            throw any 
+            throw any
         }
         return result
     }
@@ -91,8 +94,8 @@ class Hooks implements Serializable{
         if(!thread){
             throw new Exception("CpsThread not present.")
         }
-        WorkflowRun run = thread.getExecution().getOwner().run() 
+        WorkflowRun run = thread.getExecution().getOwner().run()
         return new RunWrapper(run, true)
     }
-    
+
 }
