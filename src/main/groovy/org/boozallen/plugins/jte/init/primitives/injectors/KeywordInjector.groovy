@@ -24,19 +24,19 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 @Extension class KeywordInjector extends TemplatePrimitiveInjector {
 
-    @SuppressWarnings('UnusedMethodParameter')
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
-        Class keywordClass = getPrimitiveClass()
-        config.getConfig().keywords.each{ key, value ->
-            binding.setVariable(key, keywordClass.newInstance(var_name: key, value: value))
-        }
-    }
-
     static Class getPrimitiveClass(){
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("Keyword.groovy").text
         return TemplateScriptEngine.parseClass(classText)
+    }
+
+    @Override
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+        Class keywordClass = getPrimitiveClass()
+        config.getConfig().keywords.each{ key, value ->
+            binding.setVariable(key, keywordClass.newInstance(var_name: key, value: value))
+        }
     }
 
 }

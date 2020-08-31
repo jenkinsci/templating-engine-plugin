@@ -24,8 +24,9 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     static final String VARIABLE = "pipelineConfig"
 
-    @SuppressWarnings(['UnusedMethodParameter', 'NoDef'])
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+    @SuppressWarnings('NoDef')
+    @Override
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class keywordClass = KeywordInjector.getPrimitiveClass()
         def pipelineConfig = keywordClass.newInstance(
             var_name: VARIABLE,

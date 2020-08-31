@@ -30,7 +30,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 @Extension
 class LibraryLoader extends TemplatePrimitiveInjector {
 
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
+    @Override
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         // 1. Inject steps from loaded libraries
         WorkflowJob job = flowOwner.run().getParent()
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)
@@ -86,7 +87,8 @@ class LibraryLoader extends TemplatePrimitiveInjector {
         }
     }
 
-    static void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+    @Override
+    void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         // 3. Inject a passthrough step for steps not defined (either as steps or other primitives)
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         config.getConfig().template_methods.findAll{ step ->
