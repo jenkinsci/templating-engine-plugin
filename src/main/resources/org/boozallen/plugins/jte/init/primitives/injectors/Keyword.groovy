@@ -18,9 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 
-/*
-    represents a protected variable in the jenkinsfile
-*/
+/**
+ * JTE primitive that represents a pre-populated variable
+ */
 class Keyword extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L

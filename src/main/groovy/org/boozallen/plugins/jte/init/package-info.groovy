@@ -13,7 +13,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 /**
  * everything involved in initializing a pipeline prior to execution
  */

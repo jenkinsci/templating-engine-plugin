@@ -58,10 +58,9 @@ void call(){
             } catch(ignore){}
 
             // validate only one of command or script is set
-            if (!config.subMap(["command", "script"]).size().equals(1)) {
+            if (!config.subMap(["command", "script"]).size() == 1) {
                 error error_msg
             }
-
 
             // get command to run inside image
             String scriptText

@@ -13,7 +13,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 /**
  * framework for using pipeline primitives that will be available during template execution
  */

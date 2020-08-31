@@ -21,6 +21,9 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
 
 import java.lang.annotation.Annotation
 
+/**
+ * Represents a method annotated within a step with a lifecycle hook
+ */
 @SuppressWarnings(["NoDef", "FieldTypeRequired"])
 class AnnotatedMethod implements Serializable{
 

@@ -27,6 +27,9 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 import java.lang.annotation.Annotation
 
+/**
+ * Utility class to find and invoke lifecycle annotated methods within steps
+ */
 @SuppressWarnings("NoDef")
 class Hooks implements Serializable{
 

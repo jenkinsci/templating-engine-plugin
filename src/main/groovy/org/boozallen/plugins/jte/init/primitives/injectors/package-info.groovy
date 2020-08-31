@@ -13,7 +13,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
 /**
  * responsible for parsing the pipeline configuration, instantiating pipeline primitives, and storing them
  * in the script binding

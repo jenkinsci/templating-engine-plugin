@@ -19,9 +19,9 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigExcept
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 
-/*
-    represents an immutable application environment.
-*/
+/**
+ * JTE primitive representing an Application Environment
+ */
 @SuppressWarnings(["PropertyName", "NoDef"])
 class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
 
