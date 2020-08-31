@@ -35,7 +35,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class keywordClass = getPrimitiveClass()
         config.getConfig().keywords.each{ key, value ->
-            binding.setVariable(key, keywordClass.newInstance(var_name: key, value: value))
+            binding.setVariable(key, keywordClass.newInstance(keyword: key, value: value))
         }
     }
 
