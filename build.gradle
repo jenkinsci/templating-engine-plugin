@@ -78,6 +78,7 @@ jacocoTestReport {
 
 spotless{
     groovy{
+        target = fileTree("src/main/groovy") + fileTree(dir: "src/main/resources", include: "**/*.groovy")
         trimTrailingWhitespace()
         indentWithSpaces()
         endWithNewline()
