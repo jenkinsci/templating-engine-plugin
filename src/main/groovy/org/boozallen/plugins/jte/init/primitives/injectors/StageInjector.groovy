@@ -47,10 +47,4 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         Map args = [:]
     }
 
-    static class StageContext implements Serializable {
-        private static final long serialVersionUID = 1L
-        String name
-        Map args = [:]
-    }
-
 }
