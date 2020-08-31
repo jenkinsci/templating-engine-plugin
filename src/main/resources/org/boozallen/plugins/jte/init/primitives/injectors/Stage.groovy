@@ -16,20 +16,17 @@
 
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.codehaus.groovy.runtime.InvokerHelper
 
-/*
-    represents a group of library steps to be called. 
-*/
+/**
+ *  represents a group of library steps to be called.
+ */
 class Stage extends TemplatePrimitive implements Serializable{
 
-    static EMPTY_CONTEXT = [ name: null, args: [:] ]
-
-    Binding binding 
+    Binding binding
     String name
     ArrayList<String> steps
 
@@ -38,33 +35,17 @@ class Stage extends TemplatePrimitive implements Serializable{
     Stage(Binding binding, String name, ArrayList<String> steps){
         this.binding = binding
         this.name = name
-        this.steps = steps 
+        this.steps = steps
     }
 
-    void call(stageConfig){
+    void call(args) {
         TemplateLogger.createDuringRun().print "[Stage - ${name}]"
-
-        def stageContext = [
-            name: name,
-            args: stageConfig
-        ]
-
-        for(def i = 0; i < steps.size(); i++){
-            String step = steps.get(i)
-            setStageContext(step, stageContext)
-            binding.getStep(step).call()
-            setStageContext(step, EMPTY_CONTEXT)
+        StageContext stageContext = new StageContext(name: name, args: args)
+        steps.each{ step ->
+            def clone = binding.getStep(step).clone()
+            clone.setStageContext(stageContext)
+            clone.call()
         }
-    }
-
-    @NonCPS
-    private void setStageContext(String step, stageContext) {
-        if(!binding.hasStep(step)) {
-            return
-        }
-        def impl = binding.getStep(step)?.impl
-        def metaClass = InvokerHelper.getMetaClass(impl)
-        metaClass.getStageContext = {-> stageContext}
     }
 
     void throwPreLockException(){

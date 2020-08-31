@@ -33,7 +33,6 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
-import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
@@ -92,10 +91,6 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
      */
     @Override
     void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
-        ImportCustomizer ic = new ImportCustomizer()
-        ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-        cc.addCompilationCustomizers(ic)
-
         if(isFromJTE(execution)){
             cc.addCompilationCustomizers(new CompilationCustomizer(CompilePhase.SEMANTIC_ANALYSIS) {
 

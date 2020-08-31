@@ -32,14 +32,14 @@ class Hooks implements Serializable{
 
     @NonCPS
     static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, Binding binding){
-        List<AnnotatedMethod> discovered = new ArrayList() 
+        List<AnnotatedMethod> discovered = new ArrayList()
         Class StepWrapper = StepWrapperFactory.getPrimitiveClass()
         ArrayList stepWrappers = binding.getVariables().collect{ it.value }.findAll{
             StepWrapper.getName().equals(it.getClass().getName())
         }
 
         stepWrappers.each{ step ->
-            step.getImpl().class.methods.each{ method ->
+            step.getScript().class.methods.each{ method ->
                 def annotation = method.getAnnotation(hookType)
                 if (annotation){
                     AnnotatedMethod am = new AnnotatedMethod(annotation, hookType.getSimpleName(), method.name, step)
@@ -72,11 +72,10 @@ class Hooks implements Serializable{
 
     static def shouldInvoke(AnnotatedMethod hook, HookContext context){
         def annotation = hook.getAnnotation()
-        def stepWrapper = hook.getStepWrapper() 
-        String configVar = StepWrapperFactory.CONFIG_VAR
-        Map config = stepWrapper.impl."get${configVar.capitalize()}"()
+        def stepWrapper = hook.getStepWrapper()
+        Map config = stepWrapper.getScript().getConfig()
         RunWrapper currentBuild = getRunWrapper()
-        Binding invokeBinding = new Binding([context: context, config: config, currentBuild: currentBuild])
+        Binding invokeBinding = new Binding([hookContext: context, config: config, currentBuild: currentBuild])
         def result
         try{
             result = annotation.value().newInstance(invokeBinding, invokeBinding).call()

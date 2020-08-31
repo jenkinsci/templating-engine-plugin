@@ -17,12 +17,15 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.model.Result
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
+import org.jvnet.hudson.test.WithoutJenkins
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class StepWrapperSpec extends Specification{
 
@@ -464,7 +467,7 @@ class StepWrapperSpec extends Specification{
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains("hello, world", run)
-        jenkins.assertLogContains("JTE: The fetchCrossLibrary step from the resourcesB library requested a resource 'nested/somethingElse.txt' that does not exist", run)
+        jenkins.assertLogContains("JTE: library step requested a resource 'nested/somethingElse.txt' that does not exist", run)
     }
 
     def "step fetching non-existent resource throws exception"(){
@@ -484,7 +487,7 @@ class StepWrapperSpec extends Specification{
 
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains("JTE: The doesNotExist step from the resourcesB library requested a resource 'nope.txt' that does not exist", run)
+        jenkins.assertLogContains("JTE: library step requested a resource 'nope.txt' that does not exist", run)
     }
 
     def "step fetching resource with absolute path throws exception"(){
@@ -504,7 +507,20 @@ class StepWrapperSpec extends Specification{
 
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains("JTE: The absolutePath step from the resourcesB library requested a resource '/nope.txt' that is not a relative path.  Must not begin with /.", run)
+        jenkins.assertLogContains("JTE: library step requested a resource that is not a relative path.", run)
+    }
+
+    @WithoutJenkins
+    @Unroll
+    def "overriding autowired variable #var in binding throws exception"(){
+        given:
+        TemplateBinding binding = new TemplateBinding()
+        when:
+        binding.setVariable(var, "_")
+        then:
+        thrown(Exception)
+        where:
+        var << [ "config", "stageContext", "hookContext", "resource" ]
     }
 
 }

@@ -30,25 +30,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 abstract class TemplatePrimitiveInjector implements ExtensionPoint{
 
     /**
-     * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it in
-     * the {@link TemplateBinding}
-     *
-     * @param flowOwner the run's flowOwner
-     * @param config the aggregated pipeline configuration
-     * @param binding the run's common {@link TemplateBinding}
-     */
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
-
-    /**
-     * A second pass allowing the different injector's to inspect what is in the binding and respond accordingly
-     *
-     * @param flowOwner the run's flowOwner
-     * @param config the aggregated pipeline configuration
-     * @param binding the run's common {@link TemplateBinding}
-     */
-    static void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
-
-    /**
      * fetches all registered TemplatePrimitiveInjectors
      *
      * @return list of TemplatePrimitiveInjectors
@@ -83,5 +64,24 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         }
         return returnClass
     }
+
+    /**
+     * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it in
+     * the {@link TemplateBinding}
+     *
+     * @param flowOwner the run's flowOwner
+     * @param config the aggregated pipeline configuration
+     * @param binding the run's common {@link TemplateBinding}
+     */
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
+  
+    /**
+     * A second pass allowing the different injector's to inspect what is in the binding and respond accordingly
+     *
+     * @param flowOwner the run's flowOwner
+     * @param config the aggregated pipeline configuration
+     * @param binding the run's common {@link TemplateBinding}
+     */  
+    void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
 
 }

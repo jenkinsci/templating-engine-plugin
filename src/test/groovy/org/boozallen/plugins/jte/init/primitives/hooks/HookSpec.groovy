@@ -114,9 +114,9 @@ class HookSpec extends Specification{
         def run
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep("hooksLibrary", "theHooks", """
-        @BeforeStep({ context.step.equals("foo") })
-        void blah(context){
-            println "running before \${context.step}"
+        @BeforeStep({ hookContext.step.equals("foo") })
+        void blah(){
+            println "running before \${hookContext.step}"
         }
         """)
         libProvider.addStep("someLibrary", "foo", """
@@ -156,9 +156,9 @@ class HookSpec extends Specification{
         def run
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep("hooksLibrary", "theHooks", """
-        @BeforeStep({ context.step in config.beforeSteps })
-        void blah(context){
-            println "running before \${context.step}"
+        @BeforeStep({ hookContext.step in config.beforeSteps })
+        void blah(){
+            println "running before \${hookContext.step}"
         }
         """)
         libProvider.addStep("someLibrary", "foo", """
@@ -201,8 +201,8 @@ class HookSpec extends Specification{
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep("hooksLibrary", "theHooks", """
         @BeforeStep({ bar() })
-        void blah(context){
-            println "running before \${context.step}"
+        void blah(){
+            println "running before \${hookContext.step}"
         }
         """)
         libProvider.addStep("someLibrary", "foo", """
@@ -242,8 +242,8 @@ class HookSpec extends Specification{
         def run
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep("hooksLibrary", "theHooks", """
-        ${annotation} void foo(context){ println "step: foo" }
-        ${annotation} void bar(context){ println "step: bar" }
+        ${annotation} void foo(){ println "step: foo" }
+        ${annotation} void bar(){ println "step: bar" }
         """)
         libProvider.addStep("someLibrary", "theActualStep", "void call(){ println 'the actual step' }")
         libProvider.addGlobally()
@@ -271,12 +271,12 @@ class HookSpec extends Specification{
     }
 
     @Unroll
-    def "#annotation adherest to conditional execution when closure param is { #shouldRun }"(){
+    def "#annotation adheres to conditional execution when closure param is { #shouldRun }"(){
         given:
         def run
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep("hooksLibrary", "theHooks", """
-        ${annotation}({ ${shouldRun} }) void foo(context){ println "step: foo" }
+        ${annotation}({ ${shouldRun} }) void foo(){ println "step: foo" }
         """)
         libProvider.addStep("someLibrary", "theActualStep", "void call(){ println 'the actual step' }")
         libProvider.addGlobally()

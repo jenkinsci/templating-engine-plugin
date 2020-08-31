@@ -34,28 +34,25 @@ image::lifecycle_hook.png[Lifecycle Hook Flow Diagram]
 
 == Implementation
 
-Lifecycle Hook annotations can be placed on any method inside a step. Hooks must accept a `context` parameter that is of type `HookContext` from the JTE plugin.  Because of Groovy's ducktyping functionality, you do not have to declare the Class of the context parameter. 
+Lifecycle Hook annotations can be placed on any method inside a step.
 
-[NOTE]
-====
-You can name the input parameter whatever you want to.  For ease of communication, it is assumed the parameter is named `context`
-====
+Every step has an autowired `hookContext` variable which provides steps with relevant information about what triggered the hook.
 
-.JTE LifeCycle Hook Context Parameter
+.JTE LifeCycle Hooks `hookContext` Variable
 |===
 | Variable | Description
 
-| `context.library`
+| `hookContext.library`
 | The name of the Library that contributed the step associated with the hook
 
-| `context.step`
+| `hookContext.step`
 | The name of the Step associated with the hook
 
 |===
 
 [IMPORTANT]
 ====
-`context.library` and `context.step` will be `null` before and after pipeline execution due to the fact that the hook is not in response to a particular pipeline step. 
+`hookContext.library` and `hookContext.step` will be `null` before and after pipeline execution due to the fact that the hook is not in response to a particular pipeline step.
 ====
 
 == Conditional Execution
@@ -64,20 +61,19 @@ Sometimes you'll only want to invoke the Hook when certain conditions are met, s
 
 Each annotation accepts a `Closure` parameter.  If the return object of this closure is http://www.groovy-lang.org/semantics.html#Groovy-Truth[truthy] then the hook will be executed.
 
-While executing, the code within the `Closure` parameter will be able to resolve the `context` variable described, the library configuration of the library that loads the step via the `config` variable, and the `currentBuild` variable made available in Jenkins Pipelines. 
+While executing, the code within the `Closure` parameter will be able to resolve the `hookContext` variable, the library configuration of the library that loads the step via the `config` variable, and the `currentBuild` variable made available in Jenkins Pipelines.
 
 Example Syntax:
 
 [source,groovy]
 ----
-@BeforeStep({ context.step.equals("build") })
-void call(context){
+@BeforeStep({ hookContext.step.equals("build") })
+void call(){
     // execute something right before the library step called build is executed.
 }
 ----
 
 [IMPORTANT]
 ====
-* The closure parameter is optional. If omitted, the hook will always be executed.
-* The `context` variable is always called `context` within the Closure parameter, regardless of what the step's input parameter is named. 
+The closure parameter is optional. If omitted, the hook will always be executed.
 ====

@@ -76,6 +76,17 @@ jacocoTestReport {
     }
 }
 
+sourceSets{
+    main{
+        java{
+            srcDirs = [ ]
+        }
+        groovy{
+            srcDirs += [ "src/main/java" ]
+        }
+    }
+}
+
 spotless{
     groovy{
         trimTrailingWhitespace()
