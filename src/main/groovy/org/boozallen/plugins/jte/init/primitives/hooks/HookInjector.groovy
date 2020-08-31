@@ -30,8 +30,22 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
  */
 @Extension class HookInjector extends TemplatePrimitiveInjector {
 
-    @SuppressWarnings('UnusedMethodParameter')
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+    static Class getHooksClass(){
+        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
+        String self = this.getMetaClass().getTheClass().getName()
+        String classText = uberClassLoader.loadClass(self).getResource("Hooks.groovy").text
+        return TemplateScriptEngine.parseClass(classText)
+    }
+
+    static Class getAnnotatedMethodClass(){
+        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
+        String self = this.getMetaClass().getTheClass().getName()
+        String classText = uberClassLoader.loadClass(self).getResource("AnnotatedMethod.groovy").text
+        return TemplateScriptEngine.parseClass(classText)
+    }
+
+    @Override
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class hooksClass = getHooksClass()
         getAnnotatedMethodClass()
 
@@ -45,20 +59,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         binding.setVariable("Init", Init)
         binding.setVariable("CleanUp", CleanUp)
         binding.setVariable("Notify", Notify)
-    }
-
-    static Class getHooksClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("Hooks.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
-    }
-
-    static Class getAnnotatedMethodClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("AnnotatedMethod.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
     }
 
 }

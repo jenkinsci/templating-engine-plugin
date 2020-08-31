@@ -24,8 +24,15 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 @Extension class StageInjector extends TemplatePrimitiveInjector {
 
-    @SuppressWarnings('UnusedMethodParameter')
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+    static Class getPrimitiveClass(){
+        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
+        String self = this.getMetaClass().getTheClass().getName()
+        String classText = uberClassLoader.loadClass(self).getResource("Stage.groovy").text
+        return TemplateScriptEngine.parseClass(classText)
+    }
+
+    @Override
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class stageClass = getPrimitiveClass()
         config.getConfig().stages.each{ name, steps ->
             ArrayList<String> stepsList = []
@@ -34,11 +41,10 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         }
     }
 
-    static Class getPrimitiveClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("Stage.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+    static class StageContext implements Serializable {
+        private static final long serialVersionUID = 1L
+        String name
+        Map args = [:]
     }
 
     static class StageContext implements Serializable {

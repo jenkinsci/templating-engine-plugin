@@ -94,14 +94,14 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      *
      * @return An equivalent StepWrapper instance
      */
-    StepWrapper clone(){
-        return new StepWrapper(
-            name: this.name,
-            library: this.library,
-            sourceText: this.sourceText,
-            sourceFile: this.sourceFile,
-            config: this.config
-        )
+    Object clone(){
+        Object that = super.clone()
+        that.name = this.name
+        that.library = this.library
+        that.sourceText = this.sourceText
+        that.sourceFile = this.sourceFile
+        that.config = this.config
+        return that
     }
 
     /*
@@ -123,6 +123,44 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     void setHookContext(HookContext hookContext){
         this.hookContext = hookContext
         getScript().setHookContext(hookContext)
+    }
+
+    /**
+     * recompiles the StepWrapperScript if missing. This typically only happens if
+     * Jenkins has ungracefully restarted and the pipeline is resuming
+     * @return
+     */
+    @NonCPS
+    private StepWrapperScript parseSource(){
+        CpsThread thread = CpsThread.current()
+        if(!thread){
+            throw new IllegalStateException("CpsThread not present.")
+        }
+
+        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
+        WorkflowRun run = flowOwner.run()
+        PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
+        if(!pipelineDecorator){
+            throw new IllegalStateException("PipelineDecorator action missing")
+        }
+        TemplateBinding binding = pipelineDecorator.getBinding()
+
+        String source
+        if(sourceFile){
+            FilePath f = new FilePath(new File(sourceFile))
+            if(f.exists()){
+                source = f.readToString()
+            } else{
+                throw new IllegalStateException("Unable to find source file '${sourceFile}' for StepWrapper[library: ${library}, name: ${name}]")
+            }
+        } else if (sourceText){
+            source = sourceText
+        } else{
+            throw new IllegalStateException("Unable to determine StepWrapper[library: ${library}, name: ${name}] source.")
+        }
+
+        StepWrapperFactory factory = new StepWrapperFactory(flowOwner)
+        return factory.prepareScript(library, name, source, binding, config, stageContext, hookContext)
     }
 
     /*

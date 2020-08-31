@@ -21,7 +21,6 @@ import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.boozallen.plugins.jte.util.TemplateScriptEngine
-import org.boozallen.plugins.jte.init.primitives.ReservedVariableName
 import hudson.Extension
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
@@ -45,19 +44,6 @@ class StepWrapperFactory{
      * configuration to the step
      */
     static final String CONFIG_VAR = "config"
-
-    /**
-     * reserves ${CONFIG_VAR} as a protected variable name in the TemplateBinding
-     */
-    @Extension static class ReservedVariableNameImpl extends ReservedVariableName{
-        static String getName(){ return CONFIG_VAR }
-        static void throwPreLockException(){
-            throw new Exception("Variable name ${CONFIG_VAR} is reserved for steps to access their library configuration")
-        }
-        static void throwPostLockException(){
-            throw new Exception("Variable name ${CONFIG_VAR} is reserved for steps to access their library configuration")
-        }
-    }
 
     private final FlowExecutionOwner flowOwner
 
@@ -89,6 +75,7 @@ class StepWrapperFactory{
      * @param optional {@link HookContext}
      * @return an executable and wired executable script
      */
+    @SuppressWarnings("ParameterCount")
     StepWrapperScript prepareScript(
             String library,
             String name,

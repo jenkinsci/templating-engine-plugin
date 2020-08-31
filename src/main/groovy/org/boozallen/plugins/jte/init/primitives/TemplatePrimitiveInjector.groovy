@@ -29,16 +29,15 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 @SuppressWarnings(['EmptyMethodInAbstractClass', 'UnusedMethodParameter'])
 abstract class TemplatePrimitiveInjector implements ExtensionPoint{
 
-    // Optional. delegate injecting template primitives into the binding to the specific
-    // implementations of TemplatePrimitive
-    static void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
-
-    // Optional. do post processing of the config and binding.
-    static void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
-
-    // used to get all injectors
+    /**
+     * find all registered injectors
+     * @return all registered injectors
+     */
     static ExtensionList<TemplatePrimitiveInjector> all(){
         return Jenkins.get().getExtensionList(TemplatePrimitiveInjector)
     }
+
+    void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
+    void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
 
 }

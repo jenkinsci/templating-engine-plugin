@@ -38,6 +38,7 @@ class AnnotatedMethod implements Serializable{
         this.stepWrapper = stepWrapper
     }
 
+    @SuppressWarnings("CatchException")
     void invoke(HookContext context){
         try{
             def step = stepWrapper.clone()
@@ -47,7 +48,7 @@ class AnnotatedMethod implements Serializable{
             String stepName = step.name
             TemplateLogger.createDuringRun().print "[@${annotationName} - ${lib}/${stepName}.${methodName}]"
             InvokerHelper.getMetaClass(script).invokeMethod(script, methodName, null)
-        } catch (x) {
+        } catch (Exception x) {
             throw new InvokerInvocationException(x)
         }
     }

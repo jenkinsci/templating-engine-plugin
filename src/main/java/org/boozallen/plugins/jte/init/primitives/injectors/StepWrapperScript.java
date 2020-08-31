@@ -16,7 +16,9 @@
 package org.boozallen.plugins.jte.init.primitives.injectors;
 
 import hudson.AbortException;
+import hudson.Extension;
 import hudson.FilePath;
+import org.boozallen.plugins.jte.init.primitives.ReservedVariableName;
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext;
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext;
 import org.jenkinsci.plugins.workflow.cps.CpsScript;
@@ -57,15 +59,45 @@ public abstract class StepWrapperScript extends CpsScript {
     }
     public LinkedHashMap getConfig(){ return config; }
 
+    /**
+     * reserves the config var from being overridden in the binding
+     */
+    @Extension public static class ConfigReservedVariable extends ReservedVariableName {
+        public String getName(){ return "config"; }
+        @Override public String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access their library configuration", getName());
+        }
+    }
+  
     public void setHookContext(HookContext hookContext){
         this.hookContext = hookContext;
     }
     public HookContext getHookContext(){ return hookContext; }
 
+    /**
+     * reserves the config var from being overridden in the binding
+     */
+    @Extension public static class HookContextReservedVariable extends ReservedVariableName {
+        public String getName(){ return "hookContext"; }
+        @Override public String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access their hook context", getName());
+        }
+    }
+
     public void setStageContext(StageContext stageContext){
         this.stageContext = stageContext;
     }
     public StageContext getStageContext(){ return stageContext; }
+
+    /**
+     * reserves the config var from being overridden in the binding
+     */
+    @Extension public static class StageContextReservedVariable extends ReservedVariableName {
+        public String getName(){ return "stageContext"; }
+        @Override public String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access their stage context", getName());
+        }
+    }
 
     public void setResourcesBaseDir(FilePath resourcesBaseDir) {
         this.resourcesBaseDir = resourcesBaseDir;
@@ -90,5 +122,15 @@ public abstract class StepWrapperScript extends CpsScript {
             throw new AbortException(oopsMsg);
         }
         return resourceFile.readToString();
+    }
+
+    /**
+     * reserves the config var from being overridden in the binding
+     */
+    @Extension public static class ResourceReservedVariable extends ReservedVariableName {
+        public String getName(){ return "resource"; }
+        @Override public String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access library resources", getName());
+        }
     }
 }

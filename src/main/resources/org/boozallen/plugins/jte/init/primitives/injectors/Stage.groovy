@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 /**
  *  represents a group of library steps to be called.
  */
+
 @SuppressWarnings("NoDef")
 class Stage extends TemplatePrimitive implements Serializable{
 
