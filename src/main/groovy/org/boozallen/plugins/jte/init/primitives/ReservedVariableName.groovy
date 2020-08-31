@@ -31,7 +31,15 @@ abstract class ReservedVariableName implements ExtensionPoint{
     }
 
     abstract String getName()
-    abstract void throwPreLockException() throws Exception
-    abstract void throwPostLockException() throws Exception
+
+    abstract String getExceptionMessage()
+
+    void throwPreLockException() throws Exception{
+        throw new Exception(getExceptionMessage())
+    }
+
+    void throwPostLockException() throws Exception{
+        throw new Exception(getExceptionMessage())
+    }
 
 }
