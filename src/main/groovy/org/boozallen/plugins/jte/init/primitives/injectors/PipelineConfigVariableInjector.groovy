@@ -33,7 +33,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class keywordClass = KeywordInjector.getPrimitiveClass()
         def pipelineConfig = keywordClass.newInstance(
-            var_name: VARIABLE,
+            keyword: VARIABLE,
             value: config.getConfig(),
             preLockException: "Variable ${VARIABLE} reserved for accessing the aggregated pipeline configuration",
             postLockException: "Variable ${VARIABLE} reserved for accessing the aggregated pipeline configuration"

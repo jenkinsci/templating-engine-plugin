@@ -23,8 +23,11 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 /**
  *  represents a group of library steps to be called.
  */
+
+@SuppressWarnings("NoDef")
 class Stage extends TemplatePrimitive implements Serializable{
 
+    private static final long serialVersionUID = 1L
     Binding binding
     String name
     ArrayList<String> steps
@@ -37,6 +40,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         this.steps = steps
     }
 
+    @SuppressWarnings("MethodParameterTypeRequired")
     void call(args) {
         TemplateLogger.createDuringRun().print "[Stage - ${name}]"
         StageContext stageContext = new StageContext(name: name, args: args)

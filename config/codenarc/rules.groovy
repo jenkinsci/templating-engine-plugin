@@ -395,7 +395,7 @@ ruleset {
     MethodCount
     MethodSize
     NestedBlockDepth
-    ParameterCount
+//    ParameterCount
 
     // rulesets/unnecessary.xml
     AddEmptyString

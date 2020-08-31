@@ -22,31 +22,33 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 /*
     represents an immutable application environment.
 */
+@SuppressWarnings(["PropertyName", "NoDef"])
 class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
-    String var_name
+
+    private static final long serialVersionUID = 1L
+    String varName
     String short_name
     String long_name
-    final def config
+    LinkedHashMap config
     ApplicationEnvironment previous
     ApplicationEnvironment next
 
-
     ApplicationEnvironment(){}
 
-    ApplicationEnvironment(String var_name, Map _config){
-        this.var_name = var_name
+    ApplicationEnvironment(String varName, LinkedHashMap config){
+        this.varName = varName
 
-        short_name = _config.short_name ?: var_name
-        long_name = _config.long_name ?: var_name
+        short_name = config.short_name ?: varName
+        long_name = config.long_name ?: varName
 
         /*
             users cant define the previous or next properties. they'll
             just be ignored. so throw an exception if they try.
         */
 
-        def context = _config.subMap(["previous", "next"])
+        def context = config.subMap(["previous", "next"])
         if(context){
-            throw new TemplateConfigException("""Error configuring ApplicationEnvironment ${var_name}
+            throw new TemplateConfigException("""Error configuring ApplicationEnvironment ${varName}
             The previous and next configuration options are reserved and auto-populated.
             """.stripIndent())
         }
@@ -58,29 +60,25 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
                 will throw an UnsupportOperationException.  Need to figure out how to
                 throw TemplateConfigException instead for the sake of logging.
         */
-        config = config.asImmutable()
+        this.config = config.asImmutable()
     }
 
     Object getProperty(String name){
         def meta = ApplicationEnvironment.metaClass.getMetaProperty(name)
-        if (meta) {
-            meta.getProperty(this)
-        } else {
-            if (config.containsKey(name)){ return config.get(name) }
-            else { return null }
-        }
+        return meta ? meta.getProperty(this) : config?."${name}"
     }
 
+    @SuppressWarnings("UnusedMethodParameter")
     void setProperty(String name, Object value){
         throw new TemplateConfigException("Can't modify Application Environment '${long_name}'. Application Environments are immutable.")
     }
 
     void throwPreLockException(){
-        throw new TemplateException ("Application Environment ${var_name} already defined.")
+        throw new TemplateException ("Application Environment ${varName} already defined.")
     }
 
     void throwPostLockException(){
-        throw new TemplateException ("Variable ${var_name} is reserved as an Application Environment.")
+        throw new TemplateException ("Variable ${varName} is reserved as an Application Environment.")
     }
 
 }

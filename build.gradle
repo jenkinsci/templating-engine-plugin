@@ -89,6 +89,11 @@ spotless{
 codenarc {
     toolVersion = '1.6.1'
     configFile = file('./config/codenarc/rules.groovy')
+
+}
+
+codenarcMain{
+    source = fileTree("src/main/groovy") + fileTree(dir: "src/main/resources", include: "**/*.groovy")
 }
 
 codenarcTest{

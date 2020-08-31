@@ -15,9 +15,9 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+@SuppressWarnings("NoDef")
 void call(){
-
-  String error_msg = """
+    String errorMsg = """
      step definition specification:
 
      steps{
@@ -39,12 +39,12 @@ void call(){
 
     stage(config.stage ?: config.name){
         // get docker image for step
-        def img = config.image ?:
-                  { error "Image not defined for default step implementation ${config.name}. \n ${error_msg}" }()
+        def img = config.image ?: {
+            error "Image not defined for default step implementation ${config.name}. \n ${errorMsg}"
+        }()
 
         // execute step
         docker.image(img).inside{
-
             /*
                 this part of the framework needs some thought..
                 how to pass the workspace around so libraries can access files
@@ -55,42 +55,45 @@ void call(){
             */
             try{
                 unstash "workspace"
-            }catch(any){}
+            } catch(ignore){}
 
-                // validate only one of command or script is set
-            if (!config.subMap(["command", "script"]).size().equals(1)){
+            // validate only one of command or script is set
+            if (!config.subMap(["command", "script"]).size().equals(1)) {
                 error error_msg
             }
 
+
             // get command to run inside image
-            String script_text
+            String scriptText
             if (config.command){
-                script_text = config.command
+                scriptText = config.command
             }
 
             if (config.script){
                 if (fileExists(config.script)){
-                    script_text = readFile config.script
-                } else{ error "Script ${config.script} not found" }
+                    scriptText = readFile config.script
+                } else{
+                    error "Script ${config.script} not found"
+                }
             }
 
-            sh script_text
+            sh scriptText
 
             // stash results if configured
             def s = config.stash
             if (s){
                 // validate stash configuration
-                def n = s.name ?: {error "Step ${config.name} stash name not configured: \n ${error_msg}"}()
-                def i = s.includes ?: "**"
-                def e = s.excludes ?: " "
-                def d = s.useDefaultExcludes ?: true
-                def p = s.allowEmpty ?: false
+                String n = s.name ?: { error "Step ${config.name} stash name not configured: \n ${errorMsg}" }.call()
+                String i = s.includes ?: "**"
+                String e = s.excludes ?: " "
+                boolean d = s.useDefaultExcludes ?: true
+                boolean p = s.allowEmpty ?: false
 
                 stash name: n,
-                    includes: i,
-                    excludes: e,
-                    useDefaultExcludes: d,
-                    allowEmpty: p
+                        includes: i,
+                        excludes: e,
+                        useDefaultExcludes: d,
+                        allowEmpty: p
             }
         }
     }

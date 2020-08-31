@@ -27,14 +27,17 @@ import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
 import java.lang.annotation.Annotation
 
+@SuppressWarnings("NoDef")
 class Hooks implements Serializable{
+
+    private static final long serialVersionUID = 1L
 
     @NonCPS
     static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, Binding binding){
-        List<AnnotatedMethod> discovered = new ArrayList()
-        Class StepWrapper = StepWrapperFactory.getPrimitiveClass()
-        ArrayList stepWrappers = binding.getVariables().collect{ it.value }.findAll{
-            StepWrapper.getName().equals(it.getClass().getName())
+        List<AnnotatedMethod> discovered = []
+        Class stepWrapper = StepWrapperFactory.getPrimitiveClass()
+        ArrayList stepWrappers = binding.getVariables().collect{ var -> var.value }.findAll{ var ->
+            stepWrapper.getName() == var.getClass().getName()
         }
 
         stepWrappers.each{ step ->
@@ -69,7 +72,8 @@ class Hooks implements Serializable{
          }
     }
 
-    static def shouldInvoke(AnnotatedMethod hook, HookContext context){
+    @SuppressWarnings("MethodReturnTypeRequired")
+    static shouldInvoke(AnnotatedMethod hook, HookContext context){
         def annotation = hook.getAnnotation()
         def stepWrapper = hook.getStepWrapper()
         Map config = stepWrapper.getScript().getConfig()
@@ -78,7 +82,7 @@ class Hooks implements Serializable{
         def result
         try{
             result = annotation.value().newInstance(invokeBinding, invokeBinding).call()
-        }catch(any){
+        } catch(any){
             TemplateLogger.createDuringRun().printWarning "Exception thrown while evaluating @${hook.annotationName} on ${hook.methodName} in ${hook.stepWrapper.getName()} from ${hook.stepWrapper.getLibrary()} library."
             throw any
         }

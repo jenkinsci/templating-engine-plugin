@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 
@@ -23,10 +22,12 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
     represents a protected variable in the jenkinsfile
 */
 class Keyword extends TemplatePrimitive implements Serializable{
-    String var_name
+
+    private static final long serialVersionUID = 1L
+    String keyword
     Object value
-    String preLockException = "Variable ${var_name} already exists as a Keyword."
-    String postLockException = "Variable ${var_name} is reserved as a template Keyword."
+    String preLockException = "Variable ${keyword} already exists as a Keyword."
+    String postLockException = "Variable ${keyword} is reserved as a template Keyword."
 
     Object getValue(){
         return value
@@ -39,4 +40,5 @@ class Keyword extends TemplatePrimitive implements Serializable{
     void throwPostLockException(){
         throw new TemplateException(postLockException)
     }
+
 }

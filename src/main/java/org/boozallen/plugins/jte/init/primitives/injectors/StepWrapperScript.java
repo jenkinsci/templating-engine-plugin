@@ -68,7 +68,7 @@ public abstract class StepWrapperScript extends CpsScript {
             return String.format("Variable name %s is reserved for steps to access their library configuration", getName());
         }
     }
-
+  
     public void setHookContext(HookContext hookContext){
         this.hookContext = hookContext;
     }

@@ -21,12 +21,16 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
 
 import java.lang.annotation.Annotation
 
+@SuppressWarnings(["NoDef", "FieldTypeRequired"])
 class AnnotatedMethod implements Serializable{
+
+    private static final long serialVersionUID = 1L
     Annotation annotation
     String annotationName
     def stepWrapper
     String methodName
 
+    @SuppressWarnings("MethodParameterTypeRequired")
     AnnotatedMethod(Annotation annotation, String annotationName, String methodName, def stepWrapper){
         this.annotation = annotation
         this.annotationName = annotationName
@@ -34,6 +38,7 @@ class AnnotatedMethod implements Serializable{
         this.stepWrapper = stepWrapper
     }
 
+    @SuppressWarnings("CatchException")
     void invoke(HookContext context){
         try{
             def step = stepWrapper.clone()
@@ -47,4 +52,5 @@ class AnnotatedMethod implements Serializable{
             throw new InvokerInvocationException(x)
         }
     }
+
 }
