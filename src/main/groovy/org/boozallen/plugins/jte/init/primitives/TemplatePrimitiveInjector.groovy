@@ -74,14 +74,14 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param binding the run's common {@link TemplateBinding}
      */
     void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
-  
+
     /**
      * A second pass allowing the different injector's to inspect what is in the binding and respond accordingly
      *
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
      * @param binding the run's common {@link TemplateBinding}
-     */  
+     */
     void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){}
 
 }

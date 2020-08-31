@@ -76,17 +76,6 @@ jacocoTestReport {
     }
 }
 
-sourceSets{
-    main{
-        java{
-            srcDirs = [ ]
-        }
-        groovy{
-            srcDirs += [ "src/main/java" ]
-        }
-    }
-}
-
 spotless{
     groovy{
         trimTrailingWhitespace()
@@ -112,8 +101,11 @@ task codenarc {
 
 sourceSets {
     main{
+        java{
+            srcDirs = []
+        }
         groovy {
-            srcDirs = ["src/main/groovy"]
+            srcDirs = ["src/main/groovy", "src/main/java"]
             exclude "**/package-info.groovy"
         }
     }

@@ -30,7 +30,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("ApplicationEnvironment.groovy").text
-        return TemplateScriptEngine.parseClass(classText)
+        return parseClass(classText)
     }
 
     @SuppressWarnings('NoDef')
