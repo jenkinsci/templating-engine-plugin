@@ -75,6 +75,7 @@ class StepWrapperFactory{
      * @param optional {@link HookContext}
      * @return an executable and wired executable script
      */
+    @SuppressWarnings("ParameterCount")
     StepWrapperScript prepareScript(
             String library,
             String name,

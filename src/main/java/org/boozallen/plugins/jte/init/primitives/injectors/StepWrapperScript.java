@@ -63,16 +63,12 @@ public abstract class StepWrapperScript extends CpsScript {
      * reserves the config var from being overridden in the binding
      */
     @Extension public static class ConfigReservedVariable extends ReservedVariableName {
-        private static final String config = "config";
-        public String getName(){ return config; }
-        public void throwPreLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access their library configuration", config);
-            throw new Exception(oopsMsg);
+        public String getName(){ return "config"; }
+        private String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access their library configuration", getName());
         }
-        public void throwPostLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access their library configuration", config);
-            throw new Exception(oopsMsg);
-        }
+        public void throwPreLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
+        public void throwPostLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
     }
 
     public void setHookContext(HookContext hookContext){
@@ -84,16 +80,12 @@ public abstract class StepWrapperScript extends CpsScript {
      * reserves the config var from being overridden in the binding
      */
     @Extension public static class HookContextReservedVariable extends ReservedVariableName {
-        private static final String hookContext = "hookContext";
-        public String getName(){ return hookContext; }
-        public void throwPreLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access their hook context", hookContext);
-            throw new Exception(oopsMsg);
+        public String getName(){ return "hookContext"; }
+        private String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access their hook context", getName());
         }
-        public void throwPostLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access their hook context", hookContext);
-            throw new Exception(oopsMsg);
-        }
+        public void throwPreLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
+        public void throwPostLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
     }
 
     public void setStageContext(StageContext stageContext){
@@ -105,16 +97,12 @@ public abstract class StepWrapperScript extends CpsScript {
      * reserves the config var from being overridden in the binding
      */
     @Extension public static class StageContextReservedVariable extends ReservedVariableName {
-        private static final String stageContext = "stageContext";
-        public String getName(){ return stageContext; }
-        public void throwPreLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access their stage context", stageContext);
-            throw new Exception(oopsMsg);
+        public String getName(){ return "stageContext"; }
+        private String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access their stage context", getName());
         }
-        public void throwPostLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access their stage context", stageContext);
-            throw new Exception(oopsMsg);
-        }
+        public void throwPreLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
+        public void throwPostLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
     }
 
     public void setResourcesBaseDir(FilePath resourcesBaseDir) {
@@ -146,15 +134,11 @@ public abstract class StepWrapperScript extends CpsScript {
      * reserves the config var from being overridden in the binding
      */
     @Extension public static class ResourceReservedVariable extends ReservedVariableName {
-        private static final String resource = "resource";
-        public String getName(){ return resource; }
-        public void throwPreLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access library resources", resource);
-            throw new Exception(oopsMsg);
+        public String getName(){ return "resource"; }
+        private String getExceptionMessage(){
+            return String.format("Variable name %s is reserved for steps to access library resources", getName());
         }
-        public void throwPostLockException() throws Exception{
-            String oopsMsg = String.format("Variable name %s is reserved for steps to access library resources", resource);
-            throw new Exception(oopsMsg);
-        }
+        public void throwPreLockException() throws Exception{  throw new Exception(getExceptionMessage()); }
+        public void throwPostLockException() throws Exception{ throw new Exception(getExceptionMessage()); }
     }
 }
