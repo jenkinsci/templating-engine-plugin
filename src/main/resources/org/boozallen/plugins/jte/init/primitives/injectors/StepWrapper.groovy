@@ -125,44 +125,6 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         getScript().setHookContext(hookContext)
     }
 
-    /**
-     * recompiles the StepWrapperScript if missing. This typically only happens if
-     * Jenkins has ungracefully restarted and the pipeline is resuming
-     * @return
-     */
-    @NonCPS
-    private StepWrapperScript parseSource(){
-        CpsThread thread = CpsThread.current()
-        if(!thread){
-            throw new IllegalStateException("CpsThread not present.")
-        }
-
-        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
-        WorkflowRun run = flowOwner.run()
-        PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
-        if(!pipelineDecorator){
-            throw new IllegalStateException("PipelineDecorator action missing")
-        }
-        TemplateBinding binding = pipelineDecorator.getBinding()
-
-        String source
-        if(sourceFile){
-            FilePath f = new FilePath(new File(sourceFile))
-            if(f.exists()){
-                source = f.readToString()
-            } else{
-                throw new IllegalStateException("Unable to find source file '${sourceFile}' for StepWrapper[library: ${library}, name: ${name}]")
-            }
-        } else if (sourceText){
-            source = sourceText
-        } else{
-            throw new IllegalStateException("Unable to determine StepWrapper[library: ${library}, name: ${name}] source.")
-        }
-
-        StepWrapperFactory factory = new StepWrapperFactory(flowOwner)
-        return factory.prepareScript(library, name, source, binding, config, stageContext, hookContext)
-    }
-
     /*
         need a call method defined on method missing so that
         CpsScript recognizes the StepWrapper as something it
