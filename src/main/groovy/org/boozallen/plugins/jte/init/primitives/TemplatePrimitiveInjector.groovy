@@ -74,6 +74,11 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param primitive
      */
     static void populateNamespace(JteNamespace jte, TemplatePrimitive primitive){}
+
+    /**
+     * Returns the name of the block the injector parses to create TemplatePrimitives
+     * @return
+     */
     static String getKey(){ return null }
 
     /**
