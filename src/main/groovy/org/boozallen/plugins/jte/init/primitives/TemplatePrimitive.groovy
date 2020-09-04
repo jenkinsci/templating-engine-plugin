@@ -34,14 +34,14 @@ abstract class TemplatePrimitive implements Serializable{
     abstract void throwPostLockException()
 
     /**
-     * implementation by each primitive must annotation this method with @NonCPS
+     * implementation by each primitive must annotate this method with @NonCPS
      * so that it can be invoked outside of pipeline execution during initialization
      * @return
      */
     abstract Class getInjector()
 
     /**
-     * implementation by each primitive must annotation this method with @NonCPS
+     * implementation by each primitive must annotate this method with @NonCPS
      * so that it can be invoked outside of pipeline execution during initialization
      * @return the name of the primitive in the binding
      */
