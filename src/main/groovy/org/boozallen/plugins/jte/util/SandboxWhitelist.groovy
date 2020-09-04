@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.util
 
 import hudson.Extension
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
+import org.boozallen.plugins.jte.init.primitives.JteNamespace.Namespace
 
 import java.lang.reflect.Method
 
@@ -25,21 +26,23 @@ import java.lang.reflect.Method
  */
 @Extension class SandboxWhitelist extends AbstractWhitelist {
 
-    private final ArrayList permittedReceivers = [
+    private final ArrayList permittedReceiverStrings = [
         "org.boozallen.plugins.jte.init.primitives.injectors.ApplicationEnvironment",
         "org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper",
         "org.boozallen.plugins.jte.init.primitives.injectors.Stage",
-        "org.boozallen.plugins.jte.init.primitives.hooks.Hooks"
+        "org.boozallen.plugins.jte.init.primitives.hooks.Hooks",
+        "org.boozallen.plugins.jte.init.primitives.JteNamespace"
     ]
 
     @Override
     boolean permitsMethod(Method method, Object receiver, Object[] args) {
-        return receiver.getClass().getName() in permittedReceivers
+        return (receiver in Namespace || receiver.getClass().getName() in permittedReceiverStrings)
     }
 
     @Override
     boolean permitsStaticMethod(Method method, Object[] args){
-        return method.getDeclaringClass().getName() in permittedReceivers
+        Class receiver = method.getDeclaringClass()
+        return (receiver in Namespace || receiver.getName() in permittedReceiverStrings)
     }
 
 }

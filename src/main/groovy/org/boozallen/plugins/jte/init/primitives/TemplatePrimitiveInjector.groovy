@@ -19,6 +19,8 @@ import hudson.ExtensionList
 import hudson.ExtensionPoint
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.primitives.JteNamespace.Namespace
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
@@ -64,6 +66,15 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         }
         return returnClass
     }
+
+    /**
+     * this extension exists to give injectors the opportunity to customize
+     * how they populate the namespace
+     * @param jte
+     * @param primitive
+     */
+    static void populateNamespace(JteNamespace jte, TemplatePrimitive primitive){}
+    static String getKey(){ return null }
 
     /**
      * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it in

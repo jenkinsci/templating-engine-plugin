@@ -45,12 +45,12 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     /**
      * The name of the step
      */
-    private String name
+    String name
 
     /**
      * The name of the library that's contributed the step
      */
-    private String library
+    String library
 
     /**
      * The library configuration
@@ -86,7 +86,14 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      */
     private HookContext hookContext
 
-    @NonCPS String getName(){ return name }
+    /**
+     * The injector responsible for putting this StepWrapper into
+     * the TemplateBinding
+     */
+    Class injector
+
+    @NonCPS @Override Class getInjector(){ return injector }
+    @NonCPS @Override String getName(){ return name }
     @NonCPS String getLibrary(){ return library }
 
     /**

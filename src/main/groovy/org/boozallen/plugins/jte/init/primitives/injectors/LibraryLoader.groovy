@@ -21,6 +21,9 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigExcept
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
+import org.boozallen.plugins.jte.init.primitives.JteNamespace
+import org.boozallen.plugins.jte.init.primitives.JteNamespace.Namespace
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -31,6 +34,62 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
  * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
  */
 @Extension class LibraryLoader extends TemplatePrimitiveInjector {
+
+    static void populateNamespace(JteNamespace jte, TemplatePrimitive primitive){
+        Namespace n = jte.getNamespace(key)
+        if(!n) {
+            // namespace doesn't exist yet.. create, push primitive, add
+            n = new LibrariesNamespace()
+            n.push(primitive)
+            jte.addNamespace(n)
+        } else if(!(n instanceof LibrariesNamespace)){
+            // namespace exists but isn't from this injector somehow?
+            throw new Exception("JTE Namespace conflict for name: ${key}")
+        } else {
+            // namespace exists.. just add primitive
+            n.push(primitive)
+        }
+    }
+
+    static class LibrariesNamespace extends Namespace {
+        String name = getKey()
+        List<Library> libraries = []
+        @Override void push(TemplatePrimitive primitive){
+            String libName = primitive.getLibrary()
+            Library library = getLibrary(libName)
+            if(!library){
+                library = new Library(name: libName)
+                libraries.push(library)
+            }
+            library.push(primitive)
+        }
+        Object getProperty(String name){
+            Library library = getLibrary(name)
+            if(!library){
+                throw new Exception("Library ${name} not found.")
+            }
+            return library
+        }
+        Library getLibrary(String name){
+            return libraries.find{ l -> l.getName() == name }
+        }
+        static class Library extends Namespace{
+            String name
+            List steps = []
+            void push(TemplatePrimitive step){
+                steps.push(step)
+            }
+            Object getProperty(String stepName){
+                Object step = steps.find{ s -> s.getName() == stepName }
+                if(!step){
+                    throw new Exception("JTE Library ${name} does not have step: ${stepName}")
+                }
+                return step
+            }
+        }
+    }
+
+    static String getKey(){ "libraries" }
 
     @Override
     void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
@@ -44,8 +103,11 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             libSource.getLibraryProvider()
         } - null
 
+        LinkedHashMap aggregatedConfig = config.getConfig()
+        def libraries = aggregatedConfig[getKey()]
+
         ArrayList libConfigErrors = []
-        config.getConfig().libraries.each{ libName, libConfig ->
+        libraries.each{ libName, libConfig ->
             LibraryProvider p = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)
             }

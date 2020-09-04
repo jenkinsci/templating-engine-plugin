@@ -18,6 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.primitives.JteNamespace
+import org.boozallen.plugins.jte.init.primitives.JteNamespace.Namespace
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
@@ -33,13 +36,48 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         return parseClass(classText)
     }
 
+    static void populateNamespace(JteNamespace jte, TemplatePrimitive primitive){
+        Namespace n = jte.getNamespace(key)
+        if(!n) {
+            // namespace doesn't exist yet.. create, push primitive, add
+            n = new ApplicationEnvironmentNamespace()
+            n.push(primitive)
+            jte.addNamespace(n)
+        } else if(!(n instanceof ApplicationEnvironmentNamespace)){
+            // namespace exists but isn't from this injector somehow?
+            throw new Exception("JTE Namespace conflict for name: ${key}")
+        } else {
+            // namespace exists.. just add primitive
+            n.push(primitive)
+        }
+    }
+
+    static class ApplicationEnvironmentNamespace extends Namespace {
+        String name = getKey()
+        LinkedHashMap primitives = [:]
+        @Override void push(TemplatePrimitive primitive){
+            String name = primitive.getName()
+            primitives[name] = primitive
+        }
+        Object getProperty(String name){
+            if(!primitives.containsKey(name)){
+                throw new Exception("Application Environment ${name} not found")
+            }
+            return primitives[name]
+        }
+    }
+
+    static String getKey(){ return "application_environments" }
+
     @SuppressWarnings('NoDef')
     @Override
     void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class appEnvClass = getPrimitiveClass()
-        ArrayList createdEnvs = []
-        config.getConfig().application_environments.each{ name, appEnvConfig ->
-            def env = appEnvClass.newInstance(name, appEnvConfig)
+        LinkedHashMap aggregatedConfig = config.getConfig()
+        def appEnvs = aggregatedConfig[key]
+        List createdEnvs = []
+        appEnvs.each{ name, appEnvConfig ->
+            def env = appEnvClass.newInstance(name, appEnvConfig, this.getClass())
             createdEnvs << env
             binding.setVariable(name, env)
         }

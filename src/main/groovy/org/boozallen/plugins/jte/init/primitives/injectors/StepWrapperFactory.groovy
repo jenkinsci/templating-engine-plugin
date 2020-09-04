@@ -167,7 +167,8 @@ class StepWrapperFactory{
             config: config,
             sourceText: sourceText,
             // parse to fail fast for step compilation issues
-            script: prepareScript(library, name, sourceText, binding, config)
+            script: prepareScript(library, name, sourceText, binding, config),
+            injector: LibraryLoader
         )
     }
 
@@ -191,7 +192,8 @@ class StepWrapperFactory{
             config: config,
             sourceFile: filePath.absolutize().getRemote(),
             // parse to fail fast for step compilation issues
-            script: prepareScript(library, name, sourceText, binding, config)
+            script: prepareScript(library, name, sourceText, binding, config),
+            injector: LibraryLoader
         )
     }
 

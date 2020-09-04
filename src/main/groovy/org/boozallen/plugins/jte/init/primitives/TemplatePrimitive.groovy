@@ -15,6 +15,10 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
+import com.cloudbees.groovy.cps.NonCPS
+
+import java.lang.annotation.Inherited
+
 /**
  * Objects whose class extends TemplatePrimitive will be protected in the {@link TemplateBinding} from
  * being inadvertently overridden
@@ -33,4 +37,19 @@ abstract class TemplatePrimitive implements Serializable{
      */
     abstract void throwPostLockException()
 
+    /**
+     * implementation by each primitive must annotation this method with @NonCPS
+     * so that it can be invoked outside of pipeline execution during initialization
+     * @return
+     */
+    abstract Class getInjector()
+    Class injector
+
+    /**
+     * implementation by each primitive must annotation this method with @NonCPS
+     * so that it can be invoked outside of pipeline execution during initialization
+     * @return the name of the primitive in the binding
+     */
+    abstract String getName()
+    String name
 }

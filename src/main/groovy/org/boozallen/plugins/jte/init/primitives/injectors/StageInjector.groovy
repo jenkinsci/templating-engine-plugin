@@ -18,7 +18,11 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.primitives.JteNamespace
+import org.boozallen.plugins.jte.init.primitives.JteNamespace.Namespace
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -33,13 +37,53 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         return parseClass(classText)
     }
 
+    static void populateNamespace(JteNamespace jte, TemplatePrimitive primitive){
+        Namespace n = jte.getNamespace(key)
+        if(!n) {
+            // namespace doesn't exist yet.. create, push primitive, add
+            n = new StageNamespace()
+            n.push(primitive)
+            jte.addNamespace(n)
+        } else if(!(n instanceof StageNamespace)){
+            // namespace exists but isn't from this injector somehow?
+            throw new Exception("JTE Namespace conflict for name: ${key}")
+        } else {
+            // namespace exists.. just add primitive
+            n.push(primitive)
+        }
+    }
+
+    static class StageNamespace extends Namespace {
+        String name = getKey()
+        LinkedHashMap primitives = [:]
+        @Override void push(TemplatePrimitive primitive){
+            String name = primitive.getName()
+            primitives[name] = primitive
+        }
+        Object getProperty(String name){
+            if(!primitives.containsKey(name)){
+                throw new Exception("Stage ${name} not found")
+            }
+            return primitives[name]
+        }
+    }
+
+    static String getKey(){ return "stages" }
+
     @Override
     void doInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
         Class stageClass = getPrimitiveClass()
-        config.getConfig().stages.each{ name, steps ->
+        LinkedHashMap aggregatedConfig = config.getConfig()
+        def stages = aggregatedConfig[getKey()]
+        stages.each{ name, steps ->
             ArrayList<String> stepsList = []
             steps.collect(stepsList){ step -> step.key }
-            binding.setVariable(name, stageClass.newInstance(binding, name, stepsList))
+            binding.setVariable(name, stageClass.newInstance(
+                binding: binding,
+                name: name,
+                steps: stepsList,
+                injector: this.getClass()
+            ))
         }
     }
 

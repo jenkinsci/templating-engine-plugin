@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
@@ -26,20 +27,24 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
-    String varName
+    String name
+    Class injector
     String short_name
     String long_name
     def config
     ApplicationEnvironment previous
     ApplicationEnvironment next
 
+    @NonCPS @Override String getName(){ return name }
+    @NonCPS @Override Class getInjector(){ return ApplicationEnvironmentInjector }
+
     ApplicationEnvironment(){}
 
-    ApplicationEnvironment(String varName, Map config){
-        this.varName = varName
-
-        short_name = config.short_name ?: varName
-        long_name = config.long_name ?: varName
+    ApplicationEnvironment(String name, Map config, Class injector){
+        this.injector = injector
+        this.name = name
+        this.short_name = config.short_name ?: name
+        this.long_name = config.long_name ?: name
 
         /*
             users cant define the previous or next properties. they'll
@@ -48,7 +53,7 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
 
         def context = config.subMap(["previous", "next"])
         if(context){
-            throw new TemplateConfigException("""Error configuring ApplicationEnvironment ${varName}
+            throw new TemplateConfigException("""Error configuring ApplicationEnvironment ${name}
             The previous and next configuration options are reserved and auto-populated.
             """.stripIndent())
         }
@@ -74,11 +79,11 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
     }
 
     void throwPreLockException(){
-        throw new TemplateException ("Application Environment ${varName} already defined.")
+        throw new TemplateException ("Application Environment ${name} already defined.")
     }
 
     void throwPostLockException(){
-        throw new TemplateException ("Variable ${varName} is reserved as an Application Environment.")
+        throw new TemplateException ("Variable ${name} is reserved as an Application Environment.")
     }
 
 }

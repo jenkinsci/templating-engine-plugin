@@ -97,4 +97,13 @@ class TemplateBinding extends Binding implements Serializable{
         throw new TemplateException("No step ${stepName} has been loaded")
     }
 
+    List<TemplatePrimitive> getPrimitives(){
+        /**
+         * this intentionally does not use getVariable because the invocation of
+         * result.getValue() on TemplatePrimitives will throw a CpsCallableInvocation
+         * during JTE namespace population.
+         */
+        return registry.collect{ var -> variables.get(var) } as List<TemplatePrimitive>
+    }
+
 }

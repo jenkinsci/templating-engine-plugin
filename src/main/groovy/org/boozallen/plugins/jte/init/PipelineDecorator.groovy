@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.JteNamespace
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -125,6 +126,12 @@ class PipelineDecorator extends InvisibleAction {
         injectors.each{ injector ->
             injector.doPostInject(flowOwner, config, templateBinding)
         }
+
+        JteNamespace jte = new JteNamespace()
+        templateBinding.getPrimitives().each{ primitive ->
+            primitive.getInjector().populateNamespace(jte, primitive)
+        }
+        templateBinding.setVariable("jte", jte)
 
         templateBinding.lock()
         return templateBinding
