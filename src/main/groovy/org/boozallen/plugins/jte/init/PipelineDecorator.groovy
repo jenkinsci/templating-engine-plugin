@@ -25,6 +25,7 @@ import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -134,6 +135,7 @@ class PipelineDecorator extends InvisibleAction {
         LinkedHashMap pipelineConfig = config.getConfig()
         WorkflowJob job = getJob()
         FlowDefinition flowDefinition = job.getDefinition()
+        JteBlockWrapper jteBlockWrapper = new JteBlockWrapper(pipelineConfig.jte ?: [:])
         if (flowDefinition instanceof AdHocTemplateFlowDefinition){
             String template = flowDefinition.getTemplate()
             if(template){
@@ -144,7 +146,7 @@ class PipelineDecorator extends InvisibleAction {
             FileSystemWrapper fs = FileSystemWrapper.createFromJob(flowOwner)
             String repoJenkinsfile = fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false)
             if (repoJenkinsfile){
-                Boolean allowScmJenkinsfile = pipelineConfig.containsKey("allow_scm_jenkinsfile") ? pipelineConfig.allow_scm_jenkinsfile : true
+                Boolean allowScmJenkinsfile = jteBlockWrapper.allow_scm_jenkinsfile
                 if (allowScmJenkinsfile){
                     return repoJenkinsfile
                 }
@@ -156,12 +158,12 @@ class PipelineDecorator extends InvisibleAction {
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)
         if (pipelineConfig.pipeline_template){
             for (tier in tiers){
-                String pipelineTemplate = tier.getTemplate(flowOwner, pipelineConfig.pipeline_template)
+                String pipelineTemplate = tier.getTemplate(flowOwner, jteBlockWrapper.pipeline_template)
                 if (pipelineTemplate){
                     return pipelineTemplate
                 }
             }
-            throw new Exception("Pipeline Template ${pipelineConfig.pipeline_template} could not be found in hierarchy.")
+            throw new Exception("Pipeline Template ${jteBlockWrapper.pipeline_template} could not be found in hierarchy.")
         }
 
         /*
@@ -187,6 +189,27 @@ class PipelineDecorator extends InvisibleAction {
 
     WorkflowJob getJob(){
         return flowOwner.run().getParent()
+    }
+
+    @SuppressWarnings("PropertyName")
+    static class JteBlockWrapper{
+        /**
+         * property name should match the config keys which are snake_case/underscore-separated
+         */
+        String pipeline_template = null
+        Boolean allow_scm_jenkinsfile = true
+        JteBlockWrapper(final LinkedHashMap config){
+            List<String> fields = this.getMetaClass().properties*.getName()
+            fields.each{ field ->
+                if(config.containsKey(field)){
+                    this.setProperty(field, config[field])
+                }
+            }
+            LinkedHashMap notFound = config - config.subMap(fields)
+            if(notFound){
+                throw new JTEException("the following configurations are not supported in the JTE block: ${notFound.keySet()}")
+            }
+        }
     }
 
 }
