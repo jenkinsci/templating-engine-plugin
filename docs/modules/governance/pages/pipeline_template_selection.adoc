@@ -6,13 +6,13 @@ Pipeline Templates can either come from the application's source code repository
 
 By default, if there is a Jenkinsfile within the application's source code repository it will be used as the pipeline template.
 
-Governance Tier's can choose to disable this flexibility to enforce the use of consolidated templates by setting `allow_scm_jenkinsfile = false` at the root of their configuration file.
+Governance Tier's can choose to disable this flexibility to enforce the use of consolidated templates by setting `allow_scm_jenkinsfile = false` in the `jte` block of their configuration file.
 
 == 2. Named Pipeline Template
 
 Within a Governance Tier, you can create a `pipeline_templates` directory alongside the `pipeline_config.groovy` configuration file. Within this directory you can have as many different templates as you'd like and they will be referenceable via their filename from the configuration file.
 
-To select a named pipeline template, you can specify `pipeline_template = <template name>` at the root of your configuration file.
+To select a named pipeline template, you can specify `pipeline_template = <template name>` in the `jte` block of your configuration file.
 
 If a named pipeline template is specified, JTE will recursively search the `pipeline_templates` directories of each Governance Tier going up the hierarchy from most specific all the way to the Global Governance Tier defined in `Manage Jenkins > Configure System`.
 

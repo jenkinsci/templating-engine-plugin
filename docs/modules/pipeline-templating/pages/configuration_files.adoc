@@ -16,10 +16,10 @@ An example configuration file would be:
 
 [source,groovy]
 ----
+jte{
 // restrict individual repository Jenkinsfiles
-allow_scm_jenkinsfile = false
-// skip the default JTE checkout and do it explicitly
-skip_default_checkout = true
+    allow_scm_jenkinsfile = false
+}
 // define application environment objects
 application_environments{
     dev{
@@ -56,7 +56,7 @@ By default, if there is a Jenkinsfile in an application source code repository i
 
 When using JTE to share a common pipeline template across multiple applications an organization may want to prevent individual repositories from providing their own pipeline templates for governance.
 
-To disable this default behavior, specify `allow_scm_jenkinsfile = false` within a governance tier's configuration file.
+To disable this default behavior, specify `jte.allow_scm_jenkinsfile = false` within a governance tier's configuration file.
 
 For a full overview of how governance works with JTE, check out the xref:governance:governance_model.adoc[Governance Model].
 

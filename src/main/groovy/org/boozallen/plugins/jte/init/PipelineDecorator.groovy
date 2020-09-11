@@ -156,7 +156,7 @@ class PipelineDecorator extends InvisibleAction {
 
         // specified pipeline template from pipeline template directories in governance tiers
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)
-        if (pipelineConfig.pipeline_template){
+        if (jteBlockWrapper.pipeline_template){
             for (tier in tiers){
                 String pipelineTemplate = tier.getTemplate(flowOwner, jteBlockWrapper.pipeline_template)
                 if (pipelineTemplate){
