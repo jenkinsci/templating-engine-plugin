@@ -33,10 +33,10 @@ class LibraryProviderSpec extends Specification{
     @Unroll
     def "when config value is '#actual' and expected type/value is #expected then result is #result"(){
         setup:
-        LibraryProviderImpl libSource = new LibraryProviderImpl()
+        LibraryProvider.ConfigChecker configChecker = new LibraryProvider.ConfigChecker()
 
         expect:
-        libSource.validateType(Mock(TemplateLogger), actual, expected) == result
+        configChecker.validateType(Mock(TemplateLogger), actual, expected) == result
 
         where:
         actual      |     expected      | result

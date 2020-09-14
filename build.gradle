@@ -14,7 +14,7 @@ repositories {
 }
 
 group = 'org.jenkins-ci.plugins'
-version = '1.7'
+version = '2.0'
 description = 'Allows users to create tool-agnostic, templated pipelines to be shared by multiple teams'
 
 jenkinsPlugin {
