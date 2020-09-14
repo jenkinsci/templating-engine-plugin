@@ -146,8 +146,7 @@ class PipelineDecorator extends InvisibleAction {
             FileSystemWrapper fs = FileSystemWrapper.createFromJob(flowOwner)
             String repoJenkinsfile = fs.getFileContents("Jenkinsfile", "Repository Jenkinsfile", false)
             if (repoJenkinsfile){
-                Boolean allowScmJenkinsfile = jteBlockWrapper.allow_scm_jenkinsfile
-                if (allowScmJenkinsfile){
+                if (jteBlockWrapper.allow_scm_jenkinsfile){
                     return repoJenkinsfile
                 }
                 getLogger().printWarning "Repository provided Jenkinsfile that will not be used, per organizational policy."
