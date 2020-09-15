@@ -18,7 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -40,6 +42,33 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             ArrayList<String> stepsList = []
             steps.collect(stepsList){ step -> step.key }
             binding.setVariable(name, stageClass.newInstance(binding, name, stepsList))
+        }
+    }
+
+    @Override
+    void doPostInject(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, Binding binding){
+        // 3. Inject a passthrough step for steps not defined (either as steps or other primitives)
+        Map<String, List> missingSteps = [:]
+        config.getConfig().stages.each{ name, steps ->
+            steps.findAll{ step ->
+                !(step.key in binding.registry)
+            }.each{ step ->
+                List missing = missingSteps[name] ?: []
+                missing << step.key
+                missingSteps[name] = missing
+            }
+        }
+
+        if( missingSteps.size() > 0) {
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            logger.printError("----------------------------------")
+            logger.printError("   Stage Configuration Errors   ")
+            logger.printError("----------------------------------")
+            missingSteps.each{ String stage, List names ->
+                logger.printError("stage: ${stage}, the following steps were not found: " + names.join(","))
+            }
+            logger.printError("----------------------------------")
+            throw new TemplateConfigException("There were missing steps for the stages.")
         }
     }
 

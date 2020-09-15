@@ -197,4 +197,61 @@ class StageSpec extends Specification{
         jenkins.assertBuildStatus(Result.FAILURE, job.scheduleBuild2(0))
     }
 
+    def "fail config when stage step does not exist"(){
+        def run
+
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: """
+            libraries{
+                gradle
+            }
+
+            stages{
+                ci{
+                    non_existent
+                }
+            }
+            """,
+                template: 'assert 1 == 1'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("Stage Configuration Errors", run)
+        jenkins.assertLogContains("non_existent", run)
+    }
+
+    def "template_method step works for stage"(){
+        def run
+
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: """
+            libraries{
+                gradle
+            }
+
+            stages{
+                ci{
+                    existent
+                }
+            }
+            
+            template_methods{
+              existent
+            }
+            """,
+                template: 'assert 1 == 1'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.SUCCESS, run)
+    }
 }

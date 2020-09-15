@@ -23,6 +23,8 @@ import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.injectors.LibraryLoader
+import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.JTEException
@@ -123,8 +125,8 @@ class PipelineDecorator extends InvisibleAction {
             injector.doInject(flowOwner, config, templateBinding)
         }
 
-        injectors.each{ injector ->
-            injector.doPostInject(flowOwner, config, templateBinding)
+        [LibraryLoader, StageInjector].each{ injector ->
+            injectors.get(injector).doPostInject(flowOwner, config, templateBinding)
         }
 
         templateBinding.lock()
