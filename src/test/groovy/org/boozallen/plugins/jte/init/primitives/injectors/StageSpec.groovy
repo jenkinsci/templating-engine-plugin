@@ -201,8 +201,7 @@ class StageSpec extends Specification{
         def run
 
         given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """
+        WorkflowJob job = TestUtil.createAdHoc(jenkins, config: """
             libraries{
                 gradle
             }
@@ -212,8 +211,7 @@ class StageSpec extends Specification{
                     non_existent
                 }
             }
-            """,
-                template: 'assert 1 == 1'
+            """, template: 'assert 1 == 1'
         )
 
         when:
@@ -229,8 +227,7 @@ class StageSpec extends Specification{
         def run
 
         given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """
+        WorkflowJob job = TestUtil.createAdHoc(jenkins, config: """
             libraries{
                 gradle
             }
@@ -240,12 +237,11 @@ class StageSpec extends Specification{
                     existent
                 }
             }
-            
+
             template_methods{
               existent
             }
-            """,
-                template: 'assert 1 == 1'
+            """, template: 'assert 1 == 1'
         )
 
         when:
@@ -254,4 +250,5 @@ class StageSpec extends Specification{
         then:
         jenkins.assertBuildStatus(Result.SUCCESS, run)
     }
+
 }
