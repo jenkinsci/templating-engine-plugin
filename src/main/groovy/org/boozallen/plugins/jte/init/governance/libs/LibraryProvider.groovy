@@ -46,23 +46,30 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
         return new ConfigChecker().doConfigFileValidation(flowOwner, configFile, libConfig)
     }
 
+    /**
+     * an instance can be reused within an injector call but not across multiple injector types
+     */
     static class ConfigChecker {
+        int padding = 3
 
-        void printErrors(List<String> errors, FlowExecutionOwner flowOwner, String heading){
+        void printErrors(List<String> errors, FlowExecutionOwner flowOwner, String heading, String errorMsg = null){
             List<String> outputs = errors.flatten() - null
+            String exceptionMsg = errorMsg ?: "There were ${heading.toLowerCase()}.".toString()
 
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
 
             // if errors were found:
             if(outputs){
-                logger.printError("----------------------------------")
-                logger.printError("   ${heading}   ")
-                logger.printError("----------------------------------")
+                String spacing = " " * padding
+                String dashes = "-" * (heading.size() + (2 * padding)) // heading padded with 3 on each side
+                logger.printError(dashes)
+                logger.printError("${spacing}${heading}${spacing}")
+                logger.printError(dashes)
                 outputs.each{ line ->
                     logger.printError(line)
                 }
-                logger.printError("----------------------------------")
-                throw new TemplateConfigException("There were ${heading.toLowerCase()}.")
+                logger.printError(dashes)
+                throw new TemplateConfigException(exceptionMsg)
             }
         }
 
