@@ -17,7 +17,6 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
@@ -51,12 +50,12 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             try{
                 if(aggregatedConfig.jte instanceof Map){
                     validator.validate(SCHEMA, aggregatedConfig.jte as LinkedHashMap)
-                }else {
+                } else {
                     logger.printError(ERROR_HEADER)
                     logger.printError("1. jte field is expected to be a configuration block, found: ${aggregatedConfig.jte}")
                     throw new JTEException(ERROR_MSG)
                 }
-            }catch(AggregateException e){
+            } catch(AggregateException e){
                 logger.printError(ERROR_HEADER)
                 e.getExceptions().eachWithIndex{ error, i ->
                     logger.printError("${i + 1}: ${error.getMessage()}")

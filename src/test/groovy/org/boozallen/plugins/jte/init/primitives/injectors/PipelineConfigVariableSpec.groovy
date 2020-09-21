@@ -15,9 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import hudson.model.Result
-import org.boozallen.plugins.jte.util.TestUtil
-import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
@@ -26,96 +23,5 @@ import spock.lang.Specification
 class PipelineConfigVariableSpec extends Specification{
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
-
-    def "empty jte block succeeds"(){
-        given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: "jte{}",
-                template: """
-                assert 1 == 1
-                """
-        )
-
-        expect:
-        jenkins.buildAndAssertSuccess(job)
-    }
-
-    def "non-existent jte block succeeds"(){
-        given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: "",
-                template: """
-                assert 1 == 1
-                """
-        )
-
-        expect:
-        jenkins.buildAndAssertSuccess(job)
-    }
-
-    def "jte block with boolean allow_scm_jenkins succeeds"(){
-        given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """jte{
-                    allow_scm_jenkinsfile = false
-                    pipeline_template = "my_template"
-                }
-                """,
-                template: """
-                assert 1 == 1
-                """
-        )
-
-        expect:
-        jenkins.buildAndAssertSuccess(job)
-    }
-
-    def "jte block with wrong field fails"(){
-        def run
-        given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """jte{
-                    bad_field = "false"
-                    allow_scm_jenkinsfile = false
-                    pipeline_template = "my_template"
-                }
-                """,
-                template: """
-                assert 1 == 1
-                """
-        )
-
-        when:
-        run = job.scheduleBuild2(0).get()
-
-        then:
-        jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains(PipelineConfigVariableInjector.JTE_ERROR_HEADING, run)
-        jenkins.assertLogContains("bad_field", run)
-    }
-
-    def "jte block with wrong type fails"(){
-        def run
-        given:
-        WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """jte{
-                    allow_scm_jenkinsfile = 0
-                    pipeline_template = "my_template"
-                }
-                """,
-                template: """
-                assert 1 == 1
-                """
-        )
-
-        expect:
-        when:
-        run = job.scheduleBuild2(0).get()
-
-        then:
-        jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains(PipelineConfigVariableInjector.JTE_ERROR_HEADING, run)
-        jenkins.assertLogContains("pipeline_template", run)
-    }
 
 }
