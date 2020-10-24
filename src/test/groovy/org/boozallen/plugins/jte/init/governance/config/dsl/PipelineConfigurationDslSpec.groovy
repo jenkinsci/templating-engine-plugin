@@ -15,28 +15,24 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
+import hudson.EnvVars
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import spock.lang.Specification
 
 class PipelineConfigurationDslSpec extends Specification {
 
+    EnvVars env = GroovyMock(EnvVars)
     PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner){
-        run() >> GroovyMock(WorkflowRun)
+        run() >> GroovyMock(WorkflowRun){
+            getEnvironment(_) >> env
+        }
         asBoolean() >> true
     })
 
-    def setup(){
-        EnvActionImpl env = Mock()
-        env.getProperty("someField") >> "envProperty"
-
-        GroovySpy(EnvActionImpl, global:true)
-        EnvActionImpl.forRun(_) >> env
-    }
-
     def "include Jenkins env var in configuration"(){
         setup:
+        env.get("someField", _) >> "envProperty"
         String config = "a = env.someField"
 
         when:

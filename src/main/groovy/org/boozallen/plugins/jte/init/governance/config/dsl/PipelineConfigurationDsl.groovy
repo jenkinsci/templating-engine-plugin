@@ -19,7 +19,6 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringEscapeUtils
 import org.codehaus.groovy.control.CompilerConfiguration
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.groovy.sandbox.SandboxTransformer
 

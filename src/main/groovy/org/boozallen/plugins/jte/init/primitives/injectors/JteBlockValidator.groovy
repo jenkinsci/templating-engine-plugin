@@ -28,7 +28,7 @@ import org.boozallen.plugins.jte.init.PipelineDecorator.JteBlockWrapper
 /**
  * Validates the jte configuration block
  */
-@Extension class JteBlock extends TemplatePrimitiveInjector {
+@Extension class JteBlockValidator extends TemplatePrimitiveInjector {
 
     static final String ERROR_MSG = "There were configuration errors in the jte block of the pipeline configuration"
     static final String ERROR_HEADER = "Pipeline Configuration JTE Block Errors:"

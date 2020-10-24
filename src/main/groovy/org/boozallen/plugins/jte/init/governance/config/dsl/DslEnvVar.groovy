@@ -18,14 +18,18 @@ package org.boozallen.plugins.jte.init.governance.config.dsl
 import hudson.EnvVars
 import hudson.model.TaskListener
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.steps.EnvironmentExpander
 
+/**
+ * used to get environment variables
+ */
 class DslEnvVar implements Serializable{
+
+    private static final long serialVersionUID = 1L
 
     FlowExecutionOwner flowOwner
 
     DslEnvVar(FlowExecutionOwner flowOwner){
-      this.flowOwner = flowOwner
+        this.flowOwner = flowOwner
     }
 
     Object getProperty(String property){

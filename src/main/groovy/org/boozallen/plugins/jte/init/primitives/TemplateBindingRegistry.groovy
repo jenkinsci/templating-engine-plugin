@@ -80,7 +80,7 @@ class TemplateBindingRegistry implements Serializable{
     List<String> getPrimitivesByName(String primitiveName){
         List names = []
         namespaces.each{ n ->
-            def name = n.getPrimitivesByName(primitiveName)
+            Object name = n.getPrimitivesByName(primitiveName)
             name && names.push(name)
         }
         return names.flatten().collect{ n -> "${VARIABLE_NAME}.${n}" }

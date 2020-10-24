@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.primitives
 
 import org.boozallen.plugins.jte.init.PipelineDecorator
-import org.boozallen.plugins.jte.util.JTEException
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import org.jvnet.hudson.test.WithoutJenkins
@@ -52,7 +51,7 @@ class PipelineDecoratorSpec extends Specification{
         new PipelineDecorator.JteBlockWrapper([extra:true])
 
         then:
-        thrown(JTEException)
+        thrown(MissingPropertyException)
     }
 
     @WithoutJenkins
