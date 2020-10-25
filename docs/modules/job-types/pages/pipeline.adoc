@@ -4,16 +4,8 @@ The most straight forward way test out a pipeline template is to create a Pipeli
 
 == Select the Jenkins Templating Engine Pipeline Definition Option
 
-A `Jenkins Templating Engine` pipeline definition is made available once the plugin is installed. 
+A `Jenkins Templating Engine` pipeline definition is made available once the plugin is installed.
 
 == Configure the Pipeline
 
-After selecting the `Jenkins Templating Engine` definition, you'll be able to configure your *Pipeline Template* and *Pipeline Configuration*. 
-
-== The Example
-
-The example configuration above assumes you have configured a *Library Source* that has a `maven` and `sonarqube` library contributing the `unit_test`, `build`, and `static_code_analysis` steps.
-
-The pipeline configuration defines a *Stage* called `continuous_integration` which invokes the steps defined, in order.
-
-Then, in the *Pipeline Template*, you will be able to invoke the `continuous_integration` stage that was defined.
+After selecting the `Jenkins Templating Engine` definition, you'll be able to configure your *Pipeline Template* and *Pipeline Configuration*.

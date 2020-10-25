@@ -12,97 +12,78 @@ While the flexibility of what can be done within a configuration file is limited
 
 The configuration file acts as a nested builder language will accept any arbitrary configuration. Beyond several JTE configuration fields, it is up to specific primitives and libraries to provide meaning to the keys and values provided within a configuration.
 
-An example configuration file would be:
+== Specification
+
+The following is an overview of the configuration file schema.
 
 [source,groovy]
 ----
-jte{
-// restrict individual repository Jenkinsfiles
-    allow_scm_jenkinsfile = false
-}
-// define application environment objects
-application_environments{
-    dev{
-        long_name = "Development"
-    }
-    prod{
-        long_name = "Production"
-    }
+jte{ <1>
+    allow_scm_jenkinsfile = true
+    pipeline_template = "some_template"
+    permissive_initialization = false
 }
 
-/*
-  define libraries to load.
-  available libraries are based upon the
-  library sources configured.
-*/
-libraries{
-    github
-    sonarqube
-    docker
-    // library configurations are determined by
-    // the specific library implementation
-    openshift{
-        url = "https://example.openshift.com"
-        cred_id = "openshift"
-    }
+template_methods{} <2>
+
+libraries{ <3>
+    someLibrary {} <4>
 }
+
+stages{} <5>
+application_environments{} <6>
+keywords{} <7>
 ----
+<1> The `jte` block defines framework-level configurations
+<2> `template_methods` define the list of steps that may be invoked from a template
+<3> The `libraries` block declares the libraries to be loaded
+<4> Nested blocks within `libraries` represent a library to be loaded and parameters to pass to the library via the autowired `config` variable
+<5> xref:primitives:stages.adoc[Stages] keep templates DRY to grouping steps
+<6> xref:primitives:application_environments.adoc[Application Environments] encapsulate environmental context
+<7> xref:primitives:keywords.adoc[Keywords] define variables for use in templates
 
-== Configurations
+=== JTE Block
 
-=== Application Jenkinsfiles
+|===
+| Field | Description | Default Value
 
-By default, if there is a Jenkinsfile in an application source code repository it will be executed as the pipeline template.
+| `allow_scm_jenkinsfile`
+| whether or not to permit application-specific pipeline templates within source code repositories.
+| `true`
 
-When using JTE to share a common pipeline template across multiple applications an organization may want to prevent individual repositories from providing their own pipeline templates for governance.
+| `pipeline_template`
+| A named template to fetch from a Governance Tier, per the xref:governance:pipeline_template_selection.adoc[Pipeline Template Selection] process
+| `null`
 
-To disable this default behavior, specify `jte.allow_scm_jenkinsfile = false` within a governance tier's configuration file.
+| `permissive_initialization`
+| Whether or not JTE will allow a naming collision within the binding. For example, two library's that both contribute a step by the same name or a keyword and application environment by the same name.
+| `false`
 
-For a full overview of how governance works with JTE, check out the xref:governance:governance_model.adoc[Governance Model].
+|===
 
-=== Template Methods
+[WARNING]
+====
+It is strongly recommended that `permissive_initialization` remain false. Before enabling, ask yourself if there is perhaps a better name for the steps and primitives that are being created instead of allowing JTE to load multiple primitives by the same name.
 
-The Jenkins Templating Engine is essentially an implementation of the https://en.wikipedia.org/wiki/Template_method_pattern[Template Method Design Pattern] for Jenkins Pipelines. A template is defined which invokes abstract methods (steps) yet to be defined.
+When `permissive_initialization` is enabled the original, using the shorthand invocation will throw an exception. JTE requires that if multiple steps or primitives have the same name that they be accessed via the xref:primitives:primitive_namespace.adoc[Primitive Namespace]. 
+====
 
-These methods are then implemented by either steps from the libraries loaded or the xref:primitives:default_step_implementation.adoc[default step implementation].
+== Environment Substitutions
 
-As a result, situations may arise where a step is called from a template that has not been implemented via the available options. In some cases,
-this is acceptable.
+In Jenkins, environment variables are made accessible via the ``env`` global variable.  This variable is resolvable within your pipeline configuration file.
 
-The `template_methods` block of your configuration file is used to declare the steps that will be called from your template. In the event that a step is called that has not been defined, it will be routed to the default step implementation if it's name appears in the `template_methods` block.
+This also means that Build Parameters can be access within the pipeline configuration file as they are stored on the ``env`` variable.
 
-By default, JTE provides the following default values for `template_methods`.
-
-[source,groovy]
-----
-template_methods{
-    unit_test
-    static_code_analysis
-    build
-    scan_container_image
-    penetration_test
-    accessibility_compliance_test
-    performance_test
-    functional_test
-}
-----
-
-== Environment Substitutions 
-
-In Jenkins, environment variables are made accessible via the ``env`` global variable.  This variable is resolvable within your pipeline configuration file. 
-
-This also means that Build Parameters can be access within the pipeline configuration file as they are stored on the ``env`` variable. 
-
-For example, in the following configuration:  
+For example, in the following configuration:
 
 .pipeline_config.groovy
 [source, groovy]
----- 
+----
 libraries{
     someLibrary{
-        someField = env.buildParam ?: "default if not set" 
+        someField = env.buildParam ?: "default if not set"
     }
 }
 ----
 
-``libraries.someLibrary.someField`` would resolve to the Build Parameter named ``buildParam`` and would default to ``default if not set`` if ``buildParam`` was not truthy. 
+``libraries.someLibrary.someField`` would resolve to the Build Parameter named ``buildParam`` and would default to ``default if not set`` if ``buildParam`` was not truthy.
