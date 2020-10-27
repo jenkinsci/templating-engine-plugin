@@ -16,19 +16,12 @@
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <f:entry field="defaultTemplate" title="">
-        <f:property/>
-    </f:entry>
-    <f:entry field="pipelineConfig" title="">
-        <f:property/>
-    </f:entry>
-    <f:entry title="${%Template Catalog}">
-        <f:repeatableProperty field="pipelineCatalog" header="${%Named Template}">
-            <f:entry title="">
-                <div align="right">
-                    <f:repeatableDeleteButton/>
-                </div>
-            </f:entry>
-        </f:repeatableProperty>
-    </f:entry>
+    <f:optionalBlock title="Provide default pipeline template (Jenkinsfile)"
+                     field="provideDefaultTemplate"
+                     inline="true"
+                     checked="${instance.provideDefaultTemplate}">
+        <f:entry field="defaultTemplate" title="${%Jenkinsfile}">
+            <f:textarea codemirror-mode="clike" codemirror-config="mode: 'text/x-groovy', lineNumbers: true, matchBrackets: true, onBlur: function(editor){editor.save()}"/>
+        </f:entry>
+    </f:optionalBlock>
 </j:jelly>

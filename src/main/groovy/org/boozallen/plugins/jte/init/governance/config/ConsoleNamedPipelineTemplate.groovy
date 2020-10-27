@@ -28,7 +28,7 @@ import org.kohsuke.stapler.DataBoundSetter
  * The {@link ConsolePipelineConfigurationProvider} maintains a list of {@code ConsolePipelineTemplates}
  * that act as named templates in the pipeline catalog.
  */
-class ConsolePipelineTemplate extends AbstractDescribableImpl<ConsolePipelineTemplate> implements Serializable{
+class ConsoleNamedPipelineTemplate extends AbstractDescribableImpl<ConsoleNamedPipelineTemplate> implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name
@@ -37,7 +37,7 @@ class ConsolePipelineTemplate extends AbstractDescribableImpl<ConsolePipelineTem
     // Jenkins requires this be here
     @SuppressWarnings('UnnecessaryConstructor')
     @DataBoundConstructor
-    ConsolePipelineTemplate(){}
+    ConsoleNamedPipelineTemplate(){}
 
     @DataBoundSetter
     void setName(String name){
@@ -58,6 +58,6 @@ class ConsolePipelineTemplate extends AbstractDescribableImpl<ConsolePipelineTem
     }
 
     @Extension
-    final static class DescriptorImpl extends Descriptor<ConsolePipelineTemplate> {}
+    final static class DescriptorImpl extends Descriptor<ConsoleNamedPipelineTemplate> {}
 
 }

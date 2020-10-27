@@ -30,40 +30,30 @@ import org.kohsuke.stapler.DataBoundConstructor
  */
 class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider{
 
-    boolean providePipelineConfig
-    String pipelineConfig
-    boolean provideDefaultTemplate
-    String defaultTemplate
-    List<ConsolePipelineTemplate> pipelineCatalog
+    ConsolePipelineConfiguration pipelineConfig
+    ConsoleDefaultPipelineTemplate defaultTemplate
+    List<ConsoleNamedPipelineTemplate> pipelineCatalog
 
     @DataBoundConstructor
-    ConsolePipelineConfigurationProvider(boolean providePipelineConfig, String pipelineConfig,
-                                         boolean provideDefaultTemplate, String defaultTemplate,
-                                         List<ConsolePipelineTemplate> pipelineCatalog){
-        this.providePipelineConfig = providePipelineConfig
-        this.pipelineConfig = providePipelineConfig ? Util.fixEmptyAndTrim(pipelineConfig) : null
-        this.provideDefaultTemplate = provideDefaultTemplate
-        this.defaultTemplate = provideDefaultTemplate ? Util.fixEmptyAndTrim(defaultTemplate) : null
+    ConsolePipelineConfigurationProvider(
+        ConsoleDefaultPipelineTemplate defaultTemplate,
+        ConsolePipelineConfiguration pipelineConfig,
+        List<ConsoleNamedPipelineTemplate> pipelineCatalog
+    ){
+        this.defaultTemplate = defaultTemplate
+        this.pipelineConfig = pipelineConfig
         this.pipelineCatalog = pipelineCatalog
     }
 
-    boolean getProvidePipelineConfig(){
-        return providePipelineConfig
-    }
-
-    String getPipelineConfig(){
+    ConsolePipelineConfiguration getPipelineConfig(){
         return pipelineConfig
     }
 
-    boolean getProvideDefaultTemplate(){
-        return provideDefaultTemplate
-    }
-
-    String getDefaultTemplate(){
+    ConsoleDefaultPipelineTemplate getDefaultTemplate(){
         return defaultTemplate
     }
 
-    List<ConsolePipelineTemplate> getPipelineCatalog(){
+    List<ConsoleNamedPipelineTemplate> getPipelineCatalog(){
         return pipelineCatalog
     }
 
@@ -79,7 +69,7 @@ class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider
 
     @Override
     String getTemplate(FlowExecutionOwner owner, String templateName){
-        ConsolePipelineTemplate template = pipelineCatalog.find{ item -> item.getName() == templateName }
+        ConsoleNamedPipelineTemplate template = pipelineCatalog.find{ item -> item.getName() == templateName }
         return template ? template.getTemplate() : null
     }
 

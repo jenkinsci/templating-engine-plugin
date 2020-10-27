@@ -59,6 +59,7 @@ class GovernanceTier extends AbstractDescribableImpl<GovernanceTier> implements 
        for governance, call .reverse() on the returned array to go top down
        for scoping of props, you can just iterate on the list
    */
+
     static List<GovernanceTier> getHierarchy(WorkflowJob job){
         List<GovernanceTier> h = []
 

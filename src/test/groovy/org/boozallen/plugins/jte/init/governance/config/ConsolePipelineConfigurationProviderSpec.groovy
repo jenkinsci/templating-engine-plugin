@@ -25,7 +25,7 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
 
     def "when pipeline configuration is provided getConfig returns correct config object"(){
         given:
-        List<ConsolePipelineTemplate> pipelineCatalog = []
+        List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         def c = new ConsolePipelineConfigurationProvider(true, "a = 1", false, null, pipelineCatalog)
 
         // mocks necessary to parse config
@@ -49,7 +49,7 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
 
     def "when pipeline configuration is not provided getConfig returns null"(){
         given:
-        List<ConsolePipelineTemplate> pipelineCatalog = []
+        List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         def c = new ConsolePipelineConfigurationProvider(false, null, false, null, pipelineCatalog)
 
         // mocks necessary to parse config
@@ -73,7 +73,7 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
 
     def "When Jenkinsfile is provided, getJenkinsfile returns Jenkinsfile"(){
         given:
-        List<ConsolePipelineTemplate> pipelineCatalog = []
+        List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         def c = new ConsolePipelineConfigurationProvider(false, null, true, "default jenkinsfile", pipelineCatalog)
 
         when:
@@ -85,7 +85,7 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
 
     def "fetch nonexistent named template returns null"(){
         given:
-        List<ConsolePipelineTemplate> pipelineCatalog = []
+        List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         def c = new ConsolePipelineConfigurationProvider(false, null, false, null, pipelineCatalog)
 
         FlowExecutionOwner mockOwner = GroovyMock{
@@ -102,8 +102,8 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
 
     def "fetch named template returns correct template"(){
         given:
-        List<ConsolePipelineTemplate> pipelineCatalog = [
-            new ConsolePipelineTemplate(
+        List<ConsoleNamedPipelineTemplate> pipelineCatalog = [
+            new ConsoleNamedPipelineTemplate(
                 name: "myCoolTemplate",
                 template: "named template!"
             )
