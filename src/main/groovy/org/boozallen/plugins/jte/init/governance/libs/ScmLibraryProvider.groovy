@@ -58,7 +58,17 @@ class ScmLibraryProvider extends LibraryProvider{
         SCMFileSystem fs = createFs(flowOwner)
         if (!fs){ return false }
         SCMFile lib = fs.child(prefixBaseDir(libName))
-        SCMFile stepsDir = lib.isDirectory() ? lib.child(LibraryProvider.STEPS_DIR_NAME) : null
+
+        if( !lib.isDirectory() ){
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            ArrayList msg = [
+                    "Library ${libName} does not exist. No steps will be loaded."
+            ]
+            logger.printWarning(msg.join("\n"))
+            return false
+        }
+
+        SCMFile stepsDir = lib.child(LibraryProvider.STEPS_DIR_NAME)
         boolean hasValidStepsDir = null != stepsDir && stepsDir.isDirectory()
 
         // must have a steps dir with at least one step file *.groovy
@@ -75,7 +85,7 @@ class ScmLibraryProvider extends LibraryProvider{
         if( !hasValidStepsDir ){
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
             ArrayList msg = [
-                    "Library ${libName} exists but does not have steps present in a 'steps' directory. No steps will be loaded."
+                    "Library ${libName} exists but does not have steps present under a 'steps' directory. No steps will be loaded."
             ]
             logger.printWarning(msg.join("\n"))
         }
