@@ -56,12 +56,12 @@ class ScmLibraryProviderSpec extends Specification{
         owner.run() >> run
     }
 
-    def "hasLibrary returns true when library exists"(){
+    def "hasLibrary returns true when library exists, has steps directory with any *.groovy files"(){
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
         String libraryName = "someLibrary"
         repo.init()
-        repo.write("${libraryName}/someStep.groovy", "void call(){ println 'the step' }")
+        repo.write("${libraryName}/steps/someStep.groovy", "void call(){ println 'the step' }")
         repo.git("add", "*")
         repo.git("commit", "--message=init")
         GitSCM scm = createSCM(repo)
