@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
-import hudson.Util
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
@@ -29,26 +28,16 @@ import org.kohsuke.stapler.DataBoundConstructor
  */
 class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
 
-    private final boolean providePipelineTemplate
-    private final String template
-    private final boolean providePipelineConfig
-    private final String pipelineConfig
+    AdHocTemplateFlowDefinitionConfiguration config
 
     @DataBoundConstructor
-    AdHocTemplateFlowDefinition(boolean providePipelineTemplate, String template, boolean providePipelineConfig, String pipelineConfig){
-        this.providePipelineTemplate = providePipelineTemplate
-        this.template = providePipelineTemplate ? Util.fixEmptyAndTrim(template) : null
-        this.providePipelineConfig = providePipelineConfig
-        this.pipelineConfig = providePipelineConfig ? Util.fixEmptyAndTrim(pipelineConfig) : null
+    AdHocTemplateFlowDefinition(AdHocTemplateFlowDefinitionConfiguration config){
+        this.config = config
     }
 
-    boolean getProvidePipelineTemplate(){ return providePipelineTemplate }
-
-    String getTemplate() { return template }
-
-    boolean getProvidePipelineConfig(){ return providePipelineConfig }
-
-    String getPipelineConfig(){ return pipelineConfig }
+    AdHocTemplateFlowDefinitionConfiguration getConfig(){
+        return config
+    }
 
     @Extension
     static class DescriptorImpl extends FlowDefinitionDescriptor {

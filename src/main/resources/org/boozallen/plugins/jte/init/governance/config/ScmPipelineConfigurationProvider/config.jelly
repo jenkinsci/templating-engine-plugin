@@ -19,5 +19,5 @@
     <f:dropdownDescriptorSelector field="scm" title="Source Location" descriptors="${descriptor.applicableDescriptors}"/>
     <f:entry field="baseDir" title="${%Configuration Base Directory}">
         <f:textbox/>
-    </f:entry>    
+    </f:entry>
 </j:jelly>

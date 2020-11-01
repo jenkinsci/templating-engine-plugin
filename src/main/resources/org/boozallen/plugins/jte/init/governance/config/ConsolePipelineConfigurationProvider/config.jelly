@@ -16,19 +16,23 @@
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    <f:entry field="defaultTemplate" title="">
-        <f:property/>
-    </f:entry>
-    <f:entry field="pipelineConfig" title="">
-        <f:property/>
-    </f:entry>
-    <f:entry title="${%Template Catalog}">
-        <f:repeatableProperty field="pipelineCatalog" header="${%Named Template}">
-            <f:entry title="">
-                <div align="right">
-                    <f:repeatableDeleteButton/>
-                </div>
+    <f:block>
+        <table>
+            <f:entry field="defaultTemplate" title="">
+                <f:property/>
             </f:entry>
-        </f:repeatableProperty>
-    </f:entry>
+            <f:entry field="pipelineConfig" title="">
+                <f:property/>
+            </f:entry>
+            <f:entry title="${%Template Catalog}">
+                <f:repeatableProperty field="pipelineCatalog" header="${%Named Template}">
+                    <f:entry title="">
+                        <div align="right">
+                            <f:repeatableDeleteButton/>
+                        </div>
+                    </f:entry>
+                </f:repeatableProperty>
+            </f:entry>
+        </table>
+    </f:block>
 </j:jelly>

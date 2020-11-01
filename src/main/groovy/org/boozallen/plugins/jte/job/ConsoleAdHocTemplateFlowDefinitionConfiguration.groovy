@@ -13,10 +13,12 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-package org.boozallen.plugins.jte.init.governance.config
+package org.boozallen.plugins.jte.job
 
 import hudson.Extension
 import hudson.Util
+import org.boozallen.plugins.jte.init.governance.config.ConsoleDefaultPipelineTemplate
+import org.boozallen.plugins.jte.init.governance.config.ConsolePipelineConfiguration
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -28,17 +30,15 @@ import org.kohsuke.stapler.DataBoundConstructor
  * Allows users to define a pipeline configuration, default pipeline template, and named
  * pipeline templates via a pipeline catalog.
  */
-class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider{
+class ConsoleAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefinitionConfiguration{
 
     ConsolePipelineConfiguration pipelineConfig
     ConsoleDefaultPipelineTemplate defaultTemplate
-    List<ConsoleNamedPipelineTemplate> pipelineCatalog
 
     @DataBoundConstructor
-    ConsolePipelineConfigurationProvider(
+    ConsoleAdHocTemplateFlowDefinitionConfiguration(
         ConsoleDefaultPipelineTemplate defaultTemplate,
         ConsolePipelineConfiguration pipelineConfig,
-        List<ConsoleNamedPipelineTemplate> pipelineCatalog
     ){
         this.defaultTemplate = defaultTemplate
         this.pipelineConfig = pipelineConfig
@@ -53,10 +53,6 @@ class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider
         return defaultTemplate
     }
 
-    List<ConsoleNamedPipelineTemplate> getPipelineCatalog(){
-        return pipelineCatalog
-    }
-
     @Override
     PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
         return  pipelineConfig.getProvidePipelineConfig() ?
@@ -67,12 +63,6 @@ class ConsolePipelineConfigurationProvider extends PipelineConfigurationProvider
     @Override
     String getJenkinsfile(FlowExecutionOwner owner){
         return defaultTemplate.getDefaultTemplate()
-    }
-
-    @Override
-    String getTemplate(FlowExecutionOwner owner, String templateName){
-        ConsoleNamedPipelineTemplate template = pipelineCatalog.find{ item -> item.getName() == templateName }
-        return template ? template.getTemplate() : null
     }
 
     @Extension
