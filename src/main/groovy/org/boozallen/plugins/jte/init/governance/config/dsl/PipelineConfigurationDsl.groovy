@@ -42,8 +42,8 @@ class PipelineConfigurationDsl {
         PipelineConfigurationObject pipelineConfig = new PipelineConfigurationObject(flowOwner)
         EnvActionImpl env = EnvActionImpl.forRun(flowOwner.run())
         Binding ourBinding = new Binding(
-                pipelineConfig: pipelineConfig,
-                env: env
+            pipelineConfig: pipelineConfig,
+            env: env
         )
 
         CompilerConfiguration cc = new CompilerConfiguration()
@@ -53,12 +53,11 @@ class PipelineConfigurationDsl {
         GroovyShell sh = new GroovyShell(this.getClass().getClassLoader(), ourBinding, cc)
         String processedScriptText = scriptText.replaceAll("@merge", "setMergeToTrue();")
                                                .replaceAll("@override", "setOverrideToTrue();")
-        Script script = sh.parse(processedScriptText)
 
-        DslSandbox sandbox = new DslSandbox(script, env)
+        DslSandbox sandbox = new DslSandbox(env)
         sandbox.register()
         try {
-            script.run()
+            sh.evaluate(processedScriptText)
         } finally {
             sandbox.unregister()
         }
