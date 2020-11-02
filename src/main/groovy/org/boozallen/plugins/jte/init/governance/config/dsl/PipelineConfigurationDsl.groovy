@@ -52,12 +52,11 @@ class PipelineConfigurationDsl {
         GroovyShell sh = new GroovyShell(this.getClass().getClassLoader(), ourBinding, cc)
         String processedScriptText = scriptText.replaceAll("@merge", "setMergeToTrue();")
                                                .replaceAll("@override", "setOverrideToTrue();")
-        Script script = sh.parse(processedScriptText)
 
-        DslSandbox sandbox = new DslSandbox(script, env)
+        DslSandbox sandbox = new DslSandbox(env)
         sandbox.register()
         try {
-            script.run()
+            sh.evaluate(processedScriptText)
         } finally {
             sandbox.unregister()
         }
