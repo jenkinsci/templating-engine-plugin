@@ -73,14 +73,6 @@ class DslSandbox extends GroovyInterceptor {
 
     @Override
     Object onGetProperty(Invoker invoker, Object receiver, String property) throws Throwable {
-        if (!(receiver == env || property == "env")){
-            throw new SecurityException("""
-            onGetProperty:
-            invoker -> ${invoker}
-            receiver -> ${receiver}
-            property -> ${property}
-            """.trim().stripIndent())
-        }
         return invoker.call(receiver, property)
     }
 
