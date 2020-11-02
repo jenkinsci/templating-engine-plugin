@@ -25,17 +25,10 @@ import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
  */
 class DslSandbox extends GroovyInterceptor {
 
-    //Script script
-    EnvActionImpl env
+    DslEnvVar env
 
-    DslSandbox(EnvActionImpl env){
-        //this.script = script
+    DslSandbox(DslEnvVar env){
         this.env = env
-    }
-
-    @Override
-    Object onMethodCall(Invoker invoker, Object receiver, String method, Object... args) throws Throwable {
-        return invoker.call(receiver, method, args)
     }
 
     @Override
@@ -51,7 +44,16 @@ class DslSandbox extends GroovyInterceptor {
 
     @Override
     Object onNewInstance(Invoker invoker, Class receiver, Object... args) throws Throwable {
-        return invoker.call(receiver,null,args);
+        if( receiver != PipelineConfigurationBuilder) {
+            throw new SecurityException("""
+        onNewInstance:
+        invoker -> ${invoker}
+        receiver -> ${receiver}
+        args -> ${args}
+        """.trim().stripIndent())
+        }
+
+        return invoker.call(receiver, null, args)
     }
 
     @Override
@@ -69,16 +71,6 @@ class DslSandbox extends GroovyInterceptor {
         method -> ${method}
         args -> ${args}
         """.trim().stripIndent())
-    }
-
-    @Override
-    Object onGetProperty(Invoker invoker, Object receiver, String property) throws Throwable {
-        return invoker.call(receiver, property)
-    }
-
-    @Override
-    Object onSetProperty(Invoker invoker, Object receiver, String property, Object value) throws Throwable {
-        return invoker.call(receiver, property, value)
     }
 
     @Override
