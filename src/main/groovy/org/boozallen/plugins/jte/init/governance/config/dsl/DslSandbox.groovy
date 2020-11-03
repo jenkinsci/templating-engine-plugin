@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.kohsuke.groovy.sandbox.GroovyInterceptor
 import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
 
@@ -58,7 +57,7 @@ class DslSandbox extends GroovyInterceptor {
 
     @Override
     void onSuperConstructor(Invoker invoker, Class receiver, Object... args) throws Throwable {
-        onNewInstance(invoker, receiver, args);
+        onNewInstance(invoker, receiver, args)
     }
 
     @Override
