@@ -60,11 +60,6 @@ class ScmLibraryProvider extends LibraryProvider{
         SCMFile lib = fs.child(prefixBaseDir(libName))
 
         if( !lib.isDirectory() ){
-            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-            ArrayList msg = [
-                    "Library ${libName} does not exist. No steps will be loaded."
-            ]
-            logger.printWarning(msg.join("\n"))
             return false
         }
 
