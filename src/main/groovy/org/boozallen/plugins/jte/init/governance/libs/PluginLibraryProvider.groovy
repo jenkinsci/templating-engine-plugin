@@ -115,7 +115,23 @@ class PluginLibraryProvider extends LibraryProvider{
     @Override
     Boolean hasLibrary(FlowExecutionOwner flowOwner, String libName){
         initialize()
-        return libName in libraries.keySet() && (libraries[libName])?.steps
+
+        boolean hasLibName = libName in libraries.keySet()
+        if( !hasLibName ){// does not have libName in keys
+            return false
+        }
+
+        Boolean hasSteps = (libraries[libName])?.steps as Boolean
+        if( !hasSteps ){// library has no steps
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            ArrayList msg = [
+                    "Library ${libName} exists but does not have steps present. No steps will be loaded."
+            ]
+            logger.printWarning(msg.join("\n"))
+            return false
+        }
+
+        return true
     }
 
     @Override
