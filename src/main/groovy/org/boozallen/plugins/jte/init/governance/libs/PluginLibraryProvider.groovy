@@ -57,7 +57,7 @@ class PluginLibraryProvider extends LibraryProvider{
         File jarFile = new File(jar.toURI())
         long jarFileLastModified = jarFile.lastModified()
 
-        if( this.jarLastModified != jarFileLastModified ){
+        if( this.jarLastModified == jarFileLastModified ){
             // jar has not been modified since last initialization
             // != allows for testing for 'downgrades'
             return
