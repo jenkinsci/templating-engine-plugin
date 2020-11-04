@@ -117,12 +117,12 @@ class PluginLibraryProvider extends LibraryProvider{
         initialize()
 
         boolean hasLibName = libName in libraries.keySet()
-        if( !hasLibName ){// does not have libName in keys
+        if( !hasLibName ){ // does not have libName in keys
             return false
         }
 
         Boolean hasSteps = (libraries[libName])?.steps as Boolean
-        if( !hasSteps ){// library has no steps
+        if( !hasSteps ){ // library has no steps
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
             ArrayList msg = [
                     "Library ${libName} exists but does not have steps present. No steps will be loaded."

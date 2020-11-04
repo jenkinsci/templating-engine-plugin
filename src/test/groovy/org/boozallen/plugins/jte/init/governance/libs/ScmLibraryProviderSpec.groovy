@@ -150,7 +150,6 @@ class ScmLibraryProviderSpec extends Specification{
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
         GroovySpy(FileSystemWrapper, global: true)
         FileSystemWrapper.createFromSCM(owner, scm) >> fsw
-        1 * logger.println{ msg -> msg.contains("Library ${libraryName} does not exist".toString()) }
 
         expect:
         !p.hasLibrary(owner, libraryName)
