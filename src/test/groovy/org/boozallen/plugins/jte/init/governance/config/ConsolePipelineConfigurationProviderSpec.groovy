@@ -25,8 +25,11 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
 
     def "when pipeline configuration is provided getConfig returns correct config object"(){
         given:
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(true, "a =1 ")
+        ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(false, null)
+
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
-        def c = new ConsolePipelineConfigurationProvider(true, "a = 1", false, null, pipelineCatalog)
+        def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
         // mocks necessary to parse config
         FlowExecutionOwner mockOwner = GroovyMock{
@@ -50,7 +53,9 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
     def "when pipeline configuration is not provided getConfig returns null"(){
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
-        def c = new ConsolePipelineConfigurationProvider(false, null, false, null, pipelineCatalog)
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(false, null)
+        ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(false, null)
+        def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
         // mocks necessary to parse config
         FlowExecutionOwner mockOwner = GroovyMock{
@@ -74,7 +79,10 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
     def "When Jenkinsfile is provided, getJenkinsfile returns Jenkinsfile"(){
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
-        def c = new ConsolePipelineConfigurationProvider(false, null, true, "default jenkinsfile", pipelineCatalog)
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(false, null)
+        ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(true, "default jenkinsfile")
+
+        def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
         when:
         String jenkinsfile = c.getJenkinsfile()
@@ -86,7 +94,9 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
     def "fetch nonexistent named template returns null"(){
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
-        def c = new ConsolePipelineConfigurationProvider(false, null, false, null, pipelineCatalog)
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(false, null)
+        ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(false, null)
+        def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
         FlowExecutionOwner mockOwner = GroovyMock{
             run() >> GroovyMock(WorkflowRun)
@@ -108,7 +118,9 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
                 template: "named template!"
             )
         ]
-        def c = new ConsolePipelineConfigurationProvider(false, null, false, null, pipelineCatalog)
+        def c = new ConsolePipelineConfigurationProvider(new ConsoleDefaultPipelineTemplate(false, null),
+                new ConsolePipelineConfiguration(false, null),
+                pipelineCatalog)
 
         FlowExecutionOwner mockOwner = GroovyMock{
             run() >> GroovyMock(WorkflowRun)
