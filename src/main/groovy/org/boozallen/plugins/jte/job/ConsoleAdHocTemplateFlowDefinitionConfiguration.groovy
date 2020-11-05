@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
-import hudson.Util
 import org.boozallen.plugins.jte.init.governance.config.ConsoleDefaultPipelineTemplate
 import org.boozallen.plugins.jte.init.governance.config.ConsolePipelineConfiguration
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
@@ -38,19 +37,19 @@ class ConsoleAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowD
     @DataBoundConstructor
     ConsoleAdHocTemplateFlowDefinitionConfiguration(
         ConsoleDefaultPipelineTemplate defaultTemplate,
-        ConsolePipelineConfiguration pipelineConfig,
+        ConsolePipelineConfiguration pipelineConfig
     ){
         this.defaultTemplate = defaultTemplate
         this.pipelineConfig = pipelineConfig
-        this.pipelineCatalog = pipelineCatalog
     }
 
     ConsolePipelineConfiguration getPipelineConfig(){
         return pipelineConfig
     }
 
-    ConsoleDefaultPipelineTemplate getDefaultTemplate(){
-        return defaultTemplate
+    @Override
+    Boolean hasConfig(FlowExecutionOwner flowOwner){
+        return pipelineConfig.getProvidePipelineConfig()
     }
 
     @Override
@@ -60,13 +59,22 @@ class ConsoleAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowD
                 null
     }
 
+    ConsoleDefaultPipelineTemplate getDefaultTemplate(){
+        return defaultTemplate
+    }
+
     @Override
-    String getJenkinsfile(FlowExecutionOwner owner){
+    Boolean hasTemplate(FlowExecutionOwner flowOwner){
+        return defaultTemplate.getProvideDefaultTemplate()
+    }
+
+    @Override
+    String getTemplate(FlowExecutionOwner owner){
         return defaultTemplate.getDefaultTemplate()
     }
 
     @Extension
-    static class DescriptorImpl extends PipelineConfigurationProvider.PipelineConfigurationProviderDescriptor{
+    static class DescriptorImpl extends AdHocTemplateFlowDefinitionConfiguration.DescriptorImpl {
 
         String getDisplayName(){
             return "From Console"

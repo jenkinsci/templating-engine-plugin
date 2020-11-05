@@ -24,7 +24,10 @@
   -->
 
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:wfe="/org/jenkinsci/plugins/workflow/editor">
-    <f:dropdownDescriptorSelector field="config"
-                                  title="Pipeline Configuration"
-                                  default="${descriptor.defaultConfigurationProvider}"/>
+    <f:entry field="defaultTemplate" title="">
+        <f:property/>
+    </f:entry>
+    <f:entry field="pipelineConfig" title="">
+        <f:property/>
+    </f:entry>
 </j:jelly>

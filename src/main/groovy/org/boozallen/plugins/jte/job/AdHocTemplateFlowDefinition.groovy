@@ -18,6 +18,7 @@ package org.boozallen.plugins.jte.job
 import hudson.Extension
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
+import jenkins.model.Jenkins
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
@@ -45,10 +46,15 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
         String getDisplayName() {
             return "Jenkins Templating Engine"
         }
+
+        Descriptor defaultConfigurationProvider(){
+            return Jenkins.get().getDescriptor(ConsoleAdHocTemplateFlowDefinitionConfiguration)
+        }
     }
 
     @Extension
     static class HideMeElsewhere extends DescriptorVisibilityFilter {
+
         @Override
         boolean filter(Object context, Descriptor descriptor) {
             if (descriptor instanceof DescriptorImpl) {
@@ -56,6 +62,7 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
             }
             return true
         }
+
     }
 
 }
