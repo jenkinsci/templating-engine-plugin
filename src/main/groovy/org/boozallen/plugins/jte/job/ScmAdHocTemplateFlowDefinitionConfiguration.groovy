@@ -17,9 +17,11 @@ package org.boozallen.plugins.jte.job
 
 import hudson.Extension
 import hudson.Util
+import hudson.scm.NullSCM
 import hudson.scm.SCM
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
@@ -44,16 +46,42 @@ class ScmAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefin
     }
 
     @Override
-    Boolean hasConfig(FlowExecutionOwner flowOwner){}
+    Boolean hasConfig(FlowExecutionOwner flowOwner){
+        return pipelineConfigurationPath // && null != getConfig(flowOwner)
+    }
 
     @Override
-    PipelineConfigurationObject getConfig(FlowExecutionOwner flowOwner) throws Exception{}
+    PipelineConfigurationObject getConfig(FlowExecutionOwner flowOwner) throws Exception{
+        PipelineConfigurationObject configObject = null
+        if (scm && !(scm instanceof NullSCM)){
+            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            String configFile = fsw.getFileContents(pipelineConfigurationPath, "Pipeline Configuration File")
+            if (configFile){
+                try{
+                    configObject = new PipelineConfigurationDsl(owner).parse(configFile)
+                } catch(any){
+                    new TemplateLogger(owner.getListener()).printError("Error parsing scm provided pipeline configuration")
+                    throw any
+                }
+            }
+        }
+        return configObject
+    }
 
     @Override
-    Boolean hasTemplate(FlowExecutionOwner flowOwner){}
+    Boolean hasTemplate(FlowExecutionOwner flowOwner){
+        return this.pipelineTemplatePath // && null != getTemplate(flowOwner)
+    }
 
     @Override
-    String getTemplate(FlowExecutionOwner owner){}
+    String getTemplate(FlowExecutionOwner flowOwner){
+        String jenkinsfile = null
+        if(scm && !(scm instanceof NullSCM)){
+            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            jenkinsfile = fsw.getFileContents(this.pipelineTemplatePath, "Template")
+        }
+        return jenkinsfile
+    }
 
     @Extension
     static class DescriptorImpl extends AdHocTemplateFlowDefinitionConfiguration.DescriptorImpl {
