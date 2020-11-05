@@ -20,6 +20,7 @@ import org.boozallen.plugins.jte.init.governance.config.ConsoleDefaultPipelineTe
 import org.boozallen.plugins.jte.init.governance.config.ConsolePipelineConfiguration
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
 
@@ -53,10 +54,19 @@ class ConsoleAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowD
     }
 
     @Override
-    PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
-        return  pipelineConfig.getProvidePipelineConfig() ?
-                new PipelineConfigurationDsl(owner).parse(pipelineConfig.getPipelineConfig()) :
-                null
+    PipelineConfigurationObject getConfig(FlowExecutionOwner flowOwner) throws Exception{
+        PipelineConfigurationObject conf = null
+        TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+        if(pipelineConfig.getProvidePipelineConfig()){
+            String pipelineConfigurationString = pipelineConfig.getPipelineConfig()
+            try{
+                conf = new PipelineConfigurationDsl(flowOwner).parse(pipelineConfigurationString)
+            }catch(any){
+                logger.printError "Failed to parse pipeline configuration"
+                throw any
+            }
+        }
+        return conf
     }
 
     ConsoleDefaultPipelineTemplate getDefaultTemplate(){

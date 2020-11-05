@@ -26,7 +26,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 abstract class AdHocTemplateFlowDefinitionConfiguration extends AbstractDescribableImpl<AdHocTemplateFlowDefinitionConfiguration>{
 
     abstract Boolean hasConfig(FlowExecutionOwner owner)
-    abstract PipelineConfigurationObject getConfig(FlowExecutionOwner owner)
+    abstract PipelineConfigurationObject getConfig(FlowExecutionOwner owner) throws Exception
     abstract Boolean hasTemplate(FlowExecutionOwner owner)
     abstract String getTemplate(FlowExecutionOwner owner)
 

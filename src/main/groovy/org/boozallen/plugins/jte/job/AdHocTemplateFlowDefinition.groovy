@@ -19,6 +19,7 @@ import hudson.Extension
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
 import jenkins.model.Jenkins
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
@@ -41,7 +42,7 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
         return configProvider
     }
 
-    String getPipelineConfiguration(FlowExecutionOwner flowOwner){
+    PipelineConfigurationObject getPipelineConfiguration(FlowExecutionOwner flowOwner){
         return configProvider.hasConfig(flowOwner) ? configProvider.getConfig(flowOwner) : null
     }
 
@@ -56,7 +57,7 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
             return "Jenkins Templating Engine"
         }
 
-        Descriptor defaultConfigurationProvider(){
+        Descriptor getDefaultConfigurationProvider(){
             return Jenkins.get().getDescriptor(ConsoleAdHocTemplateFlowDefinitionConfiguration)
         }
     }
