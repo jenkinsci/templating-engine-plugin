@@ -23,7 +23,6 @@ import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfiguration
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplateBindingFactory
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
-import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinitionConfiguration
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition

@@ -61,7 +61,7 @@ class ConsoleAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowD
             String pipelineConfigurationString = pipelineConfig.getPipelineConfig()
             try{
                 conf = new PipelineConfigurationDsl(flowOwner).parse(pipelineConfigurationString)
-            }catch(any){
+            } catch(any){
                 logger.printError "Failed to parse pipeline configuration"
                 throw any
             }

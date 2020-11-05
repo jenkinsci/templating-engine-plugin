@@ -20,7 +20,6 @@ import hudson.Util
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
 import org.kohsuke.stapler.DataBoundConstructor
-import org.kohsuke.stapler.DataBoundSetter
 
 /**
  * A named pipeline template defined in the Jenkins console.

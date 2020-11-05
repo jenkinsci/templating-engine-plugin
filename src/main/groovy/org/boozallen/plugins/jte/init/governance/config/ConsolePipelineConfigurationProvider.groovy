@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.governance.config
 
 import hudson.Extension
-import hudson.Util
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
