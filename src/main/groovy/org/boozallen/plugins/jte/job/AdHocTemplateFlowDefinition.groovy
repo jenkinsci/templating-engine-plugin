@@ -20,6 +20,7 @@ import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
 import jenkins.model.Jenkins
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.kohsuke.stapler.DataBoundConstructor
@@ -29,15 +30,23 @@ import org.kohsuke.stapler.DataBoundConstructor
  */
 class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
 
-    AdHocTemplateFlowDefinitionConfiguration config
+    AdHocTemplateFlowDefinitionConfiguration configProvider
 
     @DataBoundConstructor
-    AdHocTemplateFlowDefinition(AdHocTemplateFlowDefinitionConfiguration config){
-        this.config = config
+    AdHocTemplateFlowDefinition(AdHocTemplateFlowDefinitionConfiguration configProvider){
+        this.configProvider = configProvider
     }
 
-    AdHocTemplateFlowDefinitionConfiguration getConfig(){
-        return config
+    AdHocTemplateFlowDefinitionConfiguration getConfigProvider(){
+        return configProvider
+    }
+
+    String getPipelineConfiguration(FlowExecutionOwner flowOwner){
+        return configProvider.hasConfig(flowOwner) ? configProvider.getConfig(flowOwner) : null
+    }
+
+    String getTemplate(FlowExecutionOwner flowOwner){
+        return configProvider.hasTemplate(flowOwner) ? configProvider.getTemplate(flowOwner) : null
     }
 
     @Extension

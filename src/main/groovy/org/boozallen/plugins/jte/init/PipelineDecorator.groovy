@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfiguration
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplateBindingFactory
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
+import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinitionConfiguration
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -89,7 +90,7 @@ class PipelineDecorator extends InvisibleAction {
         PipelineConfigurationObject jobConfig = null
         FlowDefinition flowDefinition = job.getDefinition()
         if(flowDefinition instanceof AdHocTemplateFlowDefinition){
-            String jobConfigString = flowDefinition.getPipelineConfig()
+            String jobConfigString = flowDefinition.getPipelineConfiguration(flowOwner)
             if(jobConfigString){
                 try{
                     jobConfig = new PipelineConfigurationDsl(flowOwner).parse(jobConfigString)
@@ -120,7 +121,7 @@ class PipelineDecorator extends InvisibleAction {
         FlowDefinition flowDefinition = job.getDefinition()
         JteBlockWrapper jteBlockWrapper = new JteBlockWrapper(pipelineConfig.jte ?: [:])
         if (flowDefinition instanceof AdHocTemplateFlowDefinition){
-            String template = flowDefinition.getTemplate()
+            String template = flowDefinition.getTemplate(flowOwner)
             if(template){
                 getLogger().print "Obtained Pipeline Template from job configuration"
                 return template
