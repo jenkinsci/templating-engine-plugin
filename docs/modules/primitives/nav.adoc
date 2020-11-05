@@ -1,6 +1,7 @@
-.Primitives 
+.Primitives
 * xref:what_is_a_primitive_in_jte.adoc[What is a primitive in JTE?]
 * xref:application_environments.adoc[Application Environments]
 * xref:stages.adoc[Stages]
 * xref:keywords.adoc[Keywords]
 * xref:default_step_implementation.adoc[Default Step Implementation]
+* xref:primitive_namespace.adoc[Primitive Namespace]

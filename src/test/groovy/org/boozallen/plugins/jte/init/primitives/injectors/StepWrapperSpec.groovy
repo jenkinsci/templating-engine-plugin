@@ -16,9 +16,11 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.model.Result
+import hudson.model.TaskListener
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
@@ -513,8 +515,13 @@ class StepWrapperSpec extends Specification{
     @WithoutJenkins
     @Unroll
     def "overriding autowired variable #var in binding throws exception"(){
+        FlowExecutionOwner run = Mock(FlowExecutionOwner)
+        TaskListener listener = Mock(TaskListener)
+        listener.getLogger() >> Mock(PrintStream)
+        run.getListener() >> listener
+
         given:
-        TemplateBinding binding = new TemplateBinding()
+        TemplateBinding binding = new TemplateBinding(run, false)
         when:
         binding.setVariable(var, "_")
         then:

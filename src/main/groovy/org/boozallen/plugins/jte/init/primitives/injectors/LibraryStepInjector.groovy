@@ -130,6 +130,15 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             return libraries*.getVariables().flatten() as Set<String>
         }
 
+        @Override List<String> getPrimitivesByName(String primitiveName){
+            List<String> names = []
+            libraries.each{ n ->
+                String name = n.getPrimitivesByName(primitiveName)
+                name && names.push(name)
+            }
+            return names.collect{ n -> "${name}.${n}" } as List<String>
+        }
+
         Set<String> getFormattedVariables(){
             return libraries.collect{ lib ->
                 lib.getVariables().collect { var ->

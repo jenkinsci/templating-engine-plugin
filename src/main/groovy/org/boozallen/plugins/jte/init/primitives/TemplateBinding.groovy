@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init.primitives
 
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.cps.DSL
@@ -37,8 +38,10 @@ class TemplateBinding extends Binding implements Serializable{
     @SuppressWarnings('PrivateFieldCouldBeFinal') // could be modified during pipeline execution
     private Boolean locked = false
     private final TemplateBindingRegistry registry = new TemplateBindingRegistry()
+    private final Boolean permissiveInitialization
 
-    TemplateBinding(FlowExecutionOwner owner){
+    TemplateBinding(FlowExecutionOwner owner, Boolean permissiveInitialization){
+        this.permissiveInitialization = permissiveInitialization
         setVariable(STEPS, new DSL(owner))
         /**
          * for jte namespace, we need to bypass the exception throwing logic
@@ -59,17 +62,26 @@ class TemplateBinding extends Binding implements Serializable{
          * if the variable being set is already taken by a TemplatePrimitive or marked
          * reserved by a ReservedVariableName, throw an exception
          */
-        if (name in registry.getVariables() || ReservedVariableName.byName(name)){
-            def thrower = ReservedVariableName.byName(name) ?: variables.get(name)
-            if(!thrower){
-                throw new Exception("Something weird happened. Unable to determine source of binding collision.")
+        ReservedVariableName reservedVar = ReservedVariableName.byName(name)
+        if (name in registry.getVariables() || reservedVar) {
+            def collisionTarget = reservedVar ?: variables.get(name)
+            if (!collisionTarget) {
+                throw new JTEException("Something weird happened. Unable to determine source of binding collision.")
             }
-            if (locked){
-                thrower.throwPostLockException()
-            } else{
-                thrower.throwPreLockException()
+            if (locked) {
+                // during pipeline execution:
+                //   always throw exceptions if overriding during pipeline execution
+                //   i.e., a template or library inadvertently create a variable
+                //   that collides
+                collisionTarget.throwPostLockException()
+            } else if (!permissiveInitialization || reservedVar) {
+                // during initialization:
+                // throw an exception if the initialization mode is strict
+                // always throw exception if the collision target is a reserved variable
+                collisionTarget.throwPreLockException()
             }
         }
+
         /**
          * add all template primitives to the namespace when
          * added to the binding
@@ -85,6 +97,21 @@ class TemplateBinding extends Binding implements Serializable{
         if (!variables) {
             throw new MissingPropertyException(name, this.getClass())
         }
+
+        List<String> primitives = registry.getPrimitivesByName(name)
+        if(primitives.size() >= 2 && locked){
+            List<String> msg = [
+                "Attempted to access an overloaded primitive:  ${name}",
+                "Please use fully qualified names to access the primitives.",
+                "options: "
+            ]
+            primitives.each{ p ->
+                msg.push("  - ${p}")
+            }
+            TemplateLogger.createDuringRun().printError(msg.join("\n"))
+            throw new JTEException("Attempted to access an overloaded primitive: ${name}")
+        }
+
         Object result = variables.get(name)
 
         if (!result && !variables.containsKey(name)) {

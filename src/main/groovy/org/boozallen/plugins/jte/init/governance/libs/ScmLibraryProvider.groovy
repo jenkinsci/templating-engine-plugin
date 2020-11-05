@@ -58,7 +58,33 @@ class ScmLibraryProvider extends LibraryProvider{
         SCMFileSystem fs = createFs(flowOwner)
         if (!fs){ return false }
         SCMFile lib = fs.child(prefixBaseDir(libName))
-        return lib.isDirectory()
+
+        if( !lib.isDirectory() ){
+            return false
+        }
+
+        SCMFile stepsDir = lib.child(LibraryProvider.STEPS_DIR_NAME)
+        boolean hasValidStepsDir = null != stepsDir && stepsDir.isDirectory()
+
+        // must have a steps dir with at least one step file *.groovy
+        if( hasValidStepsDir ){
+            hasValidStepsDir = false
+            recurseChildren(stepsDir){ file ->
+                if(file.getName().endsWith(".groovy")){
+                    hasValidStepsDir = true
+                    return true
+                }
+            }
+        }
+
+        if( !hasValidStepsDir ){
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            ArrayList msg = [
+                    "Library ${libName} exists but does not have steps present under a 'steps' directory. No steps will be loaded."
+            ]
+            logger.printWarning(msg.join("\n"))
+        }
+        return hasValidStepsDir
     }
 
     @Override
@@ -95,7 +121,7 @@ class ScmLibraryProvider extends LibraryProvider{
          * by a FilePath
          */
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
-        SCMFile steps = lib.child("steps")
+        SCMFile steps = lib.child(LibraryProvider.STEPS_DIR_NAME)
         recurseChildren(steps){ file ->
             if(file.getName().endsWith(".groovy")) {
                 String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
@@ -115,7 +141,7 @@ class ScmLibraryProvider extends LibraryProvider{
          * For each resource file in the remote repository, copy it into the
          * build dir maintaining the file structure
          */
-        SCMFile resources = lib.child("resources")
+        SCMFile resources = lib.child(LibraryProvider.RESOURCES_DIR_NAME)
         recurseChildren(resources){ file ->
             String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
             FilePath resourceFile = rootDir.child(relativePath)

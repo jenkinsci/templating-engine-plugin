@@ -16,8 +16,10 @@
 package org.boozallen.plugins.jte.init.primitives
 
 import hudson.model.Result
+import hudson.model.TaskListener
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
@@ -342,6 +344,29 @@ class TemplateBindingRegistrySpec extends Specification{
         jenkins.assertBuildStatus(Result.FAILURE, run)
     }
 
+    def "step override during initialization success with permissive_initialization"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins, config: """
+            jte{
+                permissive_initialization = true
+            }
+            libraries{
+                exampleLibrary
+            }
+            keywords{
+                callNoParam = "oops"
+            }
+            """, template: 'println "doesnt matter"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.SUCCESS, run)
+    }
+
     def "step override post initialization throws exception"(){
         given:
         def run
@@ -469,15 +494,21 @@ class TemplateBindingRegistrySpec extends Specification{
 
     @WithoutJenkins
     @Unroll
-    def "overriding autowired variable #var in binding throws exception"(){
+    def "overriding autowired variable #var in binding with permissive: #permissive throws exception"(){
+        FlowExecutionOwner run = Mock(FlowExecutionOwner)
+        TaskListener listener = Mock(TaskListener)
+        listener.getLogger() >> Mock(PrintStream)
+        run.getListener() >> listener
+
         given:
-        TemplateBinding binding = new TemplateBinding()
+        TemplateBinding binding = new TemplateBinding(run, permissive)
         when:
         binding.setVariable(var, "_")
         then:
         thrown(Exception)
         where:
-        var << [ "config", "stageContext", "hookContext", "resource" ]
+        var << [ "config", "stageContext", "hookContext", "resource", "config", "stageContext", "hookContext", "resource" ]
+        permissive << [ false, false, false, false, true, true, true, true]
     }
 
 }

@@ -64,6 +64,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         }
     }
 
+    @NonCPS
     void throwPreLockException(){
         throw new TemplateException ("The Stage ${name} is already defined.")
     }

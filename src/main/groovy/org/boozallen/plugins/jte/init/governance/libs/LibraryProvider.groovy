@@ -25,6 +25,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
 
     public static final String CONFIG_FILE = "library_config.groovy"
+    public static final String STEPS_DIR_NAME = "steps"
+    public static final String RESOURCES_DIR_NAME = "resources"
 
     abstract Boolean hasLibrary(FlowExecutionOwner flowOwner, String libraryName)
     abstract String getLibrarySchema(FlowExecutionOwner flowOwner, String libraryName)

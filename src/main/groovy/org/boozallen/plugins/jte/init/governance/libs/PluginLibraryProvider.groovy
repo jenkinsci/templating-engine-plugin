@@ -38,10 +38,10 @@ class PluginLibraryProvider extends LibraryProvider{
 
     private final LibraryProvidingPlugin plugin
     private final HashMap libraries = [:]
+    private long jarLastModified = 0;
 
     @DataBoundConstructor PluginLibraryProvider(LibraryProvidingPlugin plugin){
         this.plugin = plugin
-        initialize()
     }
 
     /*
@@ -54,7 +54,18 @@ class PluginLibraryProvider extends LibraryProvider{
         // initialize libraries
         CodeSource src = plugin.getClass().getProtectionDomain().getCodeSource()
         URL jar = src.getLocation()
-        ZipFile zipFile = new ZipFile(new File(jar.toURI()))
+        File jarFile = new File(jar.toURI())
+        long jarFileLastModified = jarFile.lastModified()
+
+        if( this.jarLastModified == jarFileLastModified ){
+            // jar has not been modified since last initialization
+            // != allows for testing for 'downgrades'
+            return
+        }
+
+        jarLastModified = jarFileLastModified
+
+        ZipFile zipFile = new ZipFile(jarFile)
         ZipInputStream zipStream = new ZipInputStream(jar.openStream())
         ZipEntry zipEntry
         while( (zipEntry = zipStream.getNextEntry()) != null ){
@@ -103,7 +114,24 @@ class PluginLibraryProvider extends LibraryProvider{
 
     @Override
     Boolean hasLibrary(FlowExecutionOwner flowOwner, String libName){
-        return libName in libraries.keySet()
+        initialize()
+
+        boolean hasLibName = libName in libraries.keySet()
+        if( !hasLibName ){ // does not have libName in keys
+            return false
+        }
+
+        Boolean hasSteps = (libraries[libName])?.steps as Boolean
+        if( !hasSteps ){ // library has no steps
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            ArrayList msg = [
+                    "Library ${libName} exists but does not have steps present. No steps will be loaded."
+            ]
+            logger.printWarning(msg.join("\n"))
+            return false
+        }
+
+        return true
     }
 
     @Override

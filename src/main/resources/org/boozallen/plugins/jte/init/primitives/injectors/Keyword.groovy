@@ -39,6 +39,7 @@ class Keyword extends TemplatePrimitive implements Serializable{
         return value
     }
 
+    @NonCPS
     void throwPreLockException(){
         throw new TemplateException(preLockException)
     }

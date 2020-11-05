@@ -178,6 +178,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         throw new TemplateException("Step ${name} from the library ${library} does not have the method ${methodName}(${argsList})")
     }
 
+    @NonCPS
     void throwPreLockException(){
         throw new TemplateException ("Library Step Collision. The step ${name} already defined via the ${library} library.")
     }

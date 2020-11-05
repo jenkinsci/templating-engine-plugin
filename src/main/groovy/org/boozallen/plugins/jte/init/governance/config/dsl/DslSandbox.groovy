@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.kohsuke.groovy.sandbox.GroovyInterceptor
 import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
 
@@ -25,26 +24,10 @@ import org.kohsuke.groovy.sandbox.GroovyInterceptor.Invoker
  */
 class DslSandbox extends GroovyInterceptor {
 
-    Script script
-    EnvActionImpl env
+    DslEnvVar env
 
-    DslSandbox(Script script, EnvActionImpl env){
-        this.script = script
+    DslSandbox(DslEnvVar env){
         this.env = env
-    }
-
-    @Override
-    Object onMethodCall(Invoker invoker, Object receiver, String method, Object... args) throws Throwable {
-        if (!(receiver == script)) {
-            throw new SecurityException("""
-            onMethodCall:
-            invoker -> ${invoker}
-            receiver -> ${receiver}
-            method -> ${method}
-            args -> ${args}
-            """.trim().stripIndent())
-        }
-        return invoker.call(receiver, method, args)
     }
 
     @Override
@@ -60,26 +43,21 @@ class DslSandbox extends GroovyInterceptor {
 
     @Override
     Object onNewInstance(Invoker invoker, Class receiver, Object... args) throws Throwable {
-        if(!(receiver == script)){
+        if( receiver != PipelineConfigurationBuilder) {
             throw new SecurityException("""
-            onNewInstance:
-            invoker -> ${invoker}
-            receiver -> ${receiver}
-            args -> ${args}
-            """.trim().stripIndent())
+        onNewInstance:
+        invoker -> ${invoker}
+        receiver -> ${receiver}
+        args -> ${args}
+        """.trim().stripIndent())
         }
+
+        return invoker.call(receiver, null, args)
     }
 
     @Override
     void onSuperConstructor(Invoker invoker, Class receiver, Object... args) throws Throwable {
-        if (!(receiver == script)){
-            throw new SecurityException("""
-            onSuperConstructor:
-            invoker -> ${invoker}
-            receiver -> ${receiver}
-            args -> ${args}
-            """.trim().stripIndent())
-        }
+        onNewInstance(invoker, receiver, args)
     }
 
     @Override
@@ -92,33 +70,6 @@ class DslSandbox extends GroovyInterceptor {
         method -> ${method}
         args -> ${args}
         """.trim().stripIndent())
-    }
-
-    @Override
-    Object onGetProperty(Invoker invoker, Object receiver, String property) throws Throwable {
-        if (!(receiver == script || receiver == env)){
-            throw new SecurityException("""
-            onGetProperty:
-            invoker -> ${invoker}
-            receiver -> ${receiver}
-            property -> ${property}
-            """.trim().stripIndent())
-        }
-        return invoker.call(receiver, property)
-    }
-
-    @Override
-    Object onSetProperty(Invoker invoker, Object receiver, String property, Object value) throws Throwable {
-        if (!(receiver == script)){
-            throw new SecurityException("""
-            onSetProperty:
-            invoker -> ${invoker}
-            receiver -> ${receiver}
-            property -> ${property}
-            value -> ${value}
-            """.trim().stripIndent())
-        }
-        return invoker.call(receiver, property, value)
     }
 
     @Override

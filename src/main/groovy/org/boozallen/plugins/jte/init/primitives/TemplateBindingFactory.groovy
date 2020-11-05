@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init.primitives
 
 import hudson.ExtensionList
+import org.boozallen.plugins.jte.init.PipelineDecorator.JteBlockWrapper
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.JTEException
@@ -38,7 +39,8 @@ class TemplateBindingFactory {
 
     static TemplateBinding create(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         invoke("validateConfiguration", flowOwner, config)
-        TemplateBinding templateBinding = new TemplateBinding(flowOwner)
+        JteBlockWrapper jte = (config.getConfig().jte ?: [:]) as JteBlockWrapper
+        TemplateBinding templateBinding = new TemplateBinding(flowOwner, jte.permissive_initialization)
         invoke("injectPrimitives", flowOwner, config, templateBinding)
         invoke("validateBinding", flowOwner, config, templateBinding)
         templateBinding.lock(flowOwner)

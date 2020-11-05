@@ -23,20 +23,12 @@ import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.boozallen.plugins.jte.init.PipelineDecorator.JteBlockWrapper
 
 /**
  * Validates the jte configuration block
  */
 @Extension class JteBlockValidator extends TemplatePrimitiveInjector {
-
-    static final LinkedHashMap SCHEMA = [
-        fields: [
-            optional: [
-                allow_scm_jenkinsfile: Boolean,
-                pipeline_template:String
-            ]
-        ]
-    ]
 
     static final String ERROR_MSG = "There were configuration errors in the jte block of the pipeline configuration"
     static final String ERROR_HEADER = "Pipeline Configuration JTE Block Errors:"
@@ -49,7 +41,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             ConfigValidator validator = new ConfigValidator(flowOwner)
             try{
                 if(aggregatedConfig.jte instanceof Map){
-                    validator.validate(SCHEMA, aggregatedConfig.jte as LinkedHashMap)
+                    validator.validate(JteBlockWrapper.getSchema(), aggregatedConfig.jte as LinkedHashMap)
                 } else {
                     logger.printError(ERROR_HEADER)
                     logger.printError("1. jte field is expected to be a configuration block, found: ${aggregatedConfig.jte}")

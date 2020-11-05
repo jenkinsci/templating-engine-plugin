@@ -108,6 +108,8 @@ public abstract class StepWrapperScript extends CpsScript {
      *
      * @param path relative path within the resources directory to fetch
      * @return the resource file contents
+     * @throws java.io.IOException throws this
+     * @throws java.lang.InterruptedException throws this
      */
     public String resource(String path) throws IOException, InterruptedException {
         if (path.startsWith("/")){

@@ -19,7 +19,6 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringEscapeUtils
 import org.codehaus.groovy.control.CompilerConfiguration
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.groovy.sandbox.SandboxTransformer
 
@@ -40,10 +39,10 @@ class PipelineConfigurationDsl {
         }
 
         PipelineConfigurationObject pipelineConfig = new PipelineConfigurationObject(flowOwner)
-        EnvActionImpl env = EnvActionImpl.forRun(flowOwner.run())
+        DslEnvVar env = new DslEnvVar(flowOwner)
         Binding ourBinding = new Binding(
-                pipelineConfig: pipelineConfig,
-                env: env
+            pipelineConfig: pipelineConfig,
+            env: env
         )
 
         CompilerConfiguration cc = new CompilerConfiguration()
@@ -53,12 +52,11 @@ class PipelineConfigurationDsl {
         GroovyShell sh = new GroovyShell(this.getClass().getClassLoader(), ourBinding, cc)
         String processedScriptText = scriptText.replaceAll("@merge", "setMergeToTrue();")
                                                .replaceAll("@override", "setOverrideToTrue();")
-        Script script = sh.parse(processedScriptText)
 
-        DslSandbox sandbox = new DslSandbox(script, env)
+        DslSandbox sandbox = new DslSandbox(env)
         sandbox.register()
         try {
-            script.run()
+            sh.evaluate(processedScriptText)
         } finally {
             sandbox.unregister()
         }

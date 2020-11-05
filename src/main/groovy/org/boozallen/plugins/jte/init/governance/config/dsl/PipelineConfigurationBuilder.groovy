@@ -15,6 +15,8 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
+import org.codehaus.groovy.runtime.GStringImpl
+
 /**
  * Script base class used during execution of the pipeline configuration DSL.
  * <p>
@@ -103,11 +105,13 @@ abstract class PipelineConfigurationBuilder extends Script{
             throw new TemplateConfigException(ex.join("\n"))
         }
 
+        Object v = (value instanceof GStringImpl) ? value.toString() : value
+
         recordMergeOrOverride(name)
         if (objectStack.size()){
-            objectStack.last()[name] = value
+            objectStack.last()[name] = v
         } else {
-            pipelineConfig.config[name] = value
+            pipelineConfig.config[name] = v
         }
     }
 

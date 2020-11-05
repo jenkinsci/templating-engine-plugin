@@ -1,0 +1,47 @@
+= Primitive Namespace
+
+An autowired variable called `jte` is made available that holds the Primitive Namespace. Through the Primitive Namespace, users can access primitives that have been loaded via their full-names.
+
+This feature should typically not be used, and exists to support use-cases where `jte.permissive_initialization` has been set to true.
+
+== Primitive Namespace Structure
+
+|===
+| Key | Description
+
+| `jte.libraries.<library_name>.<library_step>()`
+| invoke a loaded library step from a particular library
+
+| `jte.keywords.<keyword>`
+| access a specific keyword value
+
+| `jte.stages.<stage_name>()`
+| invoke a configured stage
+
+| `jte.application_environments.<app_env_name>`
+| access a specific application environment
+
+|===
+
+== Library Steps
+
+The most common use case for permissive initialization is where two libraries are loaded that contribute the same step.
+
+For example, there could exist a scenario where a user has created and loaded a `maven` and `docker` library that each contribute a `build()` step.
+
+Without permissive initialization, this would throw an exception.  When enabled, users can access each step via the `libraries` keyword on the `jte` variable.
+
+[source, groovy]
+----
+build() <1>
+jte.libraries.maven.build() <2>
+jte.libraries.docker.build() <3>
+----
+<1> the shorthand `build()` will now throw an exception due to the ambiguous nature of which step is being referenced
+<2> invoke the `maven` library's `build()` step
+<3> invoke the `docker` library's `build()` step
+
+[WARNING]
+====
+In almost all scenarios, we recommend that library step names be named more specifically. For example, the `maven` library could instead contribute a `build_artifact()` step and the `docker` library could instead contribute a `build_container_image()` step.
+====
