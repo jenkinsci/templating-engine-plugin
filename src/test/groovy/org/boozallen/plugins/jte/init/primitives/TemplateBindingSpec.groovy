@@ -19,9 +19,9 @@ import com.cloudbees.groovy.cps.NonCPS
 import hudson.model.Result
 import hudson.model.TaskListener
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
-import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
@@ -293,10 +293,9 @@ class TemplateBindingSpec extends Specification{
 
     def "validate TemplateBinding sets 'steps' var"(){
         given:
-        WorkflowJob job = jenkins.createProject(WorkflowJob)
-        String template = "node{ sh 'echo hello' }"
-        def definition = new AdHocTemplateFlowDefinition(true, template, false, null)
-        job.setDefinition(definition)
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                template: "node{ sh 'echo hello' }"
+        )
 
         expect:
         jenkins.assertLogContains("hello", jenkins.buildAndAssertSuccess(job))
@@ -304,7 +303,6 @@ class TemplateBindingSpec extends Specification{
 
     def "permissive mode binding collision with ReservedVariable (stageContext) pre-lock throws pre-lock exception"(){
         given:
-        WorkflowJob job = jenkins.createProject(WorkflowJob)
         String template = """
 broadway
 """
@@ -327,8 +325,11 @@ template_methods{
   temp_meth1
 }
 """
-        def definition = new AdHocTemplateFlowDefinition(true, template, true, config)
-        job.setDefinition(definition)
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                template: template,
+                config: config
+        )
 
         expect:
         jenkins.assertLogContains("is reserved for steps to access their stage context", jenkins.buildAndAssertStatus(Result.FAILURE, job))

@@ -43,7 +43,6 @@ class JteBlockValidatorSpec extends Specification{
     def "non-existent jte block succeeds"(){
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: "",
                 template: """
                 assert 1 == 1
                 """

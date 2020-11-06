@@ -15,7 +15,10 @@
 */
 package org.boozallen.plugins.jte.util
 
+import org.boozallen.plugins.jte.init.governance.config.ConsoleDefaultPipelineTemplate
+import org.boozallen.plugins.jte.init.governance.config.ConsolePipelineConfiguration
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
+import org.boozallen.plugins.jte.job.ConsoleAdHocTemplateFlowDefinitionConfiguration
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jvnet.hudson.test.JenkinsRule
 
@@ -31,12 +34,11 @@ class TestUtil{
      */
     static WorkflowJob createAdHoc(LinkedHashMap args, JenkinsRule jenkins){
         WorkflowJob job = jenkins.createProject(WorkflowJob)
-        def definition = new AdHocTemplateFlowDefinition(
-            args.containsKey("template"),
-            args.template,
-            args.containsKey("config"),
-            args.config
-        )
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(args.containsKey("config"), args.config)
+        ConsoleDefaultPipelineTemplate pipelineTemplate = new ConsoleDefaultPipelineTemplate(args.containsKey("template"), args.template)
+        def templateConfiguration = new ConsoleAdHocTemplateFlowDefinitionConfiguration(pipelineTemplate, pipelineConfig)
+
+        def definition = new AdHocTemplateFlowDefinition(templateConfiguration)
         job.setDefinition(definition)
         return job
     }
