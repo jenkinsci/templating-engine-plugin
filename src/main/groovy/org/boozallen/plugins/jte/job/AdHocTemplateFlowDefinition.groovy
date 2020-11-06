@@ -29,7 +29,9 @@ import org.kohsuke.stapler.DataBoundConstructor
 /**
  * Allows JTE to be used in a Pipeline Job
  */
-class AdHocTemplateFlowDefinition extends TemplateFlowDefinition {
+class AdHocTemplateFlowDefinition extends TemplateFlowDefinition implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     AdHocTemplateFlowDefinitionConfiguration configProvider
 
