@@ -54,13 +54,13 @@ class ScmAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefin
     PipelineConfigurationObject getConfig(FlowExecutionOwner flowOwner) throws Exception{
         PipelineConfigurationObject configObject = null
         if (scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(flowOwner, scm)
             String configFile = fsw.getFileContents(pipelineConfigurationPath, "Pipeline Configuration File")
             if (configFile){
                 try{
-                    configObject = new PipelineConfigurationDsl(owner).parse(configFile)
+                    configObject = new PipelineConfigurationDsl(flowOwner).parse(configFile)
                 } catch(any){
-                    new TemplateLogger(owner.getListener()).printError("Error parsing scm provided pipeline configuration")
+                    new TemplateLogger(flowOwner.getListener()).printError("Error parsing scm provided pipeline configuration")
                     throw any
                 }
             }
@@ -77,7 +77,7 @@ class ScmAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefin
     String getTemplate(FlowExecutionOwner flowOwner){
         String jenkinsfile = null
         if(scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(flowOwner, scm)
             jenkinsfile = fsw.getFileContents(this.pipelineTemplatePath, "Template")
         }
         return jenkinsfile
