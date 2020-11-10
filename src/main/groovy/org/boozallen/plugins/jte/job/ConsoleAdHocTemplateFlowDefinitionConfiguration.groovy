@@ -32,8 +32,16 @@ import org.kohsuke.stapler.DataBoundConstructor
  */
 class ConsoleAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefinitionConfiguration{
 
+    private static final long serialVersionUID = 1L
     ConsolePipelineConfiguration pipelineConfig
     ConsoleDefaultPipelineTemplate defaultTemplate
+
+    static ConsoleAdHocTemplateFlowDefinitionConfiguration create(boolean hasTemplate, String template, boolean hasConfig, String config){
+        return new ConsoleAdHocTemplateFlowDefinitionConfiguration(
+                new ConsoleDefaultPipelineTemplate(hasTemplate, template),
+                new ConsolePipelineConfiguration(hasConfig, config)
+        )
+    }
 
     @DataBoundConstructor
     ConsoleAdHocTemplateFlowDefinitionConfiguration(

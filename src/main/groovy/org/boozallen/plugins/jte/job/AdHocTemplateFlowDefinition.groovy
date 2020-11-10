@@ -16,8 +16,11 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
+import hudson.init.InitMilestone
+import hudson.init.Initializer
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
+import hudson.model.Items
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
@@ -32,6 +35,10 @@ import org.kohsuke.stapler.DataBoundConstructor
 class AdHocTemplateFlowDefinition extends TemplateFlowDefinition implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private transient boolean providePipelineTemplate
+    private transient String template
+    private transient boolean providePipelineConfig
+    private transient String pipelineConfig
 
     AdHocTemplateFlowDefinitionConfiguration configProvider
 
@@ -52,8 +59,23 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition implements Seri
         return configProvider.hasTemplate(flowOwner) ? configProvider.getTemplate(flowOwner) : null
     }
 
+    protected Object readResolve(){
+        if( configProvider == null ){
+            this.configProvider = ConsoleAdHocTemplateFlowDefinitionConfiguration.create(
+                    this.providePipelineTemplate, this.template, this.providePipelineConfig, this.pipelineConfig
+            )
+        }
+
+        return this
+    }
+
     @Extension
     static class DescriptorImpl extends FlowDefinitionDescriptor {
+        @Initializer(before = InitMilestone.PLUGINS_STARTED)
+        static void addAliases() {
+            Items.XSTREAM2.addCompatibilityAlias("org.boozallen.plugins.jte.job.TemplateFlowDefinition", org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition)
+        }
+
         @Override
         String getDisplayName() {
             return "Jenkins Templating Engine"
