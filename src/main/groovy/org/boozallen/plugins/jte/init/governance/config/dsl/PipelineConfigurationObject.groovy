@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
+import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -36,6 +37,10 @@ class PipelineConfigurationObject implements Serializable{
 
     PipelineConfigurationObject(FlowExecutionOwner flowOwner){
         this.flowOwner = flowOwner
+    }
+
+    PipelineDecorator.JteBlockWrapper getJteBlockWrapper(){
+        return (config.jte ?: [:]) as PipelineDecorator.JteBlockWrapper
     }
 
     PipelineConfigurationObject plus(PipelineConfigurationObject child){

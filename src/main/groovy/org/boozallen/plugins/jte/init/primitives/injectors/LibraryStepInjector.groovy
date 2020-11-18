@@ -54,6 +54,10 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         LinkedHashMap aggregatedConfig = config.getConfig()
         AggregateException errors = new AggregateException()
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
+        boolean reverseProviders = config.jteBlockWrapper.prevent_library_override
+        if(reverseProviders) {
+            providers = providers.reverse()
+        }
         ConfigValidator validator = new ConfigValidator(flowOwner)
         aggregatedConfig[KEY].each { libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
@@ -86,7 +90,12 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
         LinkedHashMap aggregatedConfig = config.getConfig()
+
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
+        boolean reverseProviders = config.jteBlockWrapper.prevent_library_override
+        if(reverseProviders) {
+            providers = providers.reverse()
+        }
         aggregatedConfig[KEY].each{ libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)

@@ -172,6 +172,7 @@ class PipelineDecorator extends InvisibleAction {
         String pipeline_template = null
         Boolean allow_scm_jenkinsfile = true
         Boolean permissive_initialization = false
+        Boolean prevent_library_override = false
 
         static LinkedHashMap getSchema(){
             return [
@@ -179,7 +180,8 @@ class PipelineDecorator extends InvisibleAction {
                     optional: [
                         allow_scm_jenkinsfile: Boolean,
                         pipeline_template: String,
-                        permissive_initialization: Boolean
+                        permissive_initialization: Boolean,
+                        prevent_library_override: Boolean
                     ]
                 ]
             ]
