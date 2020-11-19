@@ -222,7 +222,7 @@ class LibraryStepInjectorSpec extends Specification{
     @WithoutJenkins
     def "library on higher governance tier (last in hierarchy array) gets loaded if library override set to false"(){
         setup:
-        config.jte['prevent_library_override'] = true
+        config.jte['reverse_library_resolution'] = true
         config.libraries["libA"] = [:]
 
         MockLibraryProvider p1 = Mock{

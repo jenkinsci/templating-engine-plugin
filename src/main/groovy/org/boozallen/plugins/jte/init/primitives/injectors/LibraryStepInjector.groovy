@@ -54,7 +54,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         LinkedHashMap aggregatedConfig = config.getConfig()
         AggregateException errors = new AggregateException()
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
-        boolean reverseProviders = config.jteBlockWrapper.prevent_library_override
+        boolean reverseProviders = config.jteBlockWrapper.reverse_library_resolution
         if(reverseProviders) {
             providers = providers.reverse()
         }
@@ -92,7 +92,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         LinkedHashMap aggregatedConfig = config.getConfig()
 
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
-        boolean reverseProviders = config.jteBlockWrapper.prevent_library_override
+        boolean reverseProviders = config.jteBlockWrapper.reverse_library_resolution
         if(reverseProviders) {
             providers = providers.reverse()
         }
