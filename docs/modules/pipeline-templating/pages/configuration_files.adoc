@@ -22,6 +22,7 @@ jte{ <1>
     allow_scm_jenkinsfile = true
     pipeline_template = "some_template"
     permissive_initialization = false
+    reverse_library_resolution = false
 }
 
 template_methods{} <2>
@@ -57,6 +58,10 @@ keywords{} <7>
 
 | `permissive_initialization`
 | Whether or not JTE will allow a naming collision within the binding. For example, two library's that both contribute a step by the same name or a keyword and application environment by the same name.
+| `false`
+
+| reverse_library_resolution
+| Normally, JTE resolves libraries based on the pipeline configurations from the highest governance tier down towards the job. This flag, if enabled, reverses the library search order
 | `false`
 
 |===
