@@ -63,12 +63,14 @@ class PipelineDecoratorSpec extends Specification{
         then:
         jte.allow_scm_jenkinsfile == expected_allow
         jte.pipeline_template == expected_template
+        jte.permissive_initialization == permissive
+        jte.reverse_library_resolution == reverse_libs
 
         where:
-        config | expected_allow | expected_template
-        [:]   | true        | null
-        [allow_scm_jenkinsfile:false] | false | null
-        [allow_scm_jenkinsfile:false, pipeline_template:'dev_template'] | false | 'dev_template'
+        config | expected_allow | expected_template | permissive | reverse_libs
+        [:]   | true        | null   | false | false
+        [allow_scm_jenkinsfile:false, reverse_library_resolution:true] | false | null | false | true
+        [allow_scm_jenkinsfile:false, pipeline_template:'dev_template', permissive_initialization:true] | false | 'dev_template' | true | false
     }
 
 }
