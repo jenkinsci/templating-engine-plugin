@@ -50,12 +50,17 @@ As JTE grows in adoption, there is plenty that can be done to improve our abilit
 
 == Feature Development
 
+* [] https://github.com/jenkinsci/templating-engine-plugin/pull/132[Allow for reversal of library sources traversal]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/111[move JTE behavior feature flags into a root level `jte` block in the pipeline configuration]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/100[Pipeline Job: added SCM pipeline configuration and template]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/pull/101[JTE pipelines can survive an ungraceful restart now]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/pull/98[Added pipelineConfig reserved variable]
 * [x] https://github.com/jenkinsci/templating-engine-plugin/issues/46[Add support for Library Resources]
 * [x] https://github.com/jenkinsci/templating-engine-plugin/issues/97[Field-level pipeline configuration governance]
 * [x] https://github.com/jenkinsci/templating-engine-plugin/issues/79[Standardize on autowired variables - remove the Lifecycle Hook context parameter in favor of an autowired variable]
 * [x] https://github.com/jenkinsci/templating-engine-plugin/issues/72[Document the StageContext functionality to pass arguments to steps run as part of a Stage]
-* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/62[Introduce step namespacing so that multiple steps with the same name can be loaded via a less-strict initialization process configurable by the user]
-* [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/84[Improve overall initialization logging for JTE to help users debug issues]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/62[Introduce step namespacing so that multiple steps with the same name can be loaded via a less-strict initialization process configurable by the user]
+* [x] https://github.com/jenkinsci/templating-engine-plugin/issues/84[Improve overall initialization logging for JTE to help users debug issues]
 * [ ] https://github.com/jenkinsci/templating-engine-plugin/issues/23[Investigate whether or not JTE can integrate with Jenkins Pipeline's Declarative Syntax]
 
 
