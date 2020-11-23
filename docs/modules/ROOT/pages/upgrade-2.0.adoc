@@ -124,8 +124,26 @@ void call(){ <2>
 <2> Hook steps *no longer take a method parameter*
 <3> Hook steps are *autowired* a `hookContext` variable
 
-== Job Configurations
+== Configuration Changes
 
-We took the opportunity during a major release to do some major refactoring! This impacts Job DSL scripts used to configure jobs utilizing JTE.
+We took the opportunity during a major release to do some major refactoring!
+
+=== Global Configurations
+
+There have been updates to the underlying class structure of the Global Governance Tier configured in `Manage Jenkins > Configure System > Jenkins Templating Engine`. This will impact the Jenkins Configuration as Code (JCasC) YAML schema used to configure JTE.
+
+[TIP]
+====
+We would recommend configuring the Global Governance Tier manually the way you require and exporting the JCasC YAML to see the schema required to automate configuring JTE.
+====
+
+=== Job Configurations
+
+There have been updates to the underlying package and class structure for JTE as a whole as well as feature development for adhoc pipeline jobs. This impacts Job DSL scripts used to configure jobs utilizing JTE.
 
 JTE also now supports fetching the pipeline configuration and pipeline template for a one-off pipeline job, which results in some changes to the structure of Job DSL for ad-hoc pipeline jobs.
+
+[TIP]
+====
+Job DSL supports https://github.com/jenkinsci/job-dsl-plugin/wiki/Dynamic-DSL[Dynamic DSL] which means that Job DSL supports the Jenkins Templating Engine settings. We would recommend utilizing the Job DSL API Viewer on your Jenkins Instance once JTE 2.0 has been installed to see how to configure JTE settings.
+====
