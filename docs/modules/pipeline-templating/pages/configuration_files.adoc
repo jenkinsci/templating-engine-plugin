@@ -61,7 +61,7 @@ keywords{} <7>
 | `false`
 
 | `reverse_library_resolution`
-| Normally, JTE resolves libraries based on the library sources from the highest governance tier down towards the job. This flag, if enabled, reverses the library search order
+| Normally, JTE resolves libraries based on the library sources from the highest governance tier down towards the job, xref:governance:library_selection.adoc[default library selection]. This flag, if enabled, reverses the library search order
 | `false`
 
 |===
