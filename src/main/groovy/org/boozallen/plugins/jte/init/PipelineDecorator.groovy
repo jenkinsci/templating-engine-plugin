@@ -106,10 +106,9 @@ class PipelineDecorator extends InvisibleAction {
     }
 
     String determinePipelineTemplate(){
-        LinkedHashMap pipelineConfig = config.getConfig()
         WorkflowJob job = getJob()
         FlowDefinition flowDefinition = job.getDefinition()
-        JteBlockWrapper jteBlockWrapper = (pipelineConfig.jte ?: [:]) as JteBlockWrapper
+        JteBlockWrapper jteBlockWrapper = config.jteBlockWrapper
         if (flowDefinition instanceof AdHocTemplateFlowDefinition){
             String template = flowDefinition.getTemplate(flowOwner)
             if(template){

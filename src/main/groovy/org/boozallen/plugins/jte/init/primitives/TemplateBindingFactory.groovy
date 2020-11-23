@@ -39,7 +39,7 @@ class TemplateBindingFactory {
 
     static TemplateBinding create(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         invoke("validateConfiguration", flowOwner, config)
-        JteBlockWrapper jte = (config.getConfig().jte ?: [:]) as JteBlockWrapper
+        JteBlockWrapper jte = config.jteBlockWrapper
         TemplateBinding templateBinding = new TemplateBinding(flowOwner, jte.permissive_initialization)
         invoke("injectPrimitives", flowOwner, config, templateBinding)
         invoke("validateBinding", flowOwner, config, templateBinding)
