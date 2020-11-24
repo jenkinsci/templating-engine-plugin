@@ -2,3 +2,4 @@
 * xref:what_is_a_pipeline_template.adoc[What is a pipeline template?]
 * xref:configuration_files.adoc[Pipeline Configuration Files]
 * xref:configuration_file_sandboxing.adoc[Pipeline Configuration File Sandboxing]
+* xref:declarative-templates.adoc[Declarative Syntax Pipeline Templates]
