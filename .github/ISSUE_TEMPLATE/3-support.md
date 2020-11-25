@@ -12,7 +12,7 @@ Never report security issues on GitHub or other public channels (Gitter/Twitter/
 
 🚨 Please review the [Support Policy](https://github.com/jenkinsci/.github/blob/master/SUPPORT.md)
 
-- [ ] The question was asked in the project's [Gitter chat](https://gitter.im/jenkinsci/configuration-as-code-plugin)
+- [ ] The question was asked in the project's [Gitter chat](https://gitter.im/jenkinsci/templating-engine-plugin)
 - [ ] Jenkins version
 - [ ] Plugin version
 - [ ] OS
