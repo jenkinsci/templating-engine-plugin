@@ -49,7 +49,7 @@ If your pipeline template is setup to build, test, scan, deploy then it doesn't 
 
 There are many resources available to help you get started: 
 
-- [Documentation](https://boozallen.github.io/sdp-docs/jte/1.5.2/index.html)
+- [Documentation](https://boozallen.github.io/sdp-docs/jte/1.7.1/index.html)
 - **Learning Labs**
   - [Local Development (getting up and running with JTE)](https://boozallen.github.io/sdp-docs/learning-labs/1/local-development/index.html)
   - [JTE: The Basics](https://boozallen.github.io/sdp-docs/learning-labs/1/jte-the-basics/index.html)
@@ -70,7 +70,7 @@ There are many ways to get involved. We look forward to hearing from you.
 
 ### Adopters 
 
-If you're using the Jenkins Templating Engine we would love to hear about it!  Feel free to open a Pull Request with an update to our [ADOPTERS.adoc](https://github.com/jenkinsci/templating-engine-plugin/blob/master/docs/modules/ROOT/pages/ADOPTERS.adoc) file and your use case will be displayed on the [adopters page](https://boozallen.github.io/sdp-docs/jte/1.5.2/ADOPTERS.html). 
+If you're using the Jenkins Templating Engine we would love to hear about it!  Feel free to open a Pull Request with an update to our [ADOPTERS.adoc](https://github.com/jenkinsci/templating-engine-plugin/blob/master/docs/modules/ROOT/pages/ADOPTERS.adoc) file and your use case will be displayed on the [adopters page](https://boozallen.github.io/sdp-docs/jte/1.7.1/ADOPTERS.html). 
 
 ### Join the Conversation
 
