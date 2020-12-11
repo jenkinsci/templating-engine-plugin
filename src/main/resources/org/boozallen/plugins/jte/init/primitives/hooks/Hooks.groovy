@@ -62,12 +62,7 @@ class Hooks implements Serializable{
             throw new IllegalStateException("CpsThread not present.")
         }
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
-        WorkflowRun run = flowOwner.run()
-        PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
-        if(!pipelineDecorator){
-            throw new IllegalStateException("PipelineDecorator action missing")
-        }
-        TemplateBinding binding = pipelineDecorator.getBinding()
+        TemplateBinding binding = flowOwner.run().getAction(PipelineDecorator)?.getBinding()
         discover(annotation, binding).each{ hook ->
             if(shouldInvoke(hook, context)){
                 hook.invoke(context)

@@ -43,11 +43,13 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
  * <p>
  * Action consumed by {@link GroovyShellDecoratorImpl} to attach the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding} to template execution
  */
-class PipelineDecorator extends InvisibleAction {
+class PipelineDecorator extends InvisibleAction implements Serializable {
+
+    private static final long serialVersionUID = 1L
 
     FlowExecutionOwner flowOwner
     PipelineConfigurationObject config
-    TemplateBinding binding
+    transient TemplateBinding binding
     String template
 
     PipelineDecorator(FlowExecutionOwner flowOwner) {
