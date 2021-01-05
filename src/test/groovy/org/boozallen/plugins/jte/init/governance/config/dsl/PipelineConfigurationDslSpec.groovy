@@ -278,6 +278,47 @@ class PipelineConfigurationDslSpec extends Specification {
         reparsedConfig.config == expectedConfig
     }
 
+    def "maps keys are appropriately serialized"(){
+        setup:
+        String config = "field = [ 'a': 'String a', 'b-c' : 'String b-c' ]"
+        Map expectedConfig = [
+                field: [ 'a': 'String a', 'b-c' : 'String b-c' ]
+        ]
+        def originalConfig, reparsedConfig
+
+        when:
+        originalConfig = dsl.parse(config)
+        String origText = dsl.serialize(originalConfig)
+        reparsedConfig = dsl.parse(origText)
+
+        then:
+        originalConfig.config == expectedConfig
+        reparsedConfig.config == expectedConfig
+    }
+
+    def "maps and blocks are appropriately serialized"(){
+        setup:
+        String config = """field = [ 'a': 'String a', 'b-c' : 'String b-c' ]
+keywords{
+   dev = "/[Dd]ev[elop|eloper]?/"
+}
+"""
+        Map expectedConfig = [
+                field: [ 'a': 'String a', 'b-c' : 'String b-c' ],
+                keywords: [ 'dev': "/[Dd]ev[elop|eloper]?/" ]
+        ]
+        def originalConfig, reparsedConfig
+
+        when:
+        originalConfig = dsl.parse(config)
+        String origText = dsl.serialize(originalConfig)
+        reparsedConfig = dsl.parse(origText)
+
+        then:
+        originalConfig.config == expectedConfig
+        reparsedConfig.config == expectedConfig
+    }
+
     def "Double Quote String block keys with hyphens are appropriately serialized"(){
         setup:
         String config = "\"some-block\"{}"

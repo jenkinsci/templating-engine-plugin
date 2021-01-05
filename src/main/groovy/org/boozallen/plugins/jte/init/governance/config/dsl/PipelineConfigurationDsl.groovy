@@ -27,6 +27,16 @@ import org.kohsuke.groovy.sandbox.SandboxTransformer
  */
 class PipelineConfigurationDsl {
 
+    static class ConfigBlockMap extends LinkedHashMap{
+
+        ConfigBlockMap(){}
+
+        ConfigBlockMap( Map m){
+            super(m)
+        }
+
+    }
+
     FlowExecutionOwner flowOwner
 
     PipelineConfigurationDsl(FlowExecutionOwner flowOwner){
@@ -65,7 +75,7 @@ class PipelineConfigurationDsl {
     }
 
     String serialize(PipelineConfigurationObject configObj){
-        Map config = new JsonSlurper().parseText(JsonOutput.toJson(configObj.getConfig()))
+        Map config = configObj.getConfig() //new JsonSlurper().parseText(JsonOutput.toJson(configObj.getConfig()))
 
         Integer depth = 0
         ArrayList file = []
@@ -80,9 +90,9 @@ class PipelineConfigurationDsl {
             String coordinate = keys.size() ? "${keys.join(".")}.${key}" : key
             String merge = (coordinate in configObj.merge) ? "@merge " : ""
             String override = (coordinate in configObj.override) ? "@override " : ""
+            String nodeName = key.contains("-") ? "'${key}'" : key
             switch(value.getClass()){
-                case Map:
-                    String nodeName = key.contains("-") ? "'${key}'" : key
+                case ConfigBlockMap:
                     if (value == [:]){
                         appendedFile += "${tab * depth}${merge}${override}${nodeName}{}"
                     } else{
@@ -95,6 +105,19 @@ class PipelineConfigurationDsl {
                         appendedFile += "${tab * depth}}"
                     }
                     break
+                case Map:
+                    if (value == [:]){
+                        appendedFile += "${tab * depth}${merge}${override}${nodeName} = [:]"
+                    } else{
+                        appendedFile += "${tab * depth}${merge}${override}${nodeName} = ["
+                        depth++
+                        keys.push(key)
+                        appendedFile = printMap(appendedFile, depth, value, keys, configObj)
+                        keys.pop()
+                        depth--
+                        appendedFile += "${tab * depth}]"
+                    }
+                    break
                 case String:
                     appendedFile += "${tab * depth}${merge}${override}${key} = '${StringEscapeUtils.escapeJava(value)}'"
                     break
@@ -103,6 +126,42 @@ class PipelineConfigurationDsl {
                     break
                 default:
                     appendedFile += "${tab * depth}${merge}${override}${key} = ${value}"
+            }
+        }
+        return appendedFile
+    }
+
+    ArrayList printMap(List file, Integer depth, Map block, ArrayList keys, PipelineConfigurationObject configObj){
+        List appendedFile = file
+        String tab = "    "
+        block.eachWithIndex{ key, value, i ->
+            String nodeName = key.contains("-") ? "'${key}'" : key
+            switch(value.getClass()){
+                case Map:
+                    if (value == [:]){
+                        appendedFile += "${tab * depth}${nodeName}:[:]"
+                    } else{
+                        appendedFile += "${tab * depth}${nodeName}:["
+                        depth++
+                        keys.push(key)
+                        appendedFile = printMap(appendedFile, depth, value, keys, configObj)
+
+                        keys.pop()
+                        depth--
+                        appendedFile += "${tab * depth}]"
+                    }
+                    break
+                case String:
+                    appendedFile += "${tab * depth}${nodeName}:'${StringEscapeUtils.escapeJava(value)}'"
+                    break
+                case List:
+                    appendedFile += "${tab * depth}${nodeName}:${value.inspect()}"
+                    break
+                default:
+                    appendedFile += "${tab * depth}${nodeName}:${value}"
+            }
+            if( i < (block.size() - 1)){
+                appendedFile[-1] += ", "
             }
         }
         return appendedFile

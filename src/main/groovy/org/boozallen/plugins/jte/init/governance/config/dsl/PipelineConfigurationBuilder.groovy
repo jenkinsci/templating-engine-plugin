@@ -76,7 +76,7 @@ abstract class PipelineConfigurationBuilder extends Script{
         recordMergeOrOverride()
         args[0]()
 
-        LinkedHashMap nodeConfig = objectStack.pop()
+        PipelineConfigurationDsl.ConfigBlockMap nodeConfig = new PipelineConfigurationDsl.ConfigBlockMap(objectStack.pop())
         String nodeName = nodeStack.pop()
 
         if (objectStack.size()){
