@@ -15,8 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringEscapeUtils
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -75,12 +73,10 @@ class PipelineConfigurationDsl {
     }
 
     String serialize(PipelineConfigurationObject configObj){
-        Map config = configObj.getConfig() //new JsonSlurper().parseText(JsonOutput.toJson(configObj.getConfig()))
-
         Integer depth = 0
         ArrayList file = []
         ArrayList keys = []
-        return printBlock(file, depth, config, keys, configObj).join("\n")
+        return printBlock(file, depth, configObj.getConfig(), keys, configObj).join("\n")
     }
 
     ArrayList printBlock(List file, Integer depth, Map block, ArrayList keys, PipelineConfigurationObject configObj){
