@@ -24,6 +24,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import org.jvnet.hudson.test.WithoutJenkins
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -441,6 +442,7 @@ class TemplateBindingRegistrySpec extends Specification{
         jenkins.assertLogContains("step: A", run)
     }
 
+    @Ignore
     def "Namespaced Default Step invoked"(){
         given:
         def run
@@ -467,6 +469,7 @@ class TemplateBindingRegistrySpec extends Specification{
         jenkins.assertLogContains("step: D", run)
     }
 
+    @Ignore
     def "Incorrectly Namespaced Library Step call throws MissingMethodException"(){
         given:
         def run
