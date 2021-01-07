@@ -102,17 +102,7 @@ class PipelineConfigurationDsl {
                     }
                     break
                 case Map:
-                    if (value == [:]){
-                        appendedFile += "${tab * depth}${merge}${override}${nodeName} = [:]"
-                    } else{
-                        appendedFile += "${tab * depth}${merge}${override}${nodeName} = ["
-                        depth++
-                        keys.push(key)
-                        appendedFile = printMap(appendedFile, depth, value, keys, configObj)
-                        keys.pop()
-                        depth--
-                        appendedFile += "${tab * depth}]"
-                    }
+                    appendedFile += "${tab * depth}${merge}${override}${key} = ${value.inspect()}"
                     break
                 case String:
                     appendedFile += "${tab * depth}${merge}${override}${key} = '${StringEscapeUtils.escapeJava(value)}'"
@@ -122,42 +112,6 @@ class PipelineConfigurationDsl {
                     break
                 default:
                     appendedFile += "${tab * depth}${merge}${override}${key} = ${value}"
-            }
-        }
-        return appendedFile
-    }
-
-    ArrayList printMap(List file, Integer depth, Map block, ArrayList keys, PipelineConfigurationObject configObj){
-        List appendedFile = file
-        String tab = "    "
-        block.eachWithIndex{ key, value, i ->
-            String nodeName = key.contains("-") ? "'${key}'" : key
-            switch(value.getClass()){
-                case Map:
-                    if (value == [:]){
-                        appendedFile += "${tab * depth}${nodeName}:[:]"
-                    } else{
-                        appendedFile += "${tab * depth}${nodeName}:["
-                        depth++
-                        keys.push(key)
-                        appendedFile = printMap(appendedFile, depth, value, keys, configObj)
-
-                        keys.pop()
-                        depth--
-                        appendedFile += "${tab * depth}]"
-                    }
-                    break
-                case String:
-                    appendedFile += "${tab * depth}${nodeName}:'${StringEscapeUtils.escapeJava(value)}'"
-                    break
-                case List:
-                    appendedFile += "${tab * depth}${nodeName}:${value.inspect()}"
-                    break
-                default:
-                    appendedFile += "${tab * depth}${nodeName}:${value}"
-            }
-            if( i < (block.size() - 1)){
-                appendedFile[-1] += ", "
             }
         }
         return appendedFile

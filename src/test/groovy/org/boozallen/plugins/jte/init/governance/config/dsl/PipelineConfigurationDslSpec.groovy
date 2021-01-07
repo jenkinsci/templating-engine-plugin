@@ -263,9 +263,9 @@ class PipelineConfigurationDslSpec extends Specification {
 
     def "array lists are appropriately serialized"(){
         setup:
-        String config = "field = [ 'a', 'b-c' ]"
+        String config = "field = [ 'a', 'b-c', 'c d' ]"
         Map expectedConfig = [
-            field: [ "a", "b-c" ]
+            field: [ "a", "b-c", 'c d' ]
         ]
         def originalConfig, reparsedConfig
 
@@ -280,9 +280,9 @@ class PipelineConfigurationDslSpec extends Specification {
 
     def "maps keys are appropriately serialized"(){
         setup:
-        String config = "field = [ 'a': 'String a', 'b-c' : 'String b-c' ]"
+        String config = "field = [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]"
         Map expectedConfig = [
-                field: [ 'a': 'String a', 'b-c' : 'String b-c' ]
+                field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]
         ]
         def originalConfig, reparsedConfig
 
@@ -298,13 +298,13 @@ class PipelineConfigurationDslSpec extends Specification {
 
     def "maps and blocks are appropriately serialized"(){
         setup:
-        String config = """field = [ 'a': 'String a', 'b-c' : 'String b-c' ]
+        String config = """field = [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]
 keywords{
    dev = "/[Dd]ev[elop|eloper]?/"
 }
 """
         Map expectedConfig = [
-                field: [ 'a': 'String a', 'b-c' : 'String b-c' ],
+                field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ],
                 keywords: [ 'dev': "/[Dd]ev[elop|eloper]?/" ]
         ]
         def originalConfig, reparsedConfig
