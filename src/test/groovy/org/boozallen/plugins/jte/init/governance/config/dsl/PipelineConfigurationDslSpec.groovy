@@ -284,14 +284,15 @@ class PipelineConfigurationDslSpec extends Specification {
         Map expectedConfig = [
                 field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]
         ]
-        def originalConfig, reparsedConfig
+        def originalConfig, reparsedConfig, serializeText
 
         when:
         originalConfig = dsl.parse(config)
-        String origText = dsl.serialize(originalConfig)
-        reparsedConfig = dsl.parse(origText)
+        serializeText = dsl.serialize(originalConfig)
+        reparsedConfig = dsl.parse(serializeText)
 
         then:
+        serializeText.contains("[")
         originalConfig.config == expectedConfig
         reparsedConfig.config == expectedConfig
     }
@@ -307,14 +308,16 @@ keywords{
                 field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ],
                 keywords: [ 'dev': "/[Dd]ev[elop|eloper]?/" ]
         ]
-        def originalConfig, reparsedConfig
+        def originalConfig, reparsedConfig, serializeText
 
         when:
         originalConfig = dsl.parse(config)
-        String origText = dsl.serialize(originalConfig)
-        reparsedConfig = dsl.parse(origText)
+        serializeText = dsl.serialize(originalConfig)
+        reparsedConfig = dsl.parse(serializeText)
 
         then:
+        serializeText.contains("[")
+        serializeText.contains("{")
         originalConfig.config == expectedConfig
         reparsedConfig.config == expectedConfig
     }
