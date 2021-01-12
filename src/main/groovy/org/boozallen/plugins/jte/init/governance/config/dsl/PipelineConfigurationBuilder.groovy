@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
+import static PipelineConfigurationDsl.ConfigBlockMap
 import org.codehaus.groovy.runtime.GStringImpl
 
 /**
@@ -76,7 +77,7 @@ abstract class PipelineConfigurationBuilder extends Script{
         recordMergeOrOverride()
         args[0]()
 
-        LinkedHashMap nodeConfig = objectStack.pop()
+        ConfigBlockMap nodeConfig = new ConfigBlockMap(objectStack.pop())
         String nodeName = nodeStack.pop()
 
         if (objectStack.size()){

@@ -15,8 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.apache.commons.lang.StringEscapeUtils
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -26,6 +24,16 @@ import org.kohsuke.groovy.sandbox.SandboxTransformer
  * Parses the pipeline configuration DSL into a {@link PipelineConfigurationObject}
  */
 class PipelineConfigurationDsl {
+
+    static class ConfigBlockMap extends LinkedHashMap{
+
+        ConfigBlockMap(){}
+
+        ConfigBlockMap( Map m){
+            super(m)
+        }
+
+    }
 
     FlowExecutionOwner flowOwner
 
@@ -65,12 +73,10 @@ class PipelineConfigurationDsl {
     }
 
     String serialize(PipelineConfigurationObject configObj){
-        Map config = new JsonSlurper().parseText(JsonOutput.toJson(configObj.getConfig()))
-
         Integer depth = 0
         ArrayList file = []
         ArrayList keys = []
-        return printBlock(file, depth, config, keys, configObj).join("\n")
+        return printBlock(file, depth, configObj.getConfig(), keys, configObj).join("\n")
     }
 
     ArrayList printBlock(List file, Integer depth, Map block, ArrayList keys, PipelineConfigurationObject configObj){
@@ -80,9 +86,9 @@ class PipelineConfigurationDsl {
             String coordinate = keys.size() ? "${keys.join(".")}.${key}" : key
             String merge = (coordinate in configObj.merge) ? "@merge " : ""
             String override = (coordinate in configObj.override) ? "@override " : ""
+            String nodeName = key.contains("-") ? "'${key}'" : key
             switch(value.getClass()){
-                case Map:
-                    String nodeName = key.contains("-") ? "'${key}'" : key
+                case ConfigBlockMap:
                     if (value == [:]){
                         appendedFile += "${tab * depth}${merge}${override}${nodeName}{}"
                     } else{
@@ -94,6 +100,9 @@ class PipelineConfigurationDsl {
                         depth--
                         appendedFile += "${tab * depth}}"
                     }
+                    break
+                case Map:
+                    appendedFile += "${tab * depth}${merge}${override}${key} = ${value.inspect()}"
                     break
                 case String:
                     appendedFile += "${tab * depth}${merge}${override}${key} = '${StringEscapeUtils.escapeJava(value)}'"

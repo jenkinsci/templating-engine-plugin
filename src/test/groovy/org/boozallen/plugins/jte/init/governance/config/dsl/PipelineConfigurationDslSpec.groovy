@@ -263,9 +263,9 @@ class PipelineConfigurationDslSpec extends Specification {
 
     def "array lists are appropriately serialized"(){
         setup:
-        String config = "field = [ 'a', 'b-c' ]"
+        String config = "field = [ 'a', 'b-c', 'c d' ]"
         Map expectedConfig = [
-            field: [ "a", "b-c" ]
+            field: [ "a", "b-c", 'c d' ]
         ]
         def originalConfig, reparsedConfig
 
@@ -274,6 +274,50 @@ class PipelineConfigurationDslSpec extends Specification {
         reparsedConfig = dsl.parse(dsl.serialize(originalConfig))
 
         then:
+        originalConfig.config == expectedConfig
+        reparsedConfig.config == expectedConfig
+    }
+
+    def "maps keys are appropriately serialized"(){
+        setup:
+        String config = "field = [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]"
+        Map expectedConfig = [
+                field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]
+        ]
+        def originalConfig, reparsedConfig, serializeText
+
+        when:
+        originalConfig = dsl.parse(config)
+        serializeText = dsl.serialize(originalConfig)
+        reparsedConfig = dsl.parse(serializeText)
+
+        then:
+        serializeText.contains("[")
+        originalConfig.config == expectedConfig
+        reparsedConfig.config == expectedConfig
+    }
+
+    def "maps and blocks are appropriately serialized"(){
+        setup:
+        String config = """field = [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]
+keywords{
+   dev = "/[Dd]ev[elop|eloper]?/"
+}
+"""
+        Map expectedConfig = [
+                field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ],
+                keywords: [ 'dev': "/[Dd]ev[elop|eloper]?/" ]
+        ]
+        def originalConfig, reparsedConfig, serializeText
+
+        when:
+        originalConfig = dsl.parse(config)
+        serializeText = dsl.serialize(originalConfig)
+        reparsedConfig = dsl.parse(serializeText)
+
+        then:
+        serializeText.contains("[")
+        serializeText.contains("{")
         originalConfig.config == expectedConfig
         reparsedConfig.config == expectedConfig
     }

@@ -51,7 +51,7 @@ In order to support xref:library-development:library_resources.adoc[library reso
 
 == `@override` & `@merge` annotations
 
-Previously, the ability to govern pipeline configuration changes were confied to the block-level - with no way to govern individual fields. To address this, JTE has pivoted from the flags `merge=true` & `override=true` to the *annotations* `@merge` & `@override`. These annotations can be placed on individual fields within a block, enabling field-level governance.
+Previously, the ability to govern pipeline configuration changes were confined to the block-level - with no way to govern individual fields. To address this, JTE has pivoted from the flags `merge=true` & `override=true` to the *annotations* `@merge` & `@override`. These annotations can be placed on individual fields within a block, enabling field-level governance.
 
 === Pre 2.0
 
@@ -89,6 +89,47 @@ anotherBlock{ <2>
 <2> subsequent pipeline configurations may *not* add fields to `anotherBlock`
 <3> subsequent pipeline configurations may *not* modify the `may_not_be_changed` field
 <4> a default value can be provided for the `default_value` field - but subsequent pipeline configurations *may* override this field. This previously was not possible prior to field-level governance provided by JTE 2.0.
+
+== Top level pipeline configuration values and the `jte{}` block
+
+Previously, there were top level configuration values like `allow_scm_jenkinsfile` and `pipeline_template`.  These values are now in the `jte` block in the pipeline_config
+
+=== Pre 2.0
+
+.Pipeline Configuration
+[source, groovy]
+----
+allow_scm_jenkinsfile = false
+pipeline_template = "my_template"
+someBlock{
+  merge = true
+  my_governed_field = "some value"
+}
+anotherBlock{
+  override = true
+  may_not_be_changed = true
+  default_value_may_be_changed = true
+}
+----
+
+=== Post 2.0
+
+.Pipeline Configuration
+[source, groovy]
+----
+jte{
+  allow_scm_jenkinsfile = false
+  pipeline_template = "my_template"
+}
+
+@merge someBlock{
+  my_governed_field = "some value"
+}
+anotherBlock{
+  may_not_be_changed = true
+  @override default_value = true
+}
+----
 
 == Lifecycle Hook: `hookContext`
 
