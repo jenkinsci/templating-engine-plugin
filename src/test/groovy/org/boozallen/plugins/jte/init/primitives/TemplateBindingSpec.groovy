@@ -301,6 +301,42 @@ class TemplateBindingSpec extends Specification{
         jenkins.assertLogContains("hello", jenkins.buildAndAssertSuccess(job))
     }
 
+    def "application env as argument for stage context"(){
+        given:
+        String template = """
+broadway dev
+"""
+        String config = """
+jte{
+  permissive_initialization = true
+}
+
+application_environments {
+  dev{
+    long_name = "development"
+  }
+}
+
+stages{
+  broadway{
+    temp_meth1
+  }
+}
+
+template_methods{
+  temp_meth1
+}
+"""
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                template: template,
+                config: config
+        )
+
+        expect:
+        jenkins.buildAndAssertStatus(Result.SUCCESS, job)
+    }
+
     def "permissive mode binding collision with ReservedVariable (stageContext) pre-lock throws pre-lock exception"(){
         given:
         String template = """
