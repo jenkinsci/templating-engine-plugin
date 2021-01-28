@@ -58,7 +58,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         aggregatedConfig[KEY].each{ name, steps ->
             List<String> stepNames = steps.keySet() as List<String>
             binding.setVariable(name, stageClass.newInstance(
-                binding: binding,
                 name: name,
                 steps: stepNames,
                 injector: this.getClass()
