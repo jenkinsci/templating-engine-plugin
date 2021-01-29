@@ -24,7 +24,6 @@ import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.flow.FlowExecution
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 /**
@@ -53,6 +52,15 @@ class TemplateBinding extends Binding implements Serializable{
          * that would be triggered by "jte" as a ReservedVariableName
          */
         variables.put(registry.getVariableName(), registry)
+    }
+
+    static TemplateBinding fetchDuringRun(){
+        CpsThread thread = CpsThread.current()
+        FlowExecution execution = thread?.getExecution()
+        FlowExecutionOwner owner = execution?.getOwner()
+        WorkflowRun run = owner.run()
+        PipelineDecorator decorator = run.getAction(PipelineDecorator)
+        return decorator.getBinding()
     }
 
     void lock(FlowExecutionOwner flowOwner){
@@ -156,15 +164,6 @@ class TemplateBinding extends Binding implements Serializable{
      */
     Set<String> getPrimitiveNames(){
         return this.registry.getVariables()
-    }
-
-    static TemplateBinding fetchDuringRun(){
-        CpsThread thread = CpsThread.current()
-        FlowExecution execution = thread?.getExecution()
-        FlowExecutionOwner owner = execution?.getOwner()
-        WorkflowRun run = owner.run()
-        PipelineDecorator decorator = run.getAction(PipelineDecorator)
-        return decorator.getBinding()
     }
 
 }
