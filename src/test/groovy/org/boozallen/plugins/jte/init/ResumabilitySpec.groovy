@@ -25,8 +25,9 @@ import spock.lang.Unroll
 import org.junit.runners.model.Statement
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
-
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
+import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep
 
 class ResumabilitySpec extends Specification{
 
@@ -34,29 +35,26 @@ class ResumabilitySpec extends Specification{
 
     def "Pipeline resumes after graceful restart"(){
         when: 
-        story.addStep(new Statement() {
-            @Override public void evaluate() throws Throwable {
-                WorkflowJob p = story.j.jenkins.createProject(WorkflowJob.class, "p");
-                p.setDefinition(new CpsFlowDefinition("""
+        story.then({ jenkins -> 
+            WorkflowJob p = TestUtil.createAdHoc(
+                template: """
                 println "running before sleep"
-                sleep 15
+                semaphore "wait"
                 println "running after sleep"
-                """))
-                WorkflowRun b = p.scheduleBuild2(0).waitForStart();
-                // SemaphoreStep.waitForStart("wait/1", b);
-                story.j.waitForMessage("running before sleep", b);
-            }
-        });
+                """, jenkins, "p"
+            )
+            WorkflowRun b = p.scheduleBuild2(0).waitForStart()
+            SemaphoreStep.waitForStart("wait/1", b)
+        })
 
         then: 
-        story.addStep(new Statement() {
-            @Override public void evaluate() throws Throwable {
-                // SemaphoreStep.success("wait/1", null);
-                WorkflowJob p = story.j.jenkins.getItemByFullName("p", WorkflowJob.class);
-                WorkflowRun b = p.getLastBuild();
-                story.j.assertLogContains("running after sleep", story.j.waitForCompletion(b));
-            }
-        });
+        story.then({ jenkins -> 
+            SemaphoreStep.success("wait/1", true)
+            WorkflowJob p = jenkins.getInstance().getItemByFullName("p", WorkflowJob);
+            WorkflowRun b = p.getLastBuild()
+            jenkins.waitForCompletion(b)
+            jenkins.assertLogContains("running after sleep", b);
+        })
     }
 
     def "Stages succeed after pipeline graceful restart"(){}
