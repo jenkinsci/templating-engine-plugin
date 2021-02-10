@@ -41,8 +41,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import javax.annotation.CheckForNull
 import java.lang.reflect.Field
-import java.util.logging.Logger
-import java.util.logging.Level
 
 /**
  * Decorates the pipeline template during compilation
@@ -55,8 +53,6 @@ import java.util.logging.Level
  */
 @Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
 class GroovyShellDecoratorImpl extends GroovyShellDecorator {
-
-    private static final Logger LOGGER = Logger.getLogger(GroovyShellDecoratorImpl.class.getName())
 
     /**
      * If the current pipeline run has a @see PipelineDecorator action then
@@ -72,17 +68,6 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
         WorkflowRun run = owner.run()
         PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
         if(pipelineDecorator){
-            LOGGER.log(Level.INFO, """\n
-            ----------------
-            JTE: ${run}
-            ----------------
-            is first time: ${run.firstTime}
-            pipeline decorator binding: ${pipelineDecorator.getBinding()}
-            pipeline decorator binding variables: ${pipelineDecorator.getBinding().getVariables()}
-            shell binding: ${shell.getContext()}
-            shell binding variables: ${shell.getContext().getVariables()}
-            ----------------
-            """.stripIndent().trim())
             TemplateBinding binding = pipelineDecorator.getBinding()
             Field shellBinding = GroovyShell.getDeclaredField("context")
             shellBinding.setAccessible(true)
