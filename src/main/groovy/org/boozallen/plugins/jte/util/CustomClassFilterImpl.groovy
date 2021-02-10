@@ -29,13 +29,16 @@ import java.util.logging.Logger
 @Extension
 class CustomClassFilterImpl implements CustomClassFilter {
 
+    @SuppressWarnings("UnnecessaryDotClass")
     private static final Logger LOGGER = Logger.getLogger(CustomClassFilterImpl.class.getName())
 
-    private static Set<String> APPROVED_CLASS_PARTIALS = [
+    @SuppressWarnings("FieldName")
+    private static final Set<String> APPROVED_CLASS_PARTIALS = [
         "WorkflowScript"
     ]
 
-    private static Set<String> BINDING_CLASSES = []
+    @SuppressWarnings("FieldName")
+    private static final Set<String> BINDING_CLASSES = []
     static void pushPermittedClass(Object o){
         String name = o.getClass().getName()
         if(!BINDING_CLASSES.contains(name)){
@@ -48,7 +51,7 @@ class CustomClassFilterImpl implements CustomClassFilter {
 
     @SuppressWarnings('BooleanMethodReturnsNull')
     @Override Boolean permits(Class<?> c){
-        return (c.getName() in BINDING_CLASSES || APPROVED_CLASS_PARTIALS.find{ clazz -> c.getName().contains(clazz)}) ? true : null
+        return (c.getName() in BINDING_CLASSES || APPROVED_CLASS_PARTIALS.find{ clazz -> c.getName().contains(clazz) }) ? true : null
     }
 
 }
