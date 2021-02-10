@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.init.primitives.hooks.HookContext;
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext;
 import org.jenkinsci.plugins.workflow.cps.CpsScript;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
@@ -50,7 +51,8 @@ public abstract class StepWrapperScript extends CpsScript {
      * The FilePath within the build directory from which
      * resources can be fetched
      */
-    private FilePath resourcesBaseDir;
+    private String resourcesPath;
+    private String buildRootDir;
 
     public StepWrapperScript() throws IOException { super(); }
 
@@ -99,9 +101,14 @@ public abstract class StepWrapperScript extends CpsScript {
         }
     }
 
-    public void setResourcesBaseDir(FilePath resourcesBaseDir) {
-        this.resourcesBaseDir = resourcesBaseDir;
+    public void setBuildRootDir(File rootDir){
+        this.buildRootDir = rootDir.getPath();
     }
+
+    public void setResourcesPath(String resourcesPath){
+        this.resourcesPath = resourcesPath;
+    }
+
 
     /**
      * Used within steps to access library resources
@@ -115,6 +122,9 @@ public abstract class StepWrapperScript extends CpsScript {
         if (path.startsWith("/")){
             throw new AbortException("JTE: library step requested a resource that is not a relative path.");
         }
+        File f = new File(buildRootDir);
+        FilePath runRoot = new FilePath(f);
+        FilePath resourcesBaseDir = runRoot.child(resourcesPath);
         FilePath resourceFile = resourcesBaseDir.child(path);
         if(!resourceFile.exists()){
             String oopsMsg = String.format("JTE: library step requested a resource '%s' that does not exist", path);

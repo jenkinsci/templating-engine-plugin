@@ -117,8 +117,8 @@ class StepWrapperFactory{
          *       4. an optional HookContext
          */
         script.setConfig(config)
-        FilePath baseDir = new FilePath(flowOwner.getRootDir()).child("jte/${library}/resources")
-        script.setResourcesBaseDir(baseDir)
+        script.setBuildRootDir(flowOwner.getRootDir())
+        script.setResourcesPath("jte/${library}/resources")
         stageContext && script.setStageContext(stageContext)
         hookContext  && script.setHookContext(hookContext)
         return script

@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.init.primitives
 
 import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.boozallen.plugins.jte.util.CustomClassFilterImpl
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -71,6 +72,10 @@ class TemplateBinding extends Binding implements Serializable{
 
     @Override @SuppressWarnings('NoDef')
     void setVariable(String name, Object value) {
+        // HACK: avoid JEP-200 by maintaining a list of all objects
+        //       going to the binding that'll be stored on the
+        //       PipelineDecorator Action
+        CustomClassFilterImpl.pushPermittedClass(value)
         /**
          * if the variable being set is already taken by a TemplatePrimitive or marked
          * reserved by a ReservedVariableName, throw an exception
