@@ -84,7 +84,7 @@ class PluginLibraryProvider extends LibraryProvider{
 
                 String thing = parts[2]
                 if(thing == CONFIG_FILE){
-                    libraries[libName] = getFileContents(zipFile, zipEntry)
+                    libraries[libName].config = getFileContents(zipFile, zipEntry)
                 } else if (thing in [ "steps", "resources"]){
                     String relativePath = path - "libraries/${libName}/"
                     libraries[libName][thing][relativePath] = getFileContents(zipFile, zipEntry)
