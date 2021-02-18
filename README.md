@@ -49,7 +49,7 @@ If your pipeline template is setup to build, test, scan, deploy then it doesn't 
 
 There are many resources available to help you get started: 
 
-- [Documentation](https://boozallen.github.io/sdp-docs/jte/1.5.2/index.html)
+- [Documentation](https://boozallen.github.io/sdp-docs/jte/2.0.3/index.html)
 - **Learning Labs**
   - [Local Development (getting up and running with JTE)](https://boozallen.github.io/sdp-docs/learning-labs/1/local-development/index.html)
   - [JTE: The Basics](https://boozallen.github.io/sdp-docs/learning-labs/1/jte-the-basics/index.html)
