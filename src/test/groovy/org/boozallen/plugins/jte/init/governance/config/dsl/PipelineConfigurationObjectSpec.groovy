@@ -20,7 +20,6 @@ import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 class PipelineConfigurationObjectSpec extends Specification {
