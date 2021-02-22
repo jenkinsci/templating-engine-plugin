@@ -20,6 +20,8 @@ import org.codehaus.groovy.control.CompilerConfiguration
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.groovy.sandbox.SandboxTransformer
 
+import java.util.regex.Pattern
+
 /**
  * Parses the pipeline configuration DSL into a {@link PipelineConfigurationObject}
  */
@@ -109,6 +111,9 @@ class PipelineConfigurationDsl {
                     break
                 case List:
                     appendedFile += "${tab * depth}${merge}${override}${key} = ${value.inspect()}"
+                    break
+                case Pattern:
+                    appendedFile += "${tab * depth}${merge}${override}${key} = ~/${value}/"
                     break
                 default:
                     appendedFile += "${tab * depth}${merge}${override}${key} = ${value}"

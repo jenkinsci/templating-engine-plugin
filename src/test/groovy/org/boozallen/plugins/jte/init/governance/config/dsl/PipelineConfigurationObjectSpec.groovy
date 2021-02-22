@@ -20,6 +20,7 @@ import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 class PipelineConfigurationObjectSpec extends Specification {
@@ -527,6 +528,23 @@ class PipelineConfigurationObjectSpec extends Specification {
             "Subsequent May Merge: None",
             "Subsequent May Override: None"
         ])
+    }
+
+    def "GitHub Issue #174"() {
+        given:
+        String config = """
+        keywords{
+          master = ~/[Mm](aster|ain)/
+        }
+        """
+        PipelineConfigurationObject obj = dsl.parse(config)
+
+        when:
+        String serialized = dsl.serialize(obj)
+        dsl.parse(serialized)
+
+        then:
+        noExceptionThrown()
     }
 
 }
