@@ -18,6 +18,7 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -30,15 +31,13 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 class Stage extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
-    Binding binding
     String name
     Class<? extends TemplatePrimitiveInjector> injector
     ArrayList<String> steps
 
     Stage(){}
 
-    Stage(Binding binding, String name, ArrayList<String> steps){
-        this.binding = binding
+    Stage(String name, ArrayList<String> steps){
         this.name = name
         this.steps = steps
     }
@@ -55,7 +54,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         } else {
             stageArgs = args as Map
         }
-
+        TemplateBinding binding = TemplateBinding.fetchDuringRun()
         StageContext stageContext = new StageContext(name: name, args: stageArgs)
         steps.each{ step ->
             def clone = binding.getStep(step).clone()

@@ -206,6 +206,10 @@ class ConfigValidatorSpec extends Specification{
         "hi"        |     ~/^hey.*/     | true
         "hi"        |    ["hi", "hey"]  | false
         "opt3"      |  ["opt1", "opt2"] | true
+        [ "a" ]     |       List        | false
+        "a"         |       List        | true
+        [ "a" ]     |  ArrayList        | false
+        "a"         |  ArrayList        | true
     }
 
 }

@@ -18,6 +18,9 @@ package org.boozallen.plugins.jte.util
 import hudson.Extension
 import jenkins.security.CustomClassFilter
 
+import java.util.logging.Level
+import java.util.logging.Logger
+
 /**
  * Permits JTE classes to be stored on a {@link org.jenkinsci.plugins.workflow.job.WorkflowRun} via the
  * {@link org.boozallen.plugins.jte.init.PipelineDecorator}
@@ -26,10 +29,29 @@ import jenkins.security.CustomClassFilter
 @Extension
 class CustomClassFilterImpl implements CustomClassFilter {
 
+    @SuppressWarnings("UnnecessaryDotClass")
+    private static final Logger LOGGER = Logger.getLogger(CustomClassFilterImpl.class.getName())
+
+    @SuppressWarnings("FieldName")
+    private static final Set<String> APPROVED_CLASS_PARTIALS = [
+        "WorkflowScript"
+    ]
+
+    @SuppressWarnings("FieldName")
+    private static final Set<String> BINDING_CLASSES = []
+    static void pushPermittedClass(Object o){
+        String name = o.getClass().getName()
+        if(!BINDING_CLASSES.contains(name)){
+            LOGGER.log(Level.INFO, "Adding '${name}' to CustomClassFilterImpl")
+        }
+        BINDING_CLASSES.add(o.getClass().getName())
+    }
+
+    static void flush(){ BINDING_CLASSES.clear() }
+
     @SuppressWarnings('BooleanMethodReturnsNull')
     @Override Boolean permits(Class<?> c){
-        List<String> permitted = [ "org.boozallen.plugins.jte", "WorkflowScript", "org.jenkinsci.plugins.docker.workflow", "Docker", "org.codehaus.groovy.runtime.InvokerInvocationException" ]
-        return permitted.find{ p -> c.getName().startsWith(p) } ? true : null
+        return (c.getName() in BINDING_CLASSES || APPROVED_CLASS_PARTIALS.find{ clazz -> c.getName().contains(clazz) }) ? true : null
     }
 
 }

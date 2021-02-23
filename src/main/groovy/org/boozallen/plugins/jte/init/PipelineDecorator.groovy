@@ -49,7 +49,7 @@ class PipelineDecorator extends InvisibleAction implements Serializable {
 
     FlowExecutionOwner flowOwner
     PipelineConfigurationObject config
-    transient TemplateBinding binding
+    TemplateBinding binding
     String template
 
     PipelineDecorator(FlowExecutionOwner flowOwner) {

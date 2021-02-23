@@ -149,6 +149,8 @@ class ConfigValidator {
                     return true
                 }
                 return !(actual.matches(expected))
+            case [ List, ArrayList ]:
+                return !(actual.getClass() in [List, ArrayList])
             case { expected instanceof ArrayList }:
                 return !(actual in expected)
             default:
