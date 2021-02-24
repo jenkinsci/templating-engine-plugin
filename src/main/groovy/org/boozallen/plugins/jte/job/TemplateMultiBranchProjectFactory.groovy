@@ -18,6 +18,7 @@ package org.boozallen.plugins.jte.job
 import hudson.Extension
 import hudson.model.Action
 import hudson.model.ItemGroup
+import hudson.model.Item
 import hudson.model.TaskListener
 import jenkins.branch.MultiBranchProject
 import jenkins.branch.MultiBranchProjectFactory

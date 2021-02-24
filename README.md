@@ -30,7 +30,7 @@ The Jenkins Templating Engine (JTE) is a plugin originally created by [Booz Alle
 Different teams are going to use different tools, but the flow of the pipeline is typically consistent. Having to maintain a Jenkinsfile in every source code repository introduces real challenges when scaling a DevOps pipeline across an organization: 
 
 1. *Time*:  Typical Jenkins Shared Libraries help to consolidate common pipeline code, but software teams should focus on where they provide business value: building their application.  Jenkins can have a nontrivial learning curve and there's a desire to achieve economies of scale within an organization. 
-2. *Governance*: Having a Jenkinsfile in every repository makes it difficult, if not impossible, to ensure that every team is following an agreed upon business process to get code from developer's laptops out to users in proudction.  Furthermore, developer's have access to this Jenkinsfile and could have permission to skip required quality or security gates. 
+2. *Governance*: Having a Jenkinsfile in every repository makes it difficult, if not impossible, to ensure that every team is following an agreed upon business process to get code from developer's laptops out to users in production.  Furthermore, developer's have access to this Jenkinsfile and could have permission to skip required quality or security gates. 
 3. *Maintainability*:  Incorporating lessons learned into the pipeline over time becomes untenable when there are multiple pipeline definitions - it requires opening a Pull Request across each source code repository. 
 
 JTE aims to remove this friction by pulling the Jenkinsfile out of individual source code repositories and instead, creating tool-agnostic pipeline templates that can be reused across multiple teams. 
@@ -49,7 +49,7 @@ If your pipeline template is setup to build, test, scan, deploy then it doesn't 
 
 There are many resources available to help you get started: 
 
-- [Documentation](https://boozallen.github.io/sdp-docs/jte/1.5.2/index.html)
+- [Documentation](https://boozallen.github.io/sdp-docs/jte/2.0.3/index.html)
 - **Learning Labs**
   - [Local Development (getting up and running with JTE)](https://boozallen.github.io/sdp-docs/learning-labs/1/local-development/index.html)
   - [JTE: The Basics](https://boozallen.github.io/sdp-docs/learning-labs/1/jte-the-basics/index.html)

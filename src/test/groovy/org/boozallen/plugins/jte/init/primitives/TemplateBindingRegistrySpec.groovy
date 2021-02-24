@@ -442,6 +442,26 @@ class TemplateBindingRegistrySpec extends Specification{
         jenkins.assertLogContains("step: A", run)
     }
 
+    def "GitHub #170 check namespaced environment"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins, config: """
+            application_environments{
+              dev{
+                custom_field = "whatever"
+              }
+            }
+            """, template: 'println "custom_field is ${jte.application_environments["dev"].custom_field}"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("custom_field is whatever", run)
+    }
+
     @Ignore
     def "Namespaced Default Step invoked"(){
         given:

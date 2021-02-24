@@ -49,9 +49,17 @@ import java.lang.reflect.Method
     @Override
     boolean permitsStaticMethod(Method method, Object[] args){
         Class receiver = method.getDeclaringClass()
+
+        Class receivingClass
+        if (args.size()){
+            receivingClass = args[0].getClass()
+        }
+
         boolean a = permittedReceivers.collect{ r -> receiver in r }.contains(true)
         boolean b = receiver.getName() in permittedReceiverStrings
-        return (a || b)
+        boolean c = args.size() && permittedReceivers.collect{ r -> receivingClass in r }.contains(true)
+        boolean d = args.size() && receivingClass.getName() in permittedReceiverStrings
+        return (a || b || c || d)
     }
 
 }

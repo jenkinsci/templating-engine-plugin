@@ -529,4 +529,21 @@ class PipelineConfigurationObjectSpec extends Specification {
         ])
     }
 
+    def "GitHub Issue #174"() {
+        given:
+        String config = """
+        keywords{
+          master = ~/[Mm](aster|ain)/
+        }
+        """
+        PipelineConfigurationObject obj = dsl.parse(config)
+
+        when:
+        String serialized = dsl.serialize(obj)
+        dsl.parse(serialized)
+
+        then:
+        noExceptionThrown()
+    }
+
 }
