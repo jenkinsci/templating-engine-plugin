@@ -1,6 +1,6 @@
 name: jte
 title: Jenkins Templating Engine
-version: 2.0.1
+version: latest
 start_page: ROOT:index.adoc
 nav:
 - modules/ROOT/nav.adoc
