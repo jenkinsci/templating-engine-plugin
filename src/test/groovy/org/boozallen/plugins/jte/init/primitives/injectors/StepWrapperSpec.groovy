@@ -174,7 +174,7 @@ class StepWrapperSpec extends Specification{
             config: "libraries{ hasClassA }",
             template: """
             import boozallen.Utility
-            
+
             Utility u = new Utility()
             u.doThing(steps)
             """
@@ -209,7 +209,7 @@ class StepWrapperSpec extends Specification{
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
                 config: """
-                libraries{  
+                libraries{
                   hasClassA
                   hasClassB
                 }""",
@@ -229,8 +229,8 @@ class StepWrapperSpec extends Specification{
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
                 config: """
-                libraries{ 
-                  hasClassB 
+                libraries{
+                  hasClassB
                   hasClassA
                 }""",
                 template: "useClassB()"
@@ -243,7 +243,6 @@ class StepWrapperSpec extends Specification{
         jenkins.assertBuildStatusSuccess(run)
         jenkins.assertLogContains("doing a thing", run)
     }
-
 
     def "steps invocable via call shorthand with no params"(){
         given:

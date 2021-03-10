@@ -26,6 +26,9 @@ libraries{
 | xref:steps.adoc[Create a Step]
 | Learn how to create steps in JTE
 
+| xref:classes.adoc[Create a Class]
+| Learn how to create classes in JTE
+
 | xref:lifecycle_hooks.adoc[Lifecycle Hooks]
 | Learn how to create library steps that are automatically invoked in response to pipeline events
 

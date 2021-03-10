@@ -5,6 +5,7 @@
 ** xref:library_sources/plugin_library_provider.adoc[Plugin Library Provider]
 * xref:library_structure.adoc[Library Structure]
 * xref:steps.adoc[Create a Step]
+* xref:classes.adoc[Create a Class]
 * xref:lifecycle_hooks.adoc[Lifecycle Hooks]
 * xref:parameterizing_libraries.adoc[Parameterizing Libraries]
 * xref:library_resources.adoc[Accessing Library Resources]

@@ -21,7 +21,6 @@ import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
-import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 class TestLibraryProvider extends LibraryProvider{
@@ -35,7 +34,7 @@ class TestLibraryProvider extends LibraryProvider{
     }
 
     @Override
-    void logLibraryLoading(FlowExecutionOwner _, String __){}
+    void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){}
 
     @Override
     void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){

@@ -25,6 +25,7 @@ import jenkins.plugins.git.GitSampleRepoRule
 import jenkins.scm.api.SCMFileSystem
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TestFlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
@@ -222,6 +223,67 @@ class ScmLibraryProviderSpec extends Specification{
         null       | "lib"  || "lib"
         ""         | "lib"  || "lib"
         null       | null   || ""
+    }
+
+    def "SCM library with class gets put into the build dir src directory "(){
+        given:
+        ScmLibraryProvider p = new ScmLibraryProvider()
+        String libraryName = "someLibrary"
+        repo.init()
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
+        repo.git("add", "*")
+        repo.git("commit", "--message=init")
+        GitSCM scm = createSCM(repo)
+        p.setScm(scm)
+
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        File rootDir = new File(f.getRemote())
+        owner.getRootDir() >> rootDir
+        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
+        fsw.fs = SCMFileSystem.of(job, scm)
+        GroovySpy(FileSystemWrapper, global: true)
+        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+
+        when:
+        p.loadLibraryClasses(owner, libraryName)
+
+        then:
+        File s = new File(rootDir, "jte/src/boozallen/Utility.groovy")
+        assert s.exists()
+    }
+
+    def "SCM library with class throws exception if class already exists"(){
+        given:
+        ScmLibraryProvider p = new ScmLibraryProvider()
+        String libraryName = "someLibrary"
+        repo.init()
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
+        repo.git("add", "*")
+        repo.git("commit", "--message=init")
+        GitSCM scm = createSCM(repo)
+        p.setScm(scm)
+
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        File rootDir = new File(f.getRemote())
+        owner.getRootDir() >> rootDir
+
+        // put existing class file
+        File exists = new File(rootDir, "jte/src/boozallen/Utility.groovy")
+        exists.mkdirs()
+        exists.createNewFile()
+
+        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
+        fsw.fs = SCMFileSystem.of(job, scm)
+        GroovySpy(FileSystemWrapper, global: true)
+        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+
+        when:
+        p.loadLibraryClasses(owner, libraryName)
+
+        then:
+        thrown(JTEException)
     }
 
     GitSCM createSCM(GitSampleRepoRule _repo){

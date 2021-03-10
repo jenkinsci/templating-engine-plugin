@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init
 
 import hudson.Extension
-import hudson.FilePath
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
@@ -58,7 +57,7 @@ import java.util.logging.Logger
 @Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
 class GroovyShellDecoratorImpl extends GroovyShellDecorator {
 
-    private static final Logger LOGGER = Logger.getLogger(GroovyShellDecoratorImpl.class.name);
+    private static final Logger LOGGER = Logger.getLogger(GroovyShellDecoratorImpl.name);
 
     /**
      * If the current pipeline run has a @see PipelineDecorator action then

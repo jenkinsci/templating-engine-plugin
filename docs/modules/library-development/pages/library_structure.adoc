@@ -14,6 +14,9 @@ The name of the directory is the library identifier used within the pipeline con
 | _resources/+**+/*_
 | any file under the `resources` directory will be accessible from within library steps
 
+| _src/+**+/*_
+| Classes contributed by the library that can be import from templates and steps
+
 | _library_config.groovy_
 | the library configuration file
 
@@ -31,7 +34,10 @@ exampleLibraryName <1>
 │   ├── someResource.txt <5>
 │   └── nested
 │       └── anotherResource.json <6>
-└── library_config.groovy <7>
+├── src <7>
+│   └── example
+│       └── Utility.groovy <8>
+└── library_config.groovy <9>
 ----
 <1> This library would be loaded via the `exampleLibraryName` identifier in the `libraries{}` block
 <2> All steps contributed by the library goes in the `steps` directory
@@ -39,4 +45,6 @@ exampleLibraryName <1>
 <4> All library resources go in the `resources` directory
 <5> A root level resource.  The contents could be fetched from `step1` or `step2` via `resource("someResource.txt")`
 <6> A nested resource.  The contents could be fetched from `step1` or `step2` via `resource("nested/anotherResource.json")`
-<7> The library configuration file
+<7> File paths within the `src` directory must be unique across libraries loaded and will be made available to the Class Loader for both steps and templates
+<8> A class file containing the `example.Utility` class.
+<9> The library configuration file

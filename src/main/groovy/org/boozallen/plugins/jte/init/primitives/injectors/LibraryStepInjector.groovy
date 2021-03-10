@@ -97,10 +97,12 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             providers = providers.reverse()
         }
 
+        LinkedHashMap providerCache = [:]
         aggregatedConfig[KEY].each{ libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)
             }
+            providerCache[libName] = provider
             provider.logLibraryLoading(flowOwner, libName)
             provider.loadLibraryClasses(flowOwner, libName)
         }
@@ -114,9 +116,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
          * TODO: there's probably a more efficient way to do this..
          */
         aggregatedConfig[KEY].each { libName, libConfig ->
-            LibraryProvider provider = providers.find { provider ->
-                provider.hasLibrary(flowOwner, libName)
-            }
+            LibraryProvider provider = providerCache[libName]
             provider.loadLibrarySteps(flowOwner, binding, libName, libConfig)
         }
     }

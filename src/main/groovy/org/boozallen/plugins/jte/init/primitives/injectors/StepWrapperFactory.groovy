@@ -131,7 +131,7 @@ class StepWrapperFactory{
      */
     @Extension static class StepWrapperShellDecorator extends GroovyShellDecorator {
 
-        private static final LOGGER = new Logger(StepWrapperShellDecorator.class.name)
+        private static final Logger LOGGER = new Logger(StepWrapperShellDecorator.name)
         /**
          * The name of a property that will be added to CpsFlowExecution's used to
          * parse a StepWrapper script.
