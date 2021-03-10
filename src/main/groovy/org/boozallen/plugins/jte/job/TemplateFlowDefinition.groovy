@@ -52,7 +52,7 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
     FlowExecution create(FlowExecutionOwner owner, TaskListener listener, List<? extends Action> actions) throws Exception {
         FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
         String template = initializeJTE(owner)
-        return new CpsFlowExecution(template, false, owner, hint)
+        return new CpsFlowExecution(template, true, owner, hint)
     }
 
     private String initializeJTE(FlowExecutionOwner owner){
