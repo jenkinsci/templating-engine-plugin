@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init
 
 import hudson.Extension
+import hudson.FilePath
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
@@ -39,8 +40,11 @@ import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+
 import javax.annotation.CheckForNull
 import java.lang.reflect.Field
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Decorates the pipeline template during compilation
@@ -53,6 +57,8 @@ import java.lang.reflect.Field
  */
 @Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
 class GroovyShellDecoratorImpl extends GroovyShellDecorator {
+
+    private static final Logger LOGGER = Logger.getLogger(GroovyShellDecoratorImpl.class.name);
 
     /**
      * If the current pipeline run has a @see PipelineDecorator action then
@@ -68,10 +74,21 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
         WorkflowRun run = owner.run()
         PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
         if(pipelineDecorator){
+            // attach the TemplateBinding
             TemplateBinding binding = pipelineDecorator.getBinding()
             Field shellBinding = GroovyShell.getDeclaredField("context")
             shellBinding.setAccessible(true)
             shellBinding.set(shell, binding)
+            // add loaded libraries `src` directories to the classloader
+            File jte = owner.getRootDir()
+            File srcDir = new File(jte, "jte/src")
+            if (srcDir.exists()){
+                if(srcDir.isDirectory()) {
+                    shell.getClassLoader().addURL(srcDir.toURI().toURL())
+                } else {
+                    LOGGER.log(Level.WARNING, "${srcDir.getPath()} is not a directory.")
+                }
+            }
         }
     }
 

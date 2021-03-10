@@ -20,6 +20,8 @@ import hudson.FilePath
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.boozallen.plugins.jte.util.JTEException
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 class TestLibraryProvider extends LibraryProvider{
@@ -33,7 +35,26 @@ class TestLibraryProvider extends LibraryProvider{
     }
 
     @Override
-    void loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
+    void logLibraryLoading(FlowExecutionOwner _, String __){}
+
+    @Override
+    void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){
+        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
+        FilePath jte = buildRootDir.child("jte")
+        if(hasLibrary(flowOwner, libName)){
+            TestLibrary library = getLibrary(libName)
+            library.src.each{ path, contents ->
+                FilePath src = jte.child(path)
+                if(src.exists()){
+                    throw new JTEException("src file '${path}' exists already exists")
+                }
+                src.write(contents, "UTF-8")
+            }
+        }
+    }
+
+    @Override
+    void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
         FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
         FilePath rootDir = buildRootDir.child("jte/${libName}")
         rootDir.mkdirs()
@@ -89,6 +110,15 @@ class TestLibraryProvider extends LibraryProvider{
         library.addConfig(config)
     }
 
+    void addSrc(String libName, String path, String content){
+        TestLibrary library = getLibrary(libName)
+        if(!library){
+            library = new TestLibrary(name: libName)
+            libraries << library
+        }
+        library.addSrc(path, content)
+    }
+
     TestLibrary getLibrary(String libName){
         return libraries.find{ lib -> lib.name == libName }
     }
@@ -99,6 +129,7 @@ class TestLibraryProvider extends LibraryProvider{
         String config
         LinkedHashMap steps = [:]
         LinkedHashMap resources = [:]
+        LinkedHashMap src = [:]
 
         void addStep(String stepName, String text){
             if(steps.containsKey(stepName)){
@@ -112,6 +143,13 @@ class TestLibraryProvider extends LibraryProvider{
                 throw new Exception("Test Library ${name} already has resource ${path}.")
             }
             resources[path] = text
+        }
+
+        void addSrc(String path, String text){
+            if(src.containsKey(path)){
+                throw new Exception("Test Library ${name} already contains src ${path}.")
+            }
+            src[path] = text
         }
 
         void addConfig(String config){

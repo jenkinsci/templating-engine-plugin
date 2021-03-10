@@ -74,8 +74,13 @@ class LibraryStepInjectorSpec extends Specification{
         }
 
         @Override
-        void loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig) {
-        }
+        void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){}
+
+        @Override
+        void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){}
+
+        @Override
+        void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig) {}
 
     }
 
@@ -103,7 +108,7 @@ class LibraryStepInjectorSpec extends Specification{
         injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
 
         then:
-        1 * p1.loadLibrary(flowExecutionOwner, templateBinding, libraryName, _)
+        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, libraryName, _)
     }
 
     @WithoutJenkins
@@ -136,10 +141,10 @@ class LibraryStepInjectorSpec extends Specification{
         injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
 
         then:
-        1 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
-        0 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libB", _)
-        1 * p2.loadLibrary(flowExecutionOwner, templateBinding, "libB", _)
-        0 * p2.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
+        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        0 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
+        1 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
+        0 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
     }
 
     @WithoutJenkins
@@ -176,10 +181,10 @@ class LibraryStepInjectorSpec extends Specification{
         injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
 
         then:
-        1 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
-        0 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libB", _)
-        0 * p2.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
-        1 * p2.loadLibrary(flowExecutionOwner, templateBinding, "libB", _)
+        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        0 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
+        0 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        1 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
     }
 
     @WithoutJenkins
@@ -215,8 +220,8 @@ class LibraryStepInjectorSpec extends Specification{
         injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
 
         then:
-        1 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
-        0 * p2.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
+        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        0 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
     }
 
     @WithoutJenkins
@@ -253,8 +258,8 @@ class LibraryStepInjectorSpec extends Specification{
         injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
 
         then:
-        0 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
-        1 * p2.loadLibrary(flowExecutionOwner, templateBinding, "libA", _)
+        0 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        1 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
     }
 
     @WithoutJenkins
@@ -288,8 +293,8 @@ class LibraryStepInjectorSpec extends Specification{
         injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
 
         then:
-        1 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libA", [fieldA: "A"])
-        1 * p1.loadLibrary(flowExecutionOwner, templateBinding, "libB", [fieldB: "B"])
+        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", [fieldA: "A"])
+        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", [fieldB: "B"])
     }
 
     @WithoutJenkins

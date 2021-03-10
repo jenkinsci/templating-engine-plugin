@@ -96,11 +96,28 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         if(reverseProviders) {
             providers = providers.reverse()
         }
+
         aggregatedConfig[KEY].each{ libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)
             }
-            provider.loadLibrary(flowOwner, binding, libName, libConfig)
+            provider.logLibraryLoading(flowOwner, libName)
+            provider.loadLibraryClasses(flowOwner, libName)
+        }
+
+        /*
+         * library steps need to be loaded in a second passthrough
+         * to ensure that every library's source files have been
+         * added to the classloader, lest compilation errors occur
+         * during cross-library imports.
+         *
+         * TODO: there's probably a more efficient way to do this..
+         */
+        aggregatedConfig[KEY].each { libName, libConfig ->
+            LibraryProvider provider = providers.find { provider ->
+                provider.hasLibrary(flowOwner, libName)
+            }
+            provider.loadLibrarySteps(flowOwner, binding, libName, libConfig)
         }
     }
 

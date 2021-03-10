@@ -23,6 +23,7 @@ import jenkins.scm.api.SCMFile
 import jenkins.scm.api.SCMFileSystem
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
@@ -99,14 +100,46 @@ class ScmLibraryProvider extends LibraryProvider{
     }
 
     @Override
-    void loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
-        SCMFileSystem fs = createFs(flowOwner)
+    void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         ArrayList msg = [
-            "Loading Library ${libName}",
-            "-- scm: ${scm.getKey()}"
+                "Loading Library ${libName}",
+                "-- scm: ${scm.getKey()}"
         ]
         logger.print(msg.join("\n"))
+    }
+
+    /**
+     * For each class file in the remote repository, copy it into the build dir
+     * and maintain the package structure
+     *
+     * note: all libraries share a common src directory when moving so we need to
+     * ensure there aren't collisions to avoid unexpected behavior
+     *
+     * this has to come before loading steps so that classes are available to the
+     * classloader when compiling the step.
+     */
+    @Override
+    void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){
+        SCMFileSystem fs = createFs(flowOwner)
+        // we already know this exists from hasLibrary()
+        SCMFile lib = fs.child(prefixBaseDir(libName))
+        SCMFile src = lib.child(LibraryProvider.SRC_DIR_NAME)
+        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
+        FilePath jteDir = buildRootDir.child("jte")
+        recurseChildren(src){ file ->
+            String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
+            FilePath srcFile = jteDir.child(relativePath)
+            if(srcFile.exists()){
+                throw new JTEException("Source file ${relativePath} already exists. Check across libraries for duplicate class definitions.")
+            }
+            srcFile.write(file.contentAsString(), "UTF-8")
+        }
+    }
+
+    @Override
+    void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
+        SCMFileSystem fs = createFs(flowOwner)
 
         // we already know this exists from hasLibrary()
         SCMFile lib = fs.child(prefixBaseDir(libName))

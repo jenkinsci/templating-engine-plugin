@@ -27,10 +27,13 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
     public static final String CONFIG_FILE = "library_config.groovy"
     public static final String STEPS_DIR_NAME = "steps"
     public static final String RESOURCES_DIR_NAME = "resources"
+    public static final String SRC_DIR_NAME = "src"
 
     abstract Boolean hasLibrary(FlowExecutionOwner flowOwner, String libraryName)
     abstract String getLibrarySchema(FlowExecutionOwner flowOwner, String libraryName)
-    abstract void loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig)
+    abstract void logLibraryLoading(FlowExecutionOwner flowOwner, String libName)
+    abstract void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName)
+    abstract void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig)
 
     static class LibraryProviderDescriptor extends Descriptor<LibraryProvider> {}
 

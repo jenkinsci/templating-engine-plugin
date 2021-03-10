@@ -21,6 +21,7 @@ import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
@@ -78,6 +79,7 @@ class PluginLibraryProvider extends LibraryProvider{
                     libraries[libName] = [
                         steps: [:],
                         resources: [:],
+                        src: [:],
                         config: null
                     ]
                 }
@@ -85,7 +87,7 @@ class PluginLibraryProvider extends LibraryProvider{
                 String thing = parts[2]
                 if(thing == CONFIG_FILE){
                     libraries[libName].config = getFileContents(zipFile, zipEntry)
-                } else if (thing in [ "steps", "resources"] && !path.endsWith('/')){
+                } else if (thing in [ "steps", "resources", "src"] && !path.endsWith('/')){
                     String relativePath = path - "libraries/${libName}/"
                     libraries[libName][thing][relativePath] = getFileContents(zipFile, zipEntry)
                 }
@@ -135,15 +137,30 @@ class PluginLibraryProvider extends LibraryProvider{
     }
 
     @Override
-    void loadLibrary(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
+    void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-
         ArrayList msg = [
             "Loading Library ${libName}",
             "-- plugin: ${getPluginDisplayName() ?: "can't determine plugin"}"
         ]
         logger.print(msg.join("\n"))
+    }
 
+    @Override
+    void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){
+        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
+        FilePath jte = buildRootDir.child("jte")
+        libraries[libName].src.each{ filePath, fileContents ->
+            FilePath file = jte.child(filePath)
+            if(file.exists()){
+                throw new JTEException("Source file ${relativePath} already exists. Check across libraries for duplicate class definitions.")
+            }
+            file.write(fileContents, "UTF-8")
+        }
+    }
+
+    @Override
+    void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
         // copy the library contents into the build dir
         FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
         FilePath rootDir = buildRootDir.child("jte/${libName}")
@@ -155,13 +172,13 @@ class PluginLibraryProvider extends LibraryProvider{
 
         // create StepWrappers and inject
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
-        libraries[libName].steps.each{ stepPath, stepContents ->
+        libraries[libName].steps.each { stepPath, stepContents ->
             String stepName = stepPath.split("/").last() - ".groovy"
             binding.setVariable(stepName, stepFactory.createFromFilePath(
-                rootDir.child(stepPath),
-                binding,
-                libName,
-                libConfig
+                    rootDir.child(stepPath),
+                    binding,
+                    libName,
+                    libConfig
             ))
         }
     }

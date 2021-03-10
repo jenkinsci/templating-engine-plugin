@@ -142,8 +142,108 @@ class StepWrapperSpec extends Specification{
           println resource("/nope.txt")
         }
         """)
+
+        libProvider.addSrc("hasClassA", "src/boozallen/Utility.groovy", """
+        package boozallen
+        class Utility implements Serializable{
+          void doThing(steps){ steps.echo "doing a thing" }
+        }
+        """)
+        libProvider.addStep("hasClassA", "useClass", """
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        """)
+        libProvider.addStep("hasClassB", "useClassB", """
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        """)
+
         libProvider.addGlobally()
     }
+
+    def "Library class can be imported and used in a pipeline template"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: "libraries{ hasClassA }",
+            template: """
+            import boozallen.Utility
+            
+            Utility u = new Utility()
+            u.doThing(steps)
+            """
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("doing a thing", run)
+    }
+
+    def "Library class can be imported and used from same library"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: "libraries{ hasClassA }",
+                template: "useClass()"
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("doing a thing", run)
+    }
+
+    def "Library class from A can be used in B when A is loaded first"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: """
+                libraries{  
+                  hasClassA
+                  hasClassB
+                }""",
+                template: "useClassB()"
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("doing a thing", run)
+    }
+
+    def "Library class from A can be used in B when B is loaded first"(){
+        given:
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: """
+                libraries{ 
+                  hasClassB 
+                  hasClassA
+                }""",
+                template: "useClassB()"
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("doing a thing", run)
+    }
+
 
     def "steps invocable via call shorthand with no params"(){
         given:

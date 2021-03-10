@@ -30,6 +30,8 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 
 import javax.annotation.CheckForNull
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * Produces StepWrappers
@@ -128,14 +130,22 @@ class StepWrapperFactory{
      * Registers a compiler customization for parsing StepWrappers
      */
     @Extension static class StepWrapperShellDecorator extends GroovyShellDecorator {
+
+        private static final LOGGER = new Logger(StepWrapperShellDecorator.class.name)
         /**
          * The name of a property that will be added to CpsFlowExecution's used to
          * parse a StepWrapper script.
          * <p>
-         * Simplifies determining if a CpsFlowExecution's script compliation should
+         * Simplifies determining if a CpsFlowExecution's script compilation should
          * be modified by this decorator.
          */
         private static final String FLAG = "JTE_STEP"
+
+        /**
+         * Customizes th
+         * @param execution the run's execution
+         * @param cc the compiler configuration used to compile the step
+         */
         @Override
         void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
             if(execution.hasProperty(FLAG)){
@@ -145,6 +155,22 @@ class StepWrapperFactory{
                 cc.addCompilationCustomizers(ic)
                 // set script base class to our own
                 cc.setScriptBaseClass(StepWrapperScript.name)
+            }
+        }
+
+        @Override
+        void configureShell(@CheckForNull CpsFlowExecution execution, GroovyShell shell) {
+            if(execution.hasProperty(FLAG)){
+                FlowExecutionOwner owner = execution.getOwner()
+                File jte = owner.getRootDir()
+                File srcDir = new File(jte, "jte/src")
+                if (srcDir.exists()){
+                    if(srcDir.isDirectory()) {
+                        shell.getClassLoader().addURL(srcDir.toURI().toURL())
+                    } else {
+                        LOGGER.log(Level.WARNING, "${srcDir.getPath()} is not a directory.")
+                    }
+                }
             }
         }
     }
