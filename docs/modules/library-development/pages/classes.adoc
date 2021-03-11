@@ -33,7 +33,7 @@ To learn more, check out https://www.jenkins.io/doc/book/pipeline/pipeline-best-
 
 ## Accessibility
 
-Classes contributed by loaded libraries can be import from the pipeline template, steps of the same library, and steps from other libraries.
+Classes contributed by loaded libraries can be imported into the pipeline template, steps of the same library, and steps from other libraries.
 
 ## Jenkins DSL Step Resolution
 
@@ -60,4 +60,40 @@ import example.Utility
 
 Utility u = new Utility()
 u.doThing(steps)
+----
+
+## Accessing the Library Configuration
+
+Unlike with library steps, the `config` and `pipelineConfig` variables are not autowired to library classes.
+
+To access these variables, they can be passed to the class through constructor or method parameters.
+
+For example:
+
+[source, groovy]
+----
+package example
+
+class Utility implements Serializable{
+  def config
+  Utility(config){
+    this.config = config
+  }
+
+  void doThing(steps){
+    steps.echo "library config: ${config}"
+  }
+}
+----
+
+and then from within a library step:
+
+[source,groovy]
+----
+import example.Utility
+
+void call(){
+  Utility u = new Utility(config)
+  u.doThing(steps)
+}
 ----
