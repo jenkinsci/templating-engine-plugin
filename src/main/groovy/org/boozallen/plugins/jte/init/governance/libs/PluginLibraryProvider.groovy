@@ -128,7 +128,7 @@ class PluginLibraryProvider extends LibraryProvider{
 
         if( !hasSteps || !hasClasses){ // library has no steps
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-            logger.printWarning("Library ${libName} exists but deos not have any steps or classes. Will not be loaded.")
+            logger.printWarning("Library ${libName} exists but does not have any steps or classes. Will not be loaded.")
             return false
         }
 
