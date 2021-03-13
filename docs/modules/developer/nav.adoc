@@ -1,2 +1,3 @@
 * xref:index.adoc[Developer Documentation]
+** xref:CONTRIBUTING.adoc[Contributing]
 ** xref:initialization.adoc[Initialization Process]
