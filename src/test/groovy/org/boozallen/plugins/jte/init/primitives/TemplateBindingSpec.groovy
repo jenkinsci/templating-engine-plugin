@@ -47,10 +47,12 @@ class TemplateBindingSpec extends Specification{
         @NonCPS @Override String getName(){ return name }
         @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
+        @SuppressWarnings("UnusedMethodParameter")
         void throwPreLockException(String msg){
             throw new TemplateException ("pre-lock exception")
         }
 
+        @SuppressWarnings("UnusedMethodParameter")
         void throwPostLockException(String msg){
             throw new TemplateException ("post-lock exception")
         }
@@ -311,19 +313,19 @@ class TemplateBindingSpec extends Specification{
         jte{
           permissive_initialization = true
         }
-        
+
         application_environments {
           dev{
             long_name = "development"
           }
         }
-        
+
         stages{
           broadway{
             temp_meth1
           }
         }
-        
+
         template_methods{
           temp_meth1
         }
@@ -345,17 +347,17 @@ class TemplateBindingSpec extends Specification{
         jte{
           permissive_initialization = true
         }
-        
+
         stages{
           broadway{
             temp_meth1
           }
         }
-        
+
         keywords{
           stageContext = "x"
         }
-        
+
         template_methods{
           temp_meth1
         }
