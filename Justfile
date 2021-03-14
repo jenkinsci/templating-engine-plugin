@@ -85,3 +85,7 @@ reload:
   docker exec -it {{container}} /bin/bash -c "rm -rf /var/jenkins_home/plugins/templating-engine{,.*}"
   docker cp build/libs/templating-engine.hpi {{container}}:/var/jenkins_home/plugins/templating-engine.hpi
   docker restart {{container}}
+
+# watches the given path to commit all changes as they occur
+watch path:
+  watchexec 'cd {{path}} && git add -A && git commit -m "update"' -w {{path}}
