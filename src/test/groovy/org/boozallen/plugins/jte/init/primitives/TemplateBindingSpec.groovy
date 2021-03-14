@@ -43,14 +43,15 @@ class TemplateBindingSpec extends Specification{
         String name
         Class<? extends TemplatePrimitiveInjector> injector
 
+        @NonCPS @Override String getDescription(){ return "Test Primitive ${name}" }
         @NonCPS @Override String getName(){ return name }
         @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
-        void throwPreLockException(){
+        void throwPreLockException(String msg){
             throw new TemplateException ("pre-lock exception")
         }
 
-        void throwPostLockException(){
+        void throwPostLockException(String msg){
             throw new TemplateException ("post-lock exception")
         }
 
@@ -304,33 +305,33 @@ class TemplateBindingSpec extends Specification{
     def "application env as argument for stage context"(){
         given:
         String template = """
-broadway dev
-"""
+        broadway dev
+        """
         String config = """
-jte{
-  permissive_initialization = true
-}
-
-application_environments {
-  dev{
-    long_name = "development"
-  }
-}
-
-stages{
-  broadway{
-    temp_meth1
-  }
-}
-
-template_methods{
-  temp_meth1
-}
-"""
+        jte{
+          permissive_initialization = true
+        }
+        
+        application_environments {
+          dev{
+            long_name = "development"
+          }
+        }
+        
+        stages{
+          broadway{
+            temp_meth1
+          }
+        }
+        
+        template_methods{
+          temp_meth1
+        }
+        """
 
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                template: template,
-                config: config
+            template: template,
+            config: config
         )
 
         expect:
@@ -339,32 +340,30 @@ template_methods{
 
     def "permissive mode binding collision with ReservedVariable (stageContext) pre-lock throws pre-lock exception"(){
         given:
-        String template = """
-broadway
-"""
+        String template = "broadway"
         String config = """
-jte{
-  permissive_initialization = true
-}
-
-stages{
-  broadway{
-    temp_meth1
-  }
-}
-
-keywords{
-  stageContext = "x"
-}
-
-template_methods{
-  temp_meth1
-}
-"""
+        jte{
+          permissive_initialization = true
+        }
+        
+        stages{
+          broadway{
+            temp_meth1
+          }
+        }
+        
+        keywords{
+          stageContext = "x"
+        }
+        
+        template_methods{
+          temp_meth1
+        }
+        """
 
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                template: template,
-                config: config
+            template: template,
+            config: config
         )
 
         expect:

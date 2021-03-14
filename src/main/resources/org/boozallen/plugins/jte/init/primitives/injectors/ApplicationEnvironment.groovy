@@ -66,6 +66,7 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         this.config = config.asImmutable()
     }
 
+    @NonCPS @Override String getDescription(){ return "Application Environment '${name}'" }
     @NonCPS @Override String getName(){ return name }
     @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return ApplicationEnvironmentInjector }
 
@@ -80,12 +81,14 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
     }
 
     @NonCPS
-    void throwPreLockException(){
-        throw new TemplateException ("Application Environment ${name} already defined.")
+    void throwPreLockException(String msg){
+        msg += "Application Environment ${name} already defined."
+        throw new TemplateException(msg)
     }
 
-    void throwPostLockException(){
-        throw new TemplateException ("Variable ${name} is reserved as an Application Environment.")
+    void throwPostLockException(String msg){
+        msg += "Variable ${name} is reserved as an Application Environment."
+        throw new TemplateException(msg)
     }
 
 }

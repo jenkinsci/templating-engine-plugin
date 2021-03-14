@@ -42,6 +42,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         this.steps = steps
     }
 
+    @NonCPS @Override String getDescription(){ return "Stage '${name}'" }
     @NonCPS @Override String getName(){ return name }
     @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
@@ -64,12 +65,14 @@ class Stage extends TemplatePrimitive implements Serializable{
     }
 
     @NonCPS
-    void throwPreLockException(){
-        throw new TemplateException ("The Stage ${name} is already defined.")
+    void throwPreLockException(String msg){
+        msg += "The Stage ${name} is already defined."
+        throw new TemplateException(msg)
     }
 
-    void throwPostLockException(){
-        throw new TemplateException ("The variable ${name} is reserved as a template Stage.")
+    void throwPostLockException(String msg){
+        msg += "The variable ${name} is reserved as a template Stage."
+        throw new TemplateException(msg)
     }
 
 }

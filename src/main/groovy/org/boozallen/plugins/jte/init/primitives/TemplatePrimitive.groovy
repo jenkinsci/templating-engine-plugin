@@ -34,12 +34,12 @@ abstract class TemplatePrimitive implements Serializable{
     /**
      * Invoked if an object with this class were to be overridden in the {@link TemplateBinding} during initialization
      */
-    abstract void throwPreLockException()
+    abstract void throwPreLockException(String preface)
 
     /**
      * Invoked if an object with this class were to be overridden in the {@link TemplateBinding} after initialization
      */
-    abstract void throwPostLockException()
+    abstract void throwPostLockException(String preface)
 
     /**
      * Returns the injector that creates the primitive
@@ -58,5 +58,15 @@ abstract class TemplatePrimitive implements Serializable{
      * @return
      */
     abstract String getName()
+
+    /**
+     * Returns the user-facing description of what this primitive is
+     * <p>
+     *     examples:
+     *     - Library Step 'build' from the 'maven' library
+     *     - Stage 'continuous_integration'
+     * @return the user-facing description of the primitive
+     */
+    abstract String getDescription()
 
 }

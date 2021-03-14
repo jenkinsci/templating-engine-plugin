@@ -91,6 +91,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      */
     private HookContext hookContext
 
+    @NonCPS @Override String getDescription(){ return "Library Step '${name}' from the '${library}' library" }
     @NonCPS @Override String getName(){ return name }
     @NonCPS String getLibrary(){ return library }
     @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
@@ -179,12 +180,14 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     }
 
     @NonCPS
-    void throwPreLockException(){
-        throw new TemplateException ("Library Step Collision. The step ${name} already defined via the ${library} library.")
+    void throwPreLockException(String msg){
+        msg += "The step '${name}' already defined via the '${library}' library."
+        throw new TemplateException(msg)
     }
 
-    void throwPostLockException(){
-        throw new TemplateException ("Library Step Collision. The variable ${name} is reserved as a library step via the ${library} library.")
+    void throwPostLockException(String msg){
+        msg += "The variable '${name}' is reserved as a library step via the '${library}' library."
+        throw new TemplateException(msg)
     }
 
     /**

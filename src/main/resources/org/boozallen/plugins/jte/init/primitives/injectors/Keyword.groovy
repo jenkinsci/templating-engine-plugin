@@ -32,6 +32,7 @@ class Keyword extends TemplatePrimitive implements Serializable{
     String preLockException = "Variable ${name} already exists as a Keyword."
     String postLockException = "Variable ${name} is reserved as a template Keyword."
 
+    @NonCPS @Override String getDescription(){ return "Keyword '${name}'" }
     @NonCPS @Override String getName(){ return name }
     @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
@@ -40,12 +41,14 @@ class Keyword extends TemplatePrimitive implements Serializable{
     }
 
     @NonCPS
-    void throwPreLockException(){
-        throw new TemplateException(preLockException)
+    void throwPreLockException(String msg){
+        msg += preLockException
+        throw new TemplateException(msg)
     }
 
-    void throwPostLockException(){
-        throw new TemplateException(postLockException)
+    void throwPostLockException(String msg){
+        msg += postLockException
+        throw new TemplateException(msg)
     }
 
 }

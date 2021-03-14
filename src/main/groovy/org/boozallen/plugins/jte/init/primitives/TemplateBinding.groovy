@@ -50,7 +50,8 @@ class TemplateBinding extends Binding implements Serializable{
         setVariable(STEPS, new DSL(owner))
         /**
          * for jte namespace, we need to bypass the exception throwing logic
-         * that would be triggered by "jte" as a ReservedVariableName
+         * that would be triggered by "jte" as a ReservedVariableName which is
+         * why we use `variables.put()` instead of `setVariable()`
          */
         variables.put(registry.getVariableName(), registry)
     }
@@ -86,17 +87,23 @@ class TemplateBinding extends Binding implements Serializable{
             if (!collisionTarget) {
                 throw new JTEException("Something weird happened. Unable to determine source of binding collision.")
             }
+            String preface
+            if(value in TemplatePrimitive){
+                preface = "Failed to create ${value.getDescription()}. "
+            } else {
+                preface = "Failed to create variable '${name}' with value ${value}. "
+            }
             if (locked) {
                 // during pipeline execution:
                 //   always throw exceptions if overriding during pipeline execution
                 //   i.e., a template or library inadvertently create a variable
                 //   that collides
-                collisionTarget.throwPostLockException()
+                collisionTarget.throwPostLockException(preface)
             } else if (!permissiveInitialization || reservedVar) {
                 // during initialization:
                 // throw an exception if the initialization mode is strict
                 // always throw exception if the collision target is a reserved variable
-                collisionTarget.throwPreLockException()
+                collisionTarget.throwPreLockException(preface)
             }
         }
 
@@ -116,6 +123,13 @@ class TemplateBinding extends Binding implements Serializable{
             throw new MissingPropertyException(name, this.getClass())
         }
 
+        /**
+         * The registry tracks TemplatePrimitives that have been
+         * put into the binding. When `jte.permissive_initialization` is
+         * set to true, there may be multiple primitives with the same
+         * name.  When that's the case, JTE requires that each primitive
+         * be accessed via its long-name using primitive namespacing.
+         */
         List<String> primitives = registry.getPrimitivesByName(name)
         if(primitives.size() >= 2 && locked){
             List<String> msg = [
