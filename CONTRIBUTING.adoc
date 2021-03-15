@@ -29,7 +29,7 @@ To run all the tests, run:
 just test
 ----
 
-The gradle test report is published to `build/target/tests/test/index.html`
+The gradle test report is published to `build/reports/tests/test/index.html`
 
 ### Execute tests for a specific class
 
