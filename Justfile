@@ -49,7 +49,7 @@ docs:
 # publishes the jpi
 release version branch=`git branch --show-current`: 
   #!/usr/bin/env bash
-  if [[ ! "{{branch}}" == "justfile" ]]; then 
+  if [[ ! "{{branch}}" == "main" ]]; then 
     echo "You can only cut a release from the 'main' branch."
     echo "Currently on branch '{{branch}}'"
     exit 1

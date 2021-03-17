@@ -97,48 +97,6 @@ class ScmLibraryProviderSpec extends Specification{
         p.hasLibrary(owner, libraryName)
     }
 
-    def "hasLibrary returns false when library exists but has no steps directory"(){
-        given:
-        ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
-        repo.init()
-        repo.write("${libraryName}/resources/someStep.groovy", "void call(){ println 'the step' }")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
-        GitSCM scm = createSCM(repo)
-        p.setScm(scm)
-
-        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
-        fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
-        1 * logger.println{ msg -> msg.contains("Library ${libraryName} exists but does not have steps present".toString()) }
-
-        expect:
-        p.hasLibrary(owner, libraryName) == false
-    }
-
-    def "hasLibrary returns false when library step directory exists but has no steps *.groovy"(){
-        given:
-        ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
-        repo.init()
-        repo.write("${libraryName}/steps/someStep.sh", "void call(){ println 'the step' }")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
-        GitSCM scm = createSCM(repo)
-        p.setScm(scm)
-
-        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
-        fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
-        1 * logger.println{ msg -> msg.contains("Library ${libraryName} exists but does not have steps present".toString()) }
-
-        expect:
-        p.hasLibrary(owner, libraryName) == false
-    }
-
     def "hasLibrary returns false when library does not exist"(){
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
@@ -284,6 +242,103 @@ class ScmLibraryProviderSpec extends Specification{
 
         then:
         thrown(JTEException)
+    }
+
+    def "hasLibrary returns true when only src directory present"(){
+        given:
+        ScmLibraryProvider p = new ScmLibraryProvider()
+        String libraryName = "someLibrary"
+        repo.init()
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
+        repo.git("add", "*")
+        repo.git("commit", "--message=init")
+        GitSCM scm = createSCM(repo)
+        p.setScm(scm)
+
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        File rootDir = new File(f.getRemote())
+        owner.getRootDir() >> rootDir
+        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
+        fsw.fs = SCMFileSystem.of(job, scm)
+        GroovySpy(FileSystemWrapper, global: true)
+        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+
+        expect:
+        p.hasLibrary(owner, libraryName)
+    }
+
+    def "hasLibrary returns true when only steps directory present"(){
+        given:
+        ScmLibraryProvider p = new ScmLibraryProvider()
+        String libraryName = "someLibrary"
+        repo.init()
+        repo.write("${libraryName}/steps/build.groovy", "void call(){}")
+        repo.git("add", "*")
+        repo.git("commit", "--message=init")
+        GitSCM scm = createSCM(repo)
+        p.setScm(scm)
+
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        File rootDir = new File(f.getRemote())
+        owner.getRootDir() >> rootDir
+        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
+        fsw.fs = SCMFileSystem.of(job, scm)
+        GroovySpy(FileSystemWrapper, global: true)
+        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+
+        expect:
+        p.hasLibrary(owner, libraryName)
+    }
+
+    def "hasLibrary returns true when both steps and src are present"(){
+        given:
+        ScmLibraryProvider p = new ScmLibraryProvider()
+        String libraryName = "someLibrary"
+        repo.init()
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
+        repo.write("${libraryName}/steps/build.groovy", "void call(){}")
+        repo.git("add", "*")
+        repo.git("commit", "--message=init")
+        GitSCM scm = createSCM(repo)
+        p.setScm(scm)
+
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        File rootDir = new File(f.getRemote())
+        owner.getRootDir() >> rootDir
+        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
+        fsw.fs = SCMFileSystem.of(job, scm)
+        GroovySpy(FileSystemWrapper, global: true)
+        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+
+        expect:
+        p.hasLibrary(owner, libraryName)
+    }
+
+    def "hasLibrary returns false if only resources directory present"(){
+        given:
+        ScmLibraryProvider p = new ScmLibraryProvider()
+        String libraryName = "someLibrary"
+        repo.init()
+        repo.write("${libraryName}/resources/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
+        repo.git("add", "*")
+        repo.git("commit", "--message=init")
+        GitSCM scm = createSCM(repo)
+        p.setScm(scm)
+
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
+        File rootDir = new File(f.getRemote())
+        owner.getRootDir() >> rootDir
+        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
+        fsw.fs = SCMFileSystem.of(job, scm)
+        GroovySpy(FileSystemWrapper, global: true)
+        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+
+        expect:
+        !p.hasLibrary(owner, libraryName)
     }
 
     GitSCM createSCM(GitSampleRepoRule _repo){

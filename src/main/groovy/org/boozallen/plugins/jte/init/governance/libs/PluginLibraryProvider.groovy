@@ -124,12 +124,11 @@ class PluginLibraryProvider extends LibraryProvider{
         }
 
         Boolean hasSteps = (libraries[libName])?.steps as Boolean
-        if( !hasSteps ){ // library has no steps
+        Boolean hasClasses = (libraries[libName])?.src as Boolean
+
+        if( !hasSteps || !hasClasses){ // library has no steps
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-            ArrayList msg = [
-                    "Library ${libName} exists but does not have steps present. No steps will be loaded."
-            ]
-            logger.printWarning(msg.join("\n"))
+            logger.printWarning("Library ${libName} exists but does not have any steps or classes. Will not be loaded.")
             return false
         }
 
