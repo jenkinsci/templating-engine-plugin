@@ -21,7 +21,6 @@ import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.hooks.Hooks
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
@@ -40,7 +39,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
  * A library step
  */
 @SuppressWarnings("NoDef")
-class StepWrapper extends TemplatePrimitiveGV implements Serializable, Cloneable{
+class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
 
     private static final long serialVersionUID = 1L
 

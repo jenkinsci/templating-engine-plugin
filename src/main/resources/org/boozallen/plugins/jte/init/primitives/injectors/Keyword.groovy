@@ -18,14 +18,13 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  * JTE primitive that represents a pre-populated variable
  */
-class Keyword extends TemplatePrimitiveGV implements Serializable{
+class Keyword extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name

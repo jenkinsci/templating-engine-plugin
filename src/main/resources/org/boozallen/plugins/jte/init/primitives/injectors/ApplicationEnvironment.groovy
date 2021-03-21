@@ -17,19 +17,13 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigException
-import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.jenkinsci.plugins.workflow.cps.CpsScript
-
-import javax.annotation.Nonnull
 
 /**
  * JTE primitive representing an application environment to capture environmental context
  */
 @SuppressWarnings(["PropertyName", "FieldTypeRequired", "NoDef"])
-class ApplicationEnvironment extends TemplatePrimitiveGV implements Serializable{
+class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name

@@ -5,7 +5,7 @@ import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 
 import javax.annotation.Nonnull
 
-abstract class TemplatePrimitiveGV extends GlobalVariable{
+abstract class TemplatePrimitive extends GlobalVariable{
 
     @Override
     Object getValue(@Nonnull CpsScript script) throws Exception {

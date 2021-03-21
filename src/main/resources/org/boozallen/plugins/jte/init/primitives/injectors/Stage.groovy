@@ -17,7 +17,7 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
 
@@ -26,7 +26,7 @@ import org.boozallen.plugins.jte.util.TemplateLogger
  */
 
 @SuppressWarnings("NoDef")
-class Stage extends TemplatePrimitiveGV implements Serializable{
+class Stage extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name

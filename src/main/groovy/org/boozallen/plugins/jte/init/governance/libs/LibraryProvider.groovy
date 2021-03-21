@@ -18,7 +18,6 @@ package org.boozallen.plugins.jte.init.governance.libs
 import hudson.FilePath
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**

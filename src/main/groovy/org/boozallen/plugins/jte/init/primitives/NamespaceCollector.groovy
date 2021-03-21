@@ -62,7 +62,7 @@ class NamespaceCollector extends InvisibleAction{
     static class CustomClassFilterImpl implements CustomClassFilter {
         @SuppressWarnings('BooleanMethodReturnsNull')
         @Override Boolean permits(Class<?> c){
-            return (c in TemplatePrimitiveGV) ?: null
+            return (c in TemplatePrimitive) ?: null
         }
 
     }
