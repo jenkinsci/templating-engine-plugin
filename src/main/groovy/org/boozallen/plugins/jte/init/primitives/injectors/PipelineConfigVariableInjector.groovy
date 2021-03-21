@@ -19,19 +19,15 @@ import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.Nonnull
 
 /**
- * injects the aggregated pipeline configuration as a variable called pipelineConfig into the
- * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
+ * Exposes the aggregated pipeline configuration as a variable called 'pipelineConfig'
  */
 @Extension class PipelineConfigVariableInjector extends TemplatePrimitiveInjector {
 
@@ -39,24 +35,15 @@ import javax.annotation.Nonnull
 
     @SuppressWarnings('NoDef')
     @Override
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
-        // if a run can be found, create a PrimitiveNamespace for the application environments
-        WorkflowRun run = flowOwner.run()
-        if(!run){
-            throw new JTEException("Invalid Context. Cannot determine run.")
-        }
-
+    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         PipelineConfigGlobalVariable pipelineConfig = new PipelineConfigGlobalVariable(config.getConfig())
         PrimitiveNamespace pipelineConfigNamespace = NamespaceCollector.createNamespace(KEY)
         pipelineConfigNamespace.add(pipelineConfig)
 
         // add the namespace to the collector and save it on the run
-        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
-        if(namespaceCollector == null){
-            namespaceCollector = new NamespaceCollector()
-        }
+        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
         namespaceCollector.addNamespace(pipelineConfigNamespace)
-        run.addOrReplaceAction(namespaceCollector)
+        flowOwner.run().addOrReplaceAction(namespaceCollector)
     }
 
 

@@ -1,11 +1,17 @@
 package org.boozallen.plugins.jte.init.primitives
 
+import groovy.text.Template
 import hudson.Extension
 import hudson.model.InvisibleAction
 import hudson.model.Run
+import hudson.util.DirScanner
 import jenkins.security.CustomClassFilter
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.cps.GlobalVariableSet
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 class NamespaceCollector extends InvisibleAction{
     List<PrimitiveNamespace> namespaces = []
@@ -26,6 +32,34 @@ class NamespaceCollector extends InvisibleAction{
         }
     }
 
+    Set<String> getPrimitiveNames(){
+        Set<String> primitives = []
+        getNamespaces().each{ namespace ->
+            primitives.addAll(namespace.getPrimitives()*.getName())
+        }
+        return primitives
+    }
+
+    List<TemplatePrimitive> findAll(Closure condition){
+        List<TemplatePrimitive> primitives = []
+        getNamespaces().each{namespace ->
+            primitives.addAll( namespace.getPrimitives().findAll(condition) )
+        }
+        return primitives
+    }
+
+    boolean hasStep(String name){
+        return getStep(name) as boolean
+    }
+
+    List<TemplatePrimitive> getStep(String name){
+        Class clazz = StepWrapperFactory.getPrimitiveClass()
+        return findAll{ primitive ->
+            clazz.getName() == primitive.getClass().getName() &&
+            primitive.getName() == name
+        }
+    }
+
     static PrimitiveNamespace createNamespace(String name){
         return new PrimitiveNamespace(name: name)
     }
@@ -36,6 +70,22 @@ class NamespaceCollector extends InvisibleAction{
         void add(GlobalVariable primitive){
             primitives.add(primitive)
         }
+    }
+
+    /**
+     * During execution, this can be used to fetch the current
+     * run's NamespaceCollector if present.
+     *
+     * @return the current run's NamespaceCollector. may be null
+     */
+    static NamespaceCollector current(){
+        CpsThread thread = CpsThread.current()
+        if(!thread){
+            throw new IllegalStateException("CpsThread not present.")
+        }
+        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
+        WorkflowRun run = flowOwner.run()
+        return run.getAction(NamespaceCollector)
     }
 
     @Extension static class NamespaceProvider extends GlobalVariableSet{
@@ -64,7 +114,6 @@ class NamespaceCollector extends InvisibleAction{
         @Override Boolean permits(Class<?> c){
             return (c in TemplatePrimitive) ?: null
         }
-
     }
 
 }

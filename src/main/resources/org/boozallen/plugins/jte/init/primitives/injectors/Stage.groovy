@@ -16,7 +16,7 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -50,10 +50,10 @@ class Stage extends TemplatePrimitive implements Serializable{
         } else {
             stageArgs = args as Map
         }
-        TemplateBinding binding = TemplateBinding.fetchDuringRun()
+        NamespaceCollector namespaceCollector = NamespaceCollector.current()
         StageContext stageContext = new StageContext(name: name, args: stageArgs)
         steps.each{ step ->
-            def clone = binding.getStep(step).clone()
+            def clone = namespaceCollector.getStep(step).clone()
             clone.setStageContext(stageContext)
             clone.call()
         }

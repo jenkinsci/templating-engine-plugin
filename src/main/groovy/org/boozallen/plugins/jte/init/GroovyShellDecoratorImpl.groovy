@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
 import org.boozallen.plugins.jte.init.primitives.hooks.Notify
@@ -48,9 +47,7 @@ import java.util.logging.Logger
 /**
  * Decorates the pipeline template during compilation
  * <p>
- * Attaches the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding} to the pipeline template
- * prior to execution and modifies the template at compile time to invoke lifecycle hooks prior to and after
- * template execution
+ * modifies the template at compile time to invoke lifecycle hooks prior to and after template execution
  *
  * @author Steven Terrana
  */
@@ -59,27 +56,14 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
 
     private static final Logger LOGGER = Logger.getLogger(GroovyShellDecoratorImpl.name);
 
-    /**
-     * If the current pipeline run has a @see PipelineDecorator action then
-     * fetch the already configured @see org.boozallen.plugins.jte.init.primitives.TemplateBinding
-     * and ensure the parsed scripts have this binding during execution.
-     */
     @Override
     void configureShell(@CheckForNull CpsFlowExecution context, GroovyShell shell) {
         if (!context) {
             return
         }
-        FlowExecutionOwner owner = context.getOwner()
-        WorkflowRun run = owner.run()
-        PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
-        if(pipelineDecorator){
-            // attach the TemplateBinding
-            TemplateBinding binding = pipelineDecorator.getBinding()
-            Field shellBinding = GroovyShell.getDeclaredField("context")
-            shellBinding.setAccessible(true)
-            shellBinding.set(shell, binding)
+        if(isFromJTE(context)){
             // add loaded libraries `src` directories to the classloader
-            File jte = owner.getRootDir()
+            File jte = context.getOwner().getRootDir()
             File srcDir = new File(jte, "jte/src")
             if (srcDir.exists()){
                 if(srcDir.isDirectory()) {

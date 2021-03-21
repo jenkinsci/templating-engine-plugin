@@ -19,12 +19,24 @@ import hudson.ExtensionList
 import hudson.ExtensionPoint
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.util.AggregateException
+import org.boozallen.plugins.jte.util.JTEException
+import org.boozallen.plugins.jte.util.TemplateLogger
+import org.codehaus.groovy.reflection.CachedMethod
 import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
+import org.jgrapht.Graph
+import org.jgrapht.alg.cycle.CycleDetector
+import org.jgrapht.graph.DefaultDirectedGraph
+import org.jgrapht.graph.DefaultEdge
+import org.jgrapht.traverse.TopologicalOrderIterator
+
+import java.lang.reflect.Method
 
 /**
- * Extension to hook into the initialization process. Typically used to parse the aggregated pipeline configuration
- * and inject new primitives into the run's {@link TemplateBinding}
+ * Extension to hook into the initialization process to parse the pipeline configuration,
+ * create TemplatePrimitives, and validate them after creation
  */
 @SuppressWarnings(['EmptyMethodInAbstractClass', 'UnusedMethodParameter'])
 abstract class TemplatePrimitiveInjector implements ExtensionPoint{
@@ -65,24 +77,100 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         return returnClass
     }
 
-    static Class<? extends PrimitiveNamespace> getPrimitiveNamespaceClass(){
-        return null
+    /**
+     * Triggers the 3-phase initialization process by iterating over all registered injectors
+     *
+     * @param flowOwner the run's FlowExecutionOwner
+     * @param config the aggregated pipeline configuration
+     */
+    static void orchestrate(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+        invoke("validateConfiguration", flowOwner, config)
+        invoke("injectPrimitives", flowOwner, config)
+        invoke("validatePrimitives", flowOwner, config)
     }
 
     /**
-     * factory method to create the associated namespace
-     * @return
+     * Invokes a specific phase of initialization
+     *
+     * @param phase the phase to invoke
+     * @param args the args to pass to the phase
      */
-    static PrimitiveNamespace createNamespace(){
-        return new PrimitiveNamespace(name: getNamespaceKey())
+    private static void invoke(String phase, Object... args){
+        List<Class<? extends TemplatePrimitiveInjector>> failedInjectors = []
+        Graph<Class<? extends TemplatePrimitiveInjector>, DefaultEdge> graph = createGraph(phase, args)
+        AggregateException errors = new AggregateException()
+        new TopologicalOrderIterator<>(graph).each{ injectorClazz ->
+            TemplatePrimitiveInjector injector = injectorClazz.getDeclaredConstructor().newInstance()
+            try{
+                // check if a dependent injector has failed, if so, don't execute
+                if(!(getPrerequisites(injector, phase, args).intersect(failedInjectors))){
+                    injector.invokeMethod(phase, args)
+                }
+            } catch(any){
+                TemplateLogger logger = new TemplateLogger(args[0].getListener())
+                String msg = [ any.getMessage(), any.getStackTrace()*.toString() ].flatten().join("\n")
+                logger.printError(msg)
+                errors.add(any)
+                failedInjectors << injectorClazz
+            }
+        }
+        if(errors.size()) { // this phase failed throw an exception
+            throw errors
+        }
     }
 
     /**
-     * the key for the namespace
+     * Determines which injectors must run prior to a given Injector
+     *
+     * @param injector the injector to find dependencies for
+     * @param name the phase of the injector initialization process to find dependencies for
+     * @param args the arguments passed to the initialization phase method
+     * @return the list of prerequisite dependencies
+     */
+    private static List<Class<? extends TemplatePrimitiveInjector>> getPrerequisites(TemplatePrimitiveInjector injector, String name, Object... args){
+        List<TemplatePrimitiveInjector> prereqs = []
+        MetaMethod metaMethod = injector.metaClass.pickMethod(name, args*.class as Class[])
+        if(metaMethod instanceof CachedMethod) {
+            Method method = metaMethod.getCachedMethod()
+            RunAfter annotation = method.getAnnotation(RunAfter)
+            if (annotation) {
+                prereqs = [annotation.value()].flatten() as List<Class<? extends TemplatePrimitiveInjector>>
+            }
+        }
+        return prereqs
+    }
+
+    /**
+     * Builds a Directed Acyclic Graph representing the order in which the {@link TemplatePrimitiveInjector's} should
+     * be invoked.
+     * <p>
+     *
+     * @param name the phase of binding population to a graph of
+     * @param args
      * @return
      */
-    static String getNamespaceKey(){
-        return "primitives"
+    private static Graph<Class<? extends TemplatePrimitiveInjector>, DefaultEdge> createGraph(String name, Object... args){
+        Graph<Class<? extends TemplatePrimitiveInjector>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge)
+        ExtensionList<TemplatePrimitiveInjector> injectors = TemplatePrimitiveInjector.all()
+        // add each injector as a node in the graph
+        injectors.each{ injector -> graph.addVertex(injector.class) }
+
+        // for each injector, connect edges
+        injectors.each{ injector ->
+            List<Class<? extends TemplatePrimitiveInjector>> prereqs = getPrerequisites(injector, name, args)
+            prereqs.each{ req ->
+                graph.addEdge(req, injector.class)
+            }
+        }
+
+        // check for infinite loops
+        CycleDetector detector = new CycleDetector(graph)
+        Set<TemplatePrimitiveInjector> cycles = detector.findCycles()
+        if(cycles){
+            throw new JTEException("There are cyclic dependencies preventing initialization: ${cycles}")
+        }
+
+        return graph
     }
 
     /**
@@ -93,22 +181,33 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
     void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
 
     /**
-     * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it in
-     * the {@link TemplateBinding}
+     * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it
+     * in a PrimitiveNamespace
      *
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
-     * @param binding the run's common {@link TemplateBinding}
      */
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){}
+    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
 
     /**
-     * A second pass allowing the different injector's to inspect what is in the binding and respond accordingly
+     * A second pass allowing the different injector's to inspect what TemplatePrimitives
+     * have been created and respond accordingly
      *
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
-     * @param binding the run's common {@link TemplateBinding}
      */
-    void validateBinding(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){}
+    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+
+    NamespaceCollector getNamespaceCollector(FlowExecutionOwner flowOwner){
+        WorkflowRun run = flowOwner.run()
+        if(!run){
+            throw new JTEException("Invalid Context. Cannot determine run.")
+        }
+        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
+        if(namespaceCollector == null){
+            namespaceCollector = new NamespaceCollector()
+        }
+        return namespaceCollector
+    }
 
 }

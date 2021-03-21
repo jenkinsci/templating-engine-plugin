@@ -66,7 +66,7 @@ public abstract class StepWrapperScript extends CpsScript {
      */
     @Extension public static class ConfigReservedVariable extends ReservedVariableName {
         public String getName(){ return "config"; }
-        @Override public String getExceptionMessage(){
+        @Override public String getDescription(){
             return String.format("Variable name %s is reserved for steps to access their library configuration", getName());
         }
     }
@@ -81,7 +81,7 @@ public abstract class StepWrapperScript extends CpsScript {
      */
     @Extension public static class HookContextReservedVariable extends ReservedVariableName {
         public String getName(){ return "hookContext"; }
-        @Override public String getExceptionMessage(){
+        @Override public String getDescription(){
             return String.format("Variable name %s is reserved for steps to access their hook context", getName());
         }
     }
@@ -96,7 +96,7 @@ public abstract class StepWrapperScript extends CpsScript {
      */
     @Extension public static class StageContextReservedVariable extends ReservedVariableName {
         public String getName(){ return "stageContext"; }
-        @Override public String getExceptionMessage(){
+        @Override public String getDescription(){
             return String.format("Variable name %s is reserved for steps to access their stage context", getName());
         }
     }
@@ -141,7 +141,7 @@ public abstract class StepWrapperScript extends CpsScript {
      */
     @Extension public static class ResourceReservedVariable extends ReservedVariableName {
         public String getName(){ return "resource"; }
-        @Override public String getExceptionMessage(){
+        @Override public String getDescription(){
             return String.format("Variable name %s is reserved for steps to access library resources", getName());
         }
     }

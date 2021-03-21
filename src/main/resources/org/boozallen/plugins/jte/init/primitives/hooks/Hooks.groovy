@@ -16,12 +16,11 @@
 package org.boozallen.plugins.jte.init.primitives.hooks
 
 import com.cloudbees.groovy.cps.NonCPS
-import org.boozallen.plugins.jte.init.PipelineDecorator
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsThread
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper
 
@@ -36,10 +35,10 @@ class Hooks implements Serializable{
     private static final long serialVersionUID = 1L
 
     @NonCPS
-    static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, Binding binding){
+    static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, NamespaceCollector namespaceCollector){
         List<AnnotatedMethod> discovered = []
         Class stepWrapper = StepWrapperFactory.getPrimitiveClass()
-        ArrayList stepWrappers = binding.getVariables().collect{ var -> var.value }.findAll{ var ->
+        List<TemplatePrimitive> stepWrappers = namespaceCollector.findAll{ var ->
             stepWrapper.getName() == var.getClass().getName()
         }
 
@@ -57,13 +56,7 @@ class Hooks implements Serializable{
     }
 
     static void invoke(Class<? extends Annotation> annotation, HookContext context = new HookContext()){
-        CpsThread thread = CpsThread.current()
-        if(!thread){
-            throw new IllegalStateException("CpsThread not present.")
-        }
-        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
-        TemplateBinding binding = flowOwner.run().getAction(PipelineDecorator)?.getBinding()
-        discover(annotation, binding).each{ hook ->
+        discover(annotation, NamespaceCollector.current()).each{ hook ->
             if(shouldInvoke(hook, context)){
                 hook.invoke(context)
             }

@@ -17,7 +17,7 @@ package org.boozallen.plugins.jte.util
 
 import hudson.Extension
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
-import org.boozallen.plugins.jte.init.primitives.TemplateBindingRegistry
+
 import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
 
 import java.lang.reflect.Method
@@ -35,8 +35,7 @@ import java.lang.reflect.Method
     ]
 
     private final List<Class> permittedReceivers = [
-            TemplateBindingRegistry,
-            PrimitiveNamespace,
+            PrimitiveNamespace
     ]
 
     @Override

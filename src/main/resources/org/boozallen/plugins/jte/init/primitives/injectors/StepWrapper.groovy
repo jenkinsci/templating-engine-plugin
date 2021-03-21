@@ -17,8 +17,6 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
 import hudson.FilePath
-import org.boozallen.plugins.jte.init.PipelineDecorator
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
@@ -33,7 +31,6 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.InvokerInvocationException
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 /**
  * A library step
@@ -189,14 +186,6 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
             throw new IllegalStateException("CpsThread not present.")
         }
 
-        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
-        WorkflowRun run = flowOwner.run()
-        PipelineDecorator pipelineDecorator = run.getAction(PipelineDecorator)
-        if(!pipelineDecorator){
-            throw new IllegalStateException("PipelineDecorator action missing")
-        }
-        TemplateBinding binding = pipelineDecorator.getBinding()
-
         String source
         if(sourceFile){
             FilePath f = new FilePath(new File(sourceFile))
@@ -211,8 +200,9 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
             throw new IllegalStateException("Unable to determine StepWrapper[library: ${library}, name: ${name}] source.")
         }
 
+        FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
         StepWrapperFactory factory = new StepWrapperFactory(flowOwner)
-        return factory.prepareScript(library, name, source, binding, config, stageContext, hookContext)
+        return factory.prepareScript(library, name, source, config, stageContext, hookContext)
     }
 
 }

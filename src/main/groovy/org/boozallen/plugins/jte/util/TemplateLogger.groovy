@@ -123,11 +123,6 @@ class TemplateLogger {
         LogLevel logType
         Boolean firstLine
         Boolean multiLine
-        /*
-            TODO:
-            * see if we're actually using this configuration option anywhere
-            * remove it if we arent
-        */
         Boolean initiallyHidden = true
 
         @Override

@@ -18,43 +18,47 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import hudson.model.Run
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
 /**
- * checks for collisions between TemplateBinding primitives and Jenkins globals and steps
+ * checks for collisions between TemplatePrimitives and Jenkins global variables and steps
  */
 @Extension class GlobalCollisionValidator extends TemplatePrimitiveInjector{
 
     static String warningHeading = "JTE Primitives overrode Plugin provided steps and/or variables:"
 
     @Override
-    void validateBinding(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding) {
-        List<String> collisions = checkPrimitiveCollisions( binding, flowOwner.getExecutable())
+    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
+        WorkflowRun run = flowOwner.run()
+        if(!run) return
+        Set<String> collisions = checkPrimitiveCollisions(run)
 
         if( collisions ){
-            List<String> warnings = [
-                    warningHeading,
-            ]
+            List<String> warnings = [ warningHeading ]
             collisions.each{ name ->
                 warnings << "- ${name}"
             }
-
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
             logger.printWarning(warnings.join("\n"))
         }
     }
 
     // will probably become a method on the validation class
-    List<String> checkPrimitiveCollisions(TemplateBinding templateBinding, Run run){
-        Set<String> registry = templateBinding.getPrimitiveNames()
+    Set<String> checkPrimitiveCollisions(Run run){
+        Set<String> collisions = []
+        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
+        if(!namespaceCollector) return collisions
+        Set<String> registry = namespaceCollector.getPrimitiveNames()
         List<String> functionNames = StepDescriptor.all()*.functionName
-        Set<String> collisions = registry.intersect(functionNames)
+        collisions = registry.intersect(functionNames)
 
+        // FIXME: now that we're using GV's for primitives, this changes
         collisions += registry.collect { key ->
             GlobalVariable.byName(key, run)
         }.findAll{ g -> null != g }

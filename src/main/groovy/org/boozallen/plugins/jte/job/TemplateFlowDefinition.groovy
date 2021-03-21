@@ -59,10 +59,6 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         PipelineDecorator decorator = new PipelineDecorator(owner)
         decorator.initialize() // runs the initialization process for JTE
         String template = decorator.getTemplate()
-        owner.run().with{
-            addAction(decorator)
-            save() // persist action
-        }
         return template
     }
 

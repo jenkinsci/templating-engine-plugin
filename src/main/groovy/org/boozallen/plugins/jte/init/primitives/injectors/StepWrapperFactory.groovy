@@ -69,7 +69,6 @@ class StepWrapperFactory{
      * @param library the library contributing the step
      * @param name the name of the step
      * @param source the source code text
-     * @param binding the TemplateBinding resolvable during invocation
      * @param config the library configuration
      * @param optional {@link StageContext}
      * @param optional {@link HookContext}
@@ -80,14 +79,13 @@ class StepWrapperFactory{
             String library,
             String name,
             String source,
-            Binding binding,
             LinkedHashMap config,
             StageContext stageContext = null,
             HookContext hookContext = null
     ){
         StepWrapperScript script
         /*
-         * first: parse the step the same way Jenkins parses a Jenkinsfile
+         * parse the step the same way Jenkins parses a Jenkinsfile
          *        this is easiest way to appropriately attach the flowOwner
          *        of the template to the Step. attaching the flowOwner is
          *        necessary for certain Jenkins Pipeline steps to work appropriately.
@@ -108,11 +106,7 @@ class StepWrapperFactory{
             throw any
         }
         /*
-         * second: attach the common TemplateBinding
-         */
-        script.setBinding(binding)
-        /*
-         * finally: set whatever runtime specific contexts are required for this step, such as:
+         * set whatever runtime specific contexts are required for this step, such as:
          *       1. the library configuration
          *       2. the base directory from which to fetch library resources
          *       3. an optional StageContext
@@ -180,12 +174,11 @@ class StepWrapperFactory{
      * creates a StepWrapper instance
      *
      * @param filePath the FilePath where the source file can be found
-     * @param binding the TemplateBinding context to attach to the StepWrapper
      * @param library the library contributing the step
      * @param config the library configuration for the step
      * @return a StepWrapper instance
      */
-    def createFromFilePath(FilePath filePath, Binding binding, String library, Map config){
+    def createFromFilePath(FilePath filePath, String library, Map config){
         Class stepWrapper = getPrimitiveClass()
         String name = filePath.getBaseName()
         String sourceText = filePath.readToString()
@@ -196,19 +189,18 @@ class StepWrapperFactory{
             config: config,
             sourceFile: filePath.absolutize().getRemote(),
             // parse to fail fast for step compilation issues
-            script: prepareScript(library, name, sourceText, binding, config)
+            script: prepareScript(library, name, sourceText, config)
         )
     }
 
     /**
      * Creates an instance of the default step implementation
      *
-     * @param the template binding
      * @param name
      * @param stepConfig
      * @return a StepWrapper instance
      */
-    def createDefaultStep(Binding binding, String name, Map stepConfig){
+    def createDefaultStep(String name, Map stepConfig){
         Class stepWrapper = getPrimitiveClass()
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
@@ -222,17 +214,16 @@ class StepWrapperFactory{
             config: stepConfig,
             sourceText: defaultStep,
             // parse to fail fast for step compilation issues
-            script: prepareScript("Default Step Implementation", name, defaultStep, binding, stepConfig)
+            script: prepareScript("Default Step Implementation", name, defaultStep, stepConfig)
         )
     }
 
     /**
      * Produces a no-op StepWrapper
      * @param stepName the name of the step to be created
-     * @param binding the template binding
      * @return a no-op StepWrapper
      */
-    def createNullStep(String stepName, Binding binding){
+    def createNullStep(String stepName){
         Class stepWrapper = getPrimitiveClass()
         String nullStep = "def call(Object[] args){ println \"Step ${stepName} is not implemented.\" }"
         LinkedHashMap config = [:]
@@ -243,7 +234,7 @@ class StepWrapperFactory{
             config: config,
             sourceText: nullStep,
             // parse to fail fast for step compilation issues
-            script: prepareScript(null, stepName, nullStep, binding, config)
+            script: prepareScript(null, stepName, nullStep, config)
         )
     }
 

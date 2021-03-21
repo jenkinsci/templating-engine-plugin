@@ -54,12 +54,6 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         }
 
         config = config - config.subMap(["short_name", "long_name"])
-        /*
-            TODO:
-                this makes it so that changing <inst>.config.whatever = <some value>
-                will throw an UnsupportedOperationException.  Need to figure out how to
-                throw TemplateConfigException instead for the sake of logging.
-        */
         this.config = config.asImmutable()
     }
 

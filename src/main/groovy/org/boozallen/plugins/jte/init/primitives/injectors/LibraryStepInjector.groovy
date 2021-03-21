@@ -23,7 +23,6 @@ import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
 import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
@@ -32,11 +31,9 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 /**
- * Loads libraries from the pipeline configuration and injects StepWrapper's into the
- * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
+ * Loads libraries from the pipeline configuration
  */
 @Extension class LibraryStepInjector extends TemplatePrimitiveInjector {
 
@@ -81,12 +78,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
     }
 
     @Override
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
-        WorkflowRun run = flowOwner.run()
-        if(!run){
-            throw new JTEException("Invalid Context. Cannot determine run.")
-        }
-
+    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         // fetch library providers and determine library resolution order
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
         boolean reverseProviders = config.jteBlockWrapper.reverse_library_resolution
@@ -117,17 +109,14 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
             String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy".toString()
             PrimitiveNamespace libNamespace = NamespaceCollector.createNamespace(libName)
             jteDir.list(includes).each{stepFile ->
-                libNamespace.add(stepFactory.createFromFilePath(stepFile, binding, libName, libConfig))
+                libNamespace.add(stepFactory.createFromFilePath(stepFile, libName, libConfig))
             }
             libCollector.add(libNamespace)
         }
 
-        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
-        if(namespaceCollector == null){
-            namespaceCollector = new NamespaceCollector()
-        }
+        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
         namespaceCollector.addNamespace(libCollector)
-        run.addOrReplaceAction(namespaceCollector)
+        flowOwner.run().addOrReplaceAction(namespaceCollector)
     }
 
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){

@@ -17,50 +17,46 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.RunAfter
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
- * Loads libraries from the pipeline configuration and injects StepWrapper's into the
- * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
+ * creates instances of the default step implementation
  */
 @Extension class DefaultStepInjector extends TemplatePrimitiveInjector {
 
     private static final String KEY = "steps"
-    private static final String TYPE_DISPLAY_NAME = "Default Step"
-    private static final String NAMESPACE_KEY = KEY
-
-    static PrimitiveNamespace createNamespace(){
-        return new CallableNamespace(name: getNamespaceKey(), typeDisplayName: TYPE_DISPLAY_NAME)
-    }
-
-    static String getNamespaceKey(){
-        return NAMESPACE_KEY
-    }
 
     @Override
     @RunAfter(LibraryStepInjector)
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
+    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
+        NamespaceCollector.PrimitiveNamespace steps = NamespaceCollector.createNamespace(KEY)
+
+        // populate namespace with default steps from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ stepName, stepConfig ->
             // if step already exists, print warning
-            if (binding.hasStep(stepName)){
+            if (namespaceCollector.hasStep(stepName)){
                 ArrayList msg = [
                     "Configured step ${stepName} ignored.",
-                    "-- Loaded by the ${binding.getStep(stepName).library} Library."
+                    "-- Loaded by the ${namespaceCollector.getStep(stepName).library} Library."
                 ]
                 logger.printWarning msg.join("\n")
             } else { // otherwise go ahead and create the default step implementation
                 logger.print "Creating step ${stepName} from the default step implementation."
-                binding.setVariable(stepName, stepFactory.createDefaultStep(binding, stepName, stepConfig))
+                steps.add(stepFactory.createDefaultStep(stepName, stepConfig))
             }
         }
+
+        // add the namespace to the collector and save it on the run
+        namespaceCollector.addNamespace(steps)
+        flowOwner.run().addOrReplaceAction(namespaceCollector)
     }
 
 }

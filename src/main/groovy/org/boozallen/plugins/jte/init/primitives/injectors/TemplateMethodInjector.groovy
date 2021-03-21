@@ -17,41 +17,37 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.RunAfter
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
- * Loads libraries from the pipeline configuration and injects StepWrapper's into the
- * run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
+ * creates no-op steps based on the pipeline configuration
  */
 @Extension class TemplateMethodInjector extends TemplatePrimitiveInjector {
 
     private static final String KEY = "template_methods"
-    private static final String TYPE_DISPLAY_NAME = "Template Method"
-    private static final String NAMESPACE_KEY = KEY
-
-    static PrimitiveNamespace createNamespace(){
-        return new CallableNamespace(name: getNamespaceKey(), typeDisplayName: TYPE_DISPLAY_NAME)
-    }
-
-    static String getNamespaceKey(){
-        return NAMESPACE_KEY
-    }
 
     @SuppressWarnings("ParameterName")
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector])
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
+    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
+        NamespaceCollector.PrimitiveNamespace steps = NamespaceCollector.createNamespace(KEY)
+
+        // populate namespace with no-op steps
         LinkedHashMap aggregatedConfig = config.getConfig()
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ step, _ ->
-            if(!binding.hasStep(step)){
-                binding.setVariable(step, stepFactory.createNullStep(step, binding))
+            if(!namespaceCollector.hasStep(step)){
+                steps.add(stepFactory.createNullStep(step))
             }
         }
+
+        // add the namespace to the collector and save it on the run
+        namespaceCollector.addNamespace(steps)
+        flowOwner.run().addOrReplaceAction(namespaceCollector)
     }
 
 }
