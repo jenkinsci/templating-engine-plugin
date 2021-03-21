@@ -31,7 +31,8 @@ import java.lang.reflect.Method
         "org.boozallen.plugins.jte.init.primitives.injectors.ApplicationEnvironment",
         "org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper",
         "org.boozallen.plugins.jte.init.primitives.injectors.Stage",
-        "org.boozallen.plugins.jte.init.primitives.hooks.Hooks"
+        "org.boozallen.plugins.jte.init.primitives.hooks.Hooks",
+        "org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper"
     ]
 
     private final List<Class> permittedReceivers = [

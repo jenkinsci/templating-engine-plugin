@@ -100,6 +100,7 @@ class StepWrapperFactory{
             // tell StepWrapperShellDecorator this is a step
             exec.metaClass[StepWrapperShellDecorator.FLAG] = true
             script = exec.parseScript() as StepWrapperScript
+            script.$initialize()
         } catch(any){
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
             logger.printError("Failed to parse step text. Library: ${library}. Step: ${name}.")

@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.init
 
 import hudson.Extension
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
+import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
 import org.boozallen.plugins.jte.init.primitives.hooks.Notify
 import org.boozallen.plugins.jte.init.primitives.hooks.Validate
@@ -32,15 +33,13 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
+import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.CheckForNull
-import java.lang.reflect.Field
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -113,21 +112,64 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                         trying to find those names as variables in the binding.
                         So i put them in the binding for now </shrug>
                     */
-                    BlockStatement wrapper = (new AstBuilder().buildFromCode(CompilePhase.SEMANTIC_ANALYSIS){
-                        try{
-                            Hooks.invoke(Validate)
-                            Hooks.invoke(Init)
-                            // <-- this is where the template AST statements get injected
-                        } finally{
-                            Hooks.invoke(CleanUp)
-                            Hooks.invoke(Notify)
+                    ImportCustomizer ic = new ImportCustomizer()
+                    ic.addImports("org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper")
+                    cc.addCompilationCustomizers(ic)
+//                    BlockStatement wrapper = (new AstBuilder().buildFromCode(CompilePhase.SEMANTIC_ANALYSIS){
+//                        try{
+//                            HooksWrapper.invoke(Validate)
+//                            HooksWrapper.invoke(Init)
+//                            // <-- this is where the template AST statements get injected
+//                        } finally{
+//                            HooksWrapper.invoke(CleanUp)
+//                            HooksWrapper.invoke(Notify)
+//                        }
+//                    }).first()
+                    BlockStatement wrapper = (new AstBuilder().buildFromSpec{
+                        block{
+                            tryCatch{
+                                block {
+                                    expression {
+                                        staticMethodCall(HooksWrapper, 'invoke') {
+                                            argumentList {
+                                                classExpression Validate
+                                            }
+                                        }
+                                    }
+                                    expression {
+                                        staticMethodCall(HooksWrapper, 'invoke') {
+                                            argumentList {
+                                                classExpression Init
+                                            }
+                                        }
+                                    }
+                                }
+                                block{
+                                    block{
+                                        expression {
+                                            staticMethodCall(HooksWrapper, 'invoke') {
+                                                argumentList {
+                                                    classExpression CleanUp
+                                                }
+                                            }
+                                        }
+                                        expression {
+                                            staticMethodCall(HooksWrapper, 'invoke') {
+                                                argumentList {
+                                                    classExpression Notify
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }).first()
 
                     wrapper.getStatements().first().getTryStatement().addStatements(statements)
                     statements.clear()
                     statements.add(0, wrapper)
-                }
+                };
 
                 /*
                     need to ensure we're only modifying AST for the template.
@@ -146,7 +188,7 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                 }
             })
         }
-    }
+    };
 
     /**
      * determines if the current pipeline is using JTE
