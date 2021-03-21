@@ -16,10 +16,8 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
-import org.boozallen.plugins.jte.init.primitives.TemplateException
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
 
@@ -28,11 +26,10 @@ import org.boozallen.plugins.jte.util.TemplateLogger
  */
 
 @SuppressWarnings("NoDef")
-class Stage extends TemplatePrimitive implements Serializable{
+class Stage extends TemplatePrimitiveGV implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name
-    Class<? extends TemplatePrimitiveInjector> injector
     ArrayList<String> steps
 
     Stage(){}
@@ -42,9 +39,7 @@ class Stage extends TemplatePrimitive implements Serializable{
         this.steps = steps
     }
 
-    @NonCPS @Override String getDescription(){ return "Stage '${name}'" }
     @NonCPS @Override String getName(){ return name }
-    @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
     @SuppressWarnings("MethodParameterTypeRequired")
     void call(args) {
@@ -62,17 +57,6 @@ class Stage extends TemplatePrimitive implements Serializable{
             clone.setStageContext(stageContext)
             clone.call()
         }
-    }
-
-    @NonCPS
-    void throwPreLockException(String msg){
-        msg += "The Stage ${name} is already defined."
-        throw new TemplateException(msg)
-    }
-
-    void throwPostLockException(String msg){
-        msg += "The variable ${name} is reserved as a template Stage."
-        throw new TemplateException(msg)
     }
 
 }

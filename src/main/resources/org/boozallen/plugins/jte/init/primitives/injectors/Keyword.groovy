@@ -18,12 +18,14 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  * JTE primitive that represents a pre-populated variable
  */
-class Keyword extends TemplatePrimitive implements Serializable{
+class Keyword extends TemplatePrimitiveGV implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name
@@ -32,11 +34,11 @@ class Keyword extends TemplatePrimitive implements Serializable{
     String preLockException = "Variable ${name} already exists as a Keyword."
     String postLockException = "Variable ${name} is reserved as a template Keyword."
 
-    @NonCPS @Override String getDescription(){ return "Keyword '${name}'" }
+    @NonCPS String getDescription(){ return "Keyword '${name}'" }
     @NonCPS @Override String getName(){ return name }
-    @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
+    @NonCPS Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
-    @NonCPS Object getValue(){
+    @NonCPS Object getValue(CpsScript script){
         return value
     }
 

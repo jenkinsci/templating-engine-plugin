@@ -18,15 +18,20 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 /**
  * creates Keywords and populates the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
  */
 @Extension class KeywordInjector extends TemplatePrimitiveInjector {
+
+    private static final String KEY = "keywords"
 
     static Class getPrimitiveClass(){
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
@@ -35,29 +40,33 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         return parseClass(classText)
     }
 
-    private static final String KEY = "keywords"
-    private static final String TYPE_DISPLAY_NAME = "Keyword"
-    private static final String NAMESPACE_KEY = KEY
-
-    static PrimitiveNamespace createNamespace(){
-        return new PrimitiveNamespace(name: getNamespaceKey(), typeDisplayName: TYPE_DISPLAY_NAME)
-    }
-
-    static String getNamespaceKey(){
-        return NAMESPACE_KEY
-    }
-
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
+        // if a run can be found, create a PrimitiveNamespace for the keywords
+        WorkflowRun run = flowOwner.run()
+        if(!run){
+            throw new JTEException("Invalid Context. Cannot determine run.")
+        }
+
+        PrimitiveNamespace keywords = NamespaceCollector.createNamespace(KEY)
+
+        // populate namespace with keywords from pipeline config
         Class keywordClass = getPrimitiveClass()
         LinkedHashMap aggregatedConfig = config.getConfig()
         aggregatedConfig[KEY].each{ key, value ->
-            binding.setVariable(key, keywordClass.newInstance(
+            keywords.add(keywordClass.newInstance(
                 name: key,
-                value: value,
-                injector: this.getClass()
+                value: value
             ))
         }
+
+        // add the namespace to the collector and save it on the run
+        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
+        if(namespaceCollector == null){
+            namespaceCollector = new NamespaceCollector()
+        }
+        namespaceCollector.addNamespace(keywords)
+        run.addOrReplaceAction(namespaceCollector)
     }
 
 }

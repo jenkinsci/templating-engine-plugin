@@ -135,50 +135,33 @@ class PluginLibraryProvider extends LibraryProvider{
         return true
     }
 
+
     @Override
-    void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){
+    void loadLibrary(FlowExecutionOwner flowOwner, String libName, FilePath srcDir, FilePath libDir){
+        // log the library loading to the build log
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         ArrayList msg = [
             "Loading Library ${libName}",
             "-- plugin: ${getPluginDisplayName() ?: "can't determine plugin"}"
         ]
         logger.print(msg.join("\n"))
-    }
 
-    @Override
-    void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){
-        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
-        FilePath jte = buildRootDir.child("jte")
+        // load the library's src files
         libraries[libName].src.each{ filePath, fileContents ->
-            FilePath file = jte.child(filePath)
+            FilePath file = srcDir.child(filePath)
             if(file.exists()){
                 throw new JTEException("Source file ${relativePath} already exists. Check across libraries for duplicate class definitions.")
             }
             file.write(fileContents, "UTF-8")
         }
-    }
 
-    @Override
-    void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
-        // copy the library contents into the build dir
+        // copy the library steps and resources into the build dir
         FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
         FilePath rootDir = buildRootDir.child("jte/${libName}")
         rootDir.mkdirs()
         (libraries[libName].steps + libraries[libName].resources).each { filePath, fileContents ->
             FilePath file = rootDir.child(filePath)
             file.write(fileContents, "UTF-8")
-        }
-
-        // create StepWrappers and inject
-        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
-        libraries[libName].steps.each { stepPath, stepContents ->
-            String stepName = stepPath.split("/").last() - ".groovy"
-            binding.setVariable(stepName, stepFactory.createFromFilePath(
-                    rootDir.child(stepPath),
-                    binding,
-                    libName,
-                    libConfig
-            ))
         }
     }
 

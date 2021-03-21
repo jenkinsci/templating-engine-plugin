@@ -1,5 +1,15 @@
 package org.boozallen.plugins.jte.init.primitives
 
+import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 
-abstract class GlobalVariableTemplatePrimitive extends GlobalVariable{}
+import javax.annotation.Nonnull
+
+abstract class TemplatePrimitiveGV extends GlobalVariable{
+
+    @Override
+    Object getValue(@Nonnull CpsScript script) throws Exception {
+        return this
+    }
+
+}

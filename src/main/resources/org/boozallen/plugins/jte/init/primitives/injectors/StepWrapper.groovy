@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.hooks.Hooks
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
@@ -39,7 +40,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
  * A library step
  */
 @SuppressWarnings("NoDef")
-class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
+class StepWrapper extends TemplatePrimitiveGV implements Serializable, Cloneable{
 
     private static final long serialVersionUID = 1L
 
@@ -91,10 +92,8 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      */
     private HookContext hookContext
 
-    @NonCPS @Override String getDescription(){ return "Library Step '${name}' from the '${library}' library" }
     @NonCPS @Override String getName(){ return name }
     @NonCPS String getLibrary(){ return library }
-    @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
     /**
      * clones this StepWrapper
@@ -177,17 +176,6 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
             return result
         }
         throw new TemplateException("Step ${name} from the library ${library} does not have the method ${methodName}(${argsList})")
-    }
-
-    @NonCPS
-    void throwPreLockException(String msg){
-        msg += "The step '${name}' already defined via the '${library}' library."
-        throw new TemplateException(msg)
-    }
-
-    void throwPostLockException(String msg){
-        msg += "The variable '${name}' is reserved as a library step via the '${library}' library."
-        throw new TemplateException(msg)
     }
 
     /**

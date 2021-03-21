@@ -19,17 +19,20 @@ import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.jenkinsci.plugins.workflow.cps.CpsScript
+
+import javax.annotation.Nonnull
 
 /**
  * JTE primitive representing an application environment to capture environmental context
  */
 @SuppressWarnings(["PropertyName", "FieldTypeRequired", "NoDef"])
-class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
+class ApplicationEnvironment extends TemplatePrimitiveGV implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name
-    Class<? extends TemplatePrimitiveInjector> injector
     String short_name
     String long_name
     def config
@@ -66,9 +69,7 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         this.config = config.asImmutable()
     }
 
-    @NonCPS @Override String getDescription(){ return "Application Environment '${name}'" }
     @NonCPS @Override String getName(){ return name }
-    @NonCPS @Override Class<? extends TemplatePrimitiveInjector> getInjector(){ return ApplicationEnvironmentInjector }
 
     Object getProperty(String name){
         def meta = ApplicationEnvironment.metaClass.getMetaProperty(name)
@@ -78,17 +79,6 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
     @SuppressWarnings("UnusedMethodParameter")
     void setProperty(String name, Object value){
         throw new TemplateConfigException("Can't modify Application Environment '${long_name}'. Application Environments are immutable.")
-    }
-
-    @NonCPS
-    void throwPreLockException(String msg){
-        msg += "Application Environment ${name} already defined."
-        throw new TemplateException(msg)
-    }
-
-    void throwPostLockException(String msg){
-        msg += "Variable ${name} is reserved as an Application Environment."
-        throw new TemplateException(msg)
     }
 
 }

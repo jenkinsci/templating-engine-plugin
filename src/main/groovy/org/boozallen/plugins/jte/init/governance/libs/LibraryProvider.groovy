@@ -15,8 +15,10 @@
 */
 package org.boozallen.plugins.jte.init.governance.libs
 
+import hudson.FilePath
 import hudson.model.AbstractDescribableImpl
 import hudson.model.Descriptor
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -24,16 +26,54 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
  */
 abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
 
+    /**
+     * the library configuration file path
+     */
     public static final String CONFIG_FILE = "library_config.groovy"
+
+    /**
+     * the name of the directory containing step files
+     */
     public static final String STEPS_DIR_NAME = "steps"
+
+    /**
+     * the name of the directory containing library resources
+     */
     public static final String RESOURCES_DIR_NAME = "resources"
+
+    /**
+     * the name of the directory containing library src files
+     */
     public static final String SRC_DIR_NAME = "src"
 
-    abstract Boolean hasLibrary(FlowExecutionOwner flowOwner, String libraryName)
-    abstract String getLibrarySchema(FlowExecutionOwner flowOwner, String libraryName)
-    abstract void logLibraryLoading(FlowExecutionOwner flowOwner, String libName)
-    abstract void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName)
-    abstract void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig)
+    /**
+     * Determines whether the provider has a library
+     * @param flowOwner the Run's FlowExecutionOwner
+     * @param libName the Library to load
+     * @return true if the provider has the library
+     */
+    abstract Boolean hasLibrary(FlowExecutionOwner flowOwner, String libName)
+
+    /**
+     * Returns the contents of the library configuration file, if present.
+     * Null otherwise
+     *
+     * @param flowOwner the Run's FlowExecutionOwner
+     * @param libName the Library to load
+     * @return the contents of the library configuration file, if present. null otherwise.
+     */
+    abstract String getLibrarySchema(FlowExecutionOwner flowOwner, String libName)
+
+
+    /**
+     * Copies the library's src files to the provided directory
+     *
+     * @param flowOwner the Run's FlowExecutionOwner
+     * @param libName the library to load
+     * @param srcDir the directory to copy src files to
+     * @param libDir the directory to copy library setps to
+     */
+    abstract void loadLibrary(FlowExecutionOwner flowOwner, String libName, FilePath srcDir, FilePath libDir)
 
     static class LibraryProviderDescriptor extends Descriptor<LibraryProvider> {}
 

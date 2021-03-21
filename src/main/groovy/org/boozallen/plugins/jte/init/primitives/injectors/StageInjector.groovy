@@ -18,6 +18,7 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
 import org.boozallen.plugins.jte.init.primitives.RunAfter
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
@@ -25,11 +26,14 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 /**
  * creates Stages and populates the run's {@link org.boozallen.plugins.jte.init.primitives.TemplateBinding}
  */
 @Extension class StageInjector extends TemplatePrimitiveInjector {
+
+    private static final String KEY = "stages"
 
     static Class getPrimitiveClass(){
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
@@ -38,31 +42,35 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         return parseClass(classText)
     }
 
-    private static final String KEY = "stages"
-    private static final String TYPE_DISPLAY_NAME = "Stage"
-    private static final String NAMESPACE_KEY = KEY
-
-    static PrimitiveNamespace createNamespace(){
-        return new CallableNamespace(name: getNamespaceKey(), typeDisplayName: TYPE_DISPLAY_NAME)
-    }
-
-    static String getNamespaceKey(){
-        return NAMESPACE_KEY
-    }
-
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector, TemplateMethodInjector])
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
+        // if a run can be found, create a PrimitiveNamespace for the stages
+        WorkflowRun run = flowOwner.run()
+        if(!run){
+            throw new JTEException("Invalid Context. Cannot determine run.")
+        }
+
+        NamespaceCollector.PrimitiveNamespace stages = NamespaceCollector.createNamespace(KEY)
+
+        // populate namespace with stages from pipeline config
         Class stageClass = getPrimitiveClass()
         LinkedHashMap aggregatedConfig = config.getConfig()
         aggregatedConfig[KEY].each{ name, steps ->
             List<String> stepNames = steps.keySet() as List<String>
-            binding.setVariable(name, stageClass.newInstance(
+            stages.add(stageClass.newInstance(
                 name: name,
-                steps: stepNames,
-                injector: this.getClass()
+                steps: stepNames
             ))
         }
+
+        // add the namespace to the collector and save it on the run
+        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
+        if(namespaceCollector == null){
+            namespaceCollector = new NamespaceCollector()
+        }
+        namespaceCollector.addNamespace(stages)
+        run.addOrReplaceAction(namespaceCollector)
     }
 
     @Override

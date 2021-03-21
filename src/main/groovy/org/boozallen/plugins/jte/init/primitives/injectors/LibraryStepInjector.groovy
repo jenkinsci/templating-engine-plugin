@@ -16,20 +16,25 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
+import hudson.FilePath
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
-import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
+import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveGV
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 /**
  * Loads libraries from the pipeline configuration and injects StepWrapper's into the
@@ -38,16 +43,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 @Extension class LibraryStepInjector extends TemplatePrimitiveInjector {
 
     private static final String KEY = "libraries"
-    private static final String TYPE_DISPLAY_NAME = "Library"
-    private static final String NAMESPACE_KEY = KEY
-
-    static PrimitiveNamespace createNamespace(){
-        return new Namespace(name: getNamespaceKey(), typeDisplayName: TYPE_DISPLAY_NAME)
-    }
-
-    static String getNamespaceKey(){
-        return NAMESPACE_KEY
-    }
 
     @Override
     void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
@@ -89,36 +84,52 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config, TemplateBinding binding){
-        LinkedHashMap aggregatedConfig = config.getConfig()
+        WorkflowRun run = flowOwner.run()
+        if(!run){
+            throw new JTEException("Invalid Context. Cannot determine run.")
+        }
 
+        // fetch library providers and determine library resolution order
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
         boolean reverseProviders = config.jteBlockWrapper.reverse_library_resolution
         if(reverseProviders) {
             providers = providers.reverse()
         }
 
-        LinkedHashMap providerCache = [:]
+        // prepare directory to store loaded libraries
+        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
+        FilePath jteDir = buildRootDir.child("jte")
+
+        // load all the libraries
+        // this will copy their contents to ${jteDir} for the run
+        LinkedHashMap aggregatedConfig = config.getConfig()
         aggregatedConfig[KEY].each{ libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)
             }
-            providerCache[libName] = provider
-            provider.logLibraryLoading(flowOwner, libName)
-            provider.loadLibraryClasses(flowOwner, libName)
+            FilePath libDir = jteDir.child(libName)
+            libDir.mkdirs()
+            provider.loadLibrary(flowOwner, libName, jteDir, libDir)
         }
 
-        /*
-         * library steps need to be loaded in a second passthrough
-         * to ensure that every library's source files have been
-         * added to the classloader, lest compilation errors occur
-         * during cross-library imports.
-         *
-         * TODO: there's probably a more efficient way to do this..
-         */
-        aggregatedConfig[KEY].each { libName, libConfig ->
-            LibraryProvider provider = providerCache[libName]
-            provider.loadLibrarySteps(flowOwner, binding, libName, libConfig)
+        // actually create the StepWrappers
+        LibraryCollector libCollector = new LibraryCollector()
+        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
+        aggregatedConfig[KEY].each{ libName, libConfig ->
+            String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy".toString()
+            PrimitiveNamespace libNamespace = NamespaceCollector.createNamespace(libName)
+            jteDir.list(includes).each{stepFile ->
+                libNamespace.add(stepFactory.createFromFilePath(stepFile, binding, libName, libConfig))
+            }
+            libCollector.add(libNamespace)
         }
+
+        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
+        if(namespaceCollector == null){
+            namespaceCollector = new NamespaceCollector()
+        }
+        namespaceCollector.addNamespace(libCollector)
+        run.addOrReplaceAction(namespaceCollector)
     }
 
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){
@@ -133,62 +144,20 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         return providers
     }
 
-    static class Namespace extends PrimitiveNamespace {
-        String name = KEY
-        List<CallableNamespace> libraries = []
-
-        @Override
-        void printAllPrimitives(TemplateLogger logger){
-            logger.print( "created Library Steps:\n" + getFormattedVariables().join("\n") )
+    class LibraryCollector extends PrimitiveNamespace{
+        List<PrimitiveNamespace> libraries = []
+        void add(PrimitiveNamespace library){
+            libraries.add(library)
         }
 
-        @Override void add(TemplatePrimitive primitive){
-            String libName = primitive.getLibrary()
-            CallableNamespace library = getLibrary(libName)
-            if(!library){
-                library = new CallableNamespace(name: libName)
-                libraries.push(library)
+        List<GlobalVariable> getPrimitives(){
+            List<GlobalVariable> steps = []
+            libraries.each{library ->
+                steps.addAll(library.getPrimitives())
             }
-            library.add(primitive)
+            return steps
         }
-
-        @Override Set<String> getVariables(){
-            return libraries*.getVariables().flatten() as Set<String>
-        }
-
-        @Override List<String> getPrimitivesByName(String primitiveName){
-            List<String> names = []
-            libraries.each{ n ->
-                String name = n.getPrimitivesByName(primitiveName)
-                name && names.push(name)
-            }
-            return names.collect{ n -> "${name}.${n}" } as List<String>
-        }
-
-        Set<String> getFormattedVariables(){
-            return libraries.collect{ lib ->
-                lib.getVariables().collect { var ->
-                    "${var} from the ${lib.name} Library"
-                }
-            }.flatten() as Set<String>
-        }
-
-        Object getProperty(String name){
-            MetaProperty meta = getClass().metaClass.getMetaProperty(name)
-            if(meta){
-                return meta.getProperty(this)
-            }
-
-            CallableNamespace library = getLibrary(name)
-            if(!library){
-                throw new JTEException("Library ${name} not found.")
-            }
-            return library
-        }
-        private CallableNamespace getLibrary(String name){
-            return libraries.find{ l -> l.getName() == name }
-        }
-
     }
+
 
 }

@@ -89,73 +89,41 @@ class ScmLibraryProvider extends LibraryProvider{
     }
 
     @Override
-    void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){
+    void loadLibrary(FlowExecutionOwner flowOwner, String libName, FilePath srcDir, FilePath libDir){
+        // log the library being loaded to the build log
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         ArrayList msg = [
                 "Loading Library ${libName}",
                 "-- scm: ${scm.getKey()}"
         ]
         logger.print(msg.join("\n"))
-    }
 
-    /**
-     * For each class file in the remote repository, copy it into the build dir
-     * and maintain the package structure
-     *
-     * note: all libraries share a common src directory when moving so we need to
-     * ensure there aren't collisions to avoid unexpected behavior
-     *
-     * this has to come before loading steps so that classes are available to the
-     * classloader when compiling the step.
-     */
-    @Override
-    void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){
         SCMFileSystem fs = createFs(flowOwner)
         // we already know this exists from hasLibrary()
         SCMFile lib = fs.child(prefixBaseDir(libName))
+
+        // copy src files into srcDir
         SCMFile src = lib.child(LibraryProvider.SRC_DIR_NAME)
-        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
-        FilePath jteDir = buildRootDir.child("jte")
         recurseChildren(src){ file ->
             String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
-            FilePath srcFile = jteDir.child(relativePath)
+            FilePath srcFile = srcDir.child(relativePath)
             if(srcFile.exists()){
                 throw new JTEException("Source file ${relativePath} already exists. Check across libraries for duplicate class definitions.")
             }
             srcFile.write(file.contentAsString(), "UTF-8")
         }
-    }
-
-    @Override
-    void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
-        SCMFileSystem fs = createFs(flowOwner)
-
-        // we already know this exists from hasLibrary()
-        SCMFile lib = fs.child(prefixBaseDir(libName))
-
-        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
-        FilePath rootDir = buildRootDir.child("jte/${libName}")
-        rootDir.mkdirs()
 
         /*
          * recurse through the steps directory in the remote repository
          * for each groovy file, copy to the build's directory represented
          * by a FilePath
          */
-        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         SCMFile steps = lib.child(LibraryProvider.STEPS_DIR_NAME)
         recurseChildren(steps){ file ->
             if(file.getName().endsWith(".groovy")) {
                 String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
-                FilePath stepFile = rootDir.child(relativePath)
+                FilePath stepFile = libDir.child(relativePath)
                 stepFile.write(file.contentAsString(), "UTF-8")
-                String stepName = file.getName() - ".groovy"
-                binding.setVariable(stepName, stepFactory.createFromFilePath(
-                    stepFile,
-                    binding,
-                    libName,
-                    libConfig
-                ))
             }
         }
 
@@ -166,7 +134,7 @@ class ScmLibraryProvider extends LibraryProvider{
         SCMFile resources = lib.child(LibraryProvider.RESOURCES_DIR_NAME)
         recurseChildren(resources){ file ->
             String relativePath = file.getPath() - "${prefixBaseDir(libName)}/"
-            FilePath resourceFile = rootDir.child(relativePath)
+            FilePath resourceFile = libDir.child(relativePath)
             resourceFile.write(file.contentAsString(), "UTF-8")
         }
     }
