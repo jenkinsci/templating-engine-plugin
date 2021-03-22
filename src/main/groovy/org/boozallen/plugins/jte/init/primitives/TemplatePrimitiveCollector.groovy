@@ -21,13 +21,16 @@ import hudson.model.InvisibleAction
 import hudson.model.Run
 import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.cps.GlobalVariableSet
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
-class TemplatePrimitiveCollector extends InvisibleAction{
+import javax.annotation.Nonnull
+
+class TemplatePrimitiveCollector extends InvisibleAction implements Serializable{
     List<TemplatePrimitiveNamespace> namespaces = []
 
     void addNamespace(TemplatePrimitiveNamespace namespace){
@@ -98,16 +101,31 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         return run.getAction(TemplatePrimitiveCollector)
     }
 
+    /**
+     * exposes the primitives populated on this action to the Run
+     */
     @Extension static class TemplatePrimitiveProvider extends GlobalVariableSet{
         List<GlobalVariable> forRun(Run run){
             List<GlobalVariable> primitives = []
             if(run == null) return primitives
             TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
+            /* the run might not belong to JTE */
             if(!primitiveCollector) return primitives
-            primitiveCollector.getNamespaces().each{ namespace ->
-                primitives.addAll(namespace.getPrimitives())
-            }
+            primitives.addAll(primitiveCollector.getPrimitives())
+            primitives.add(new TemplatePrimitiveCollector.JTEVar())
             return primitives
+        }
+    }
+
+    static class JTEVar extends GlobalVariable{
+        @Override
+        String getName() {
+            return "jte"
+        }
+
+        @Override
+        Object getValue(@Nonnull CpsScript script) throws Exception {
+            return TemplatePrimitiveCollector.current()
         }
     }
 

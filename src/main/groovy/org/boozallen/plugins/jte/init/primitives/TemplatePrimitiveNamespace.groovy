@@ -15,9 +15,10 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
+import hudson.model.InvisibleAction
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 
-class TemplatePrimitiveNamespace implements Serializable{
+class TemplatePrimitiveNamespace extends InvisibleAction implements Serializable{
     String name
     List<GlobalVariable> primitives = []
     void add(GlobalVariable primitive){
