@@ -1,10 +1,24 @@
+/*
+    Copyright 2018 Booz Allen Hamilton
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 package org.boozallen.plugins.jte.init.primitives
 
-import groovy.text.Template
+
 import hudson.Extension
 import hudson.model.InvisibleAction
 import hudson.model.Run
-import hudson.util.DirScanner
 import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.jenkinsci.plugins.workflow.cps.CpsThread
@@ -13,14 +27,14 @@ import org.jenkinsci.plugins.workflow.cps.GlobalVariableSet
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
-class NamespaceCollector extends InvisibleAction{
-    List<PrimitiveNamespace> namespaces = []
+class TemplatePrimitiveCollector extends InvisibleAction{
+    List<TemplatePrimitiveNamespace> namespaces = []
 
-    void addNamespace(PrimitiveNamespace namespace){
+    void addNamespace(TemplatePrimitiveNamespace namespace){
         namespaces.add(namespace)
     }
 
-    PrimitiveNamespace getNamespace(String name){
+    TemplatePrimitiveNamespace getNamespace(String name){
         return namespaces.find{namespace ->
             namespace.getName() == name
         }
@@ -64,41 +78,33 @@ class NamespaceCollector extends InvisibleAction{
         return findAll{ true }
     }
 
-    static PrimitiveNamespace createNamespace(String name){
-        return new PrimitiveNamespace(name: name)
-    }
-
-    static class PrimitiveNamespace implements Serializable{
-        String name
-        List<GlobalVariable> primitives = []
-        void add(GlobalVariable primitive){
-            primitives.add(primitive)
-        }
+    static TemplatePrimitiveNamespace createNamespace(String name){
+        return new TemplatePrimitiveNamespace(name: name)
     }
 
     /**
      * During execution, this can be used to fetch the current
-     * run's NamespaceCollector if present.
+     * run's TemplatePrimitiveCollector if present.
      *
-     * @return the current run's NamespaceCollector. may be null
+     * @return the current run's TemplatePrimitiveCollector. may be null
      */
-    static NamespaceCollector current(){
+    static TemplatePrimitiveCollector current(){
         CpsThread thread = CpsThread.current()
         if(!thread){
             throw new IllegalStateException("CpsThread not present.")
         }
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
         WorkflowRun run = flowOwner.run()
-        return run.getAction(NamespaceCollector)
+        return run.getAction(TemplatePrimitiveCollector)
     }
 
-    @Extension static class NamespaceProvider extends GlobalVariableSet{
+    @Extension static class TemplatePrimitiveProvider extends GlobalVariableSet{
         List<GlobalVariable> forRun(Run run){
             List<GlobalVariable> primitives = []
             if(run == null) return primitives
-            NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
-            if(!namespaceCollector) return primitives
-            namespaceCollector.getNamespaces().each{ namespace ->
+            TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
+            if(!primitiveCollector) return primitives
+            primitiveCollector.getNamespaces().each{ namespace ->
                 primitives.addAll(namespace.getPrimitives())
             }
             return primitives

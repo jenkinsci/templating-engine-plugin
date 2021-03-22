@@ -18,8 +18,8 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import hudson.model.Run
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -36,11 +36,11 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
     @Override
     void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
 
         Map primitivesByName = [:]
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-        namespaceCollector.getPrimitives().each{ primitive ->
+        primitiveCollector.getPrimitives().each{ primitive ->
             String name = primitive.getName()
             if(!primitivesByName.containsKey(name)){
                 primitivesByName[name] = [] as List<TemplatePrimitive>
@@ -67,9 +67,9 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
     // will probably become a method on the validation class
     Set<String> checkPrimitiveCollisions(Run run){
         Set<String> collisions = []
-        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
-        if(!namespaceCollector) return collisions
-        Set<String> registry = namespaceCollector.getPrimitiveNames()
+        TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
+        if(!primitiveCollector) return collisions
+        Set<String> registry = primitiveCollector.getPrimitiveNames()
         List<String> functionNames = StepDescriptor.all()*.functionName
         collisions = registry.intersect(functionNames)
 

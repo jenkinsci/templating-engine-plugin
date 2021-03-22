@@ -18,9 +18,10 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.RunAfter
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -42,7 +43,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector, TemplateMethodInjector])
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        NamespaceCollector.PrimitiveNamespace stages = NamespaceCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace stages = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate namespace with stages from pipeline config
         Class stageClass = getPrimitiveClass()
@@ -56,14 +57,14 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         }
 
         // add the namespace to the collector and save it on the run
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
-        namespaceCollector.addNamespace(stages)
-        flowOwner.run().addOrReplaceAction(namespaceCollector)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        primitiveCollector.addNamespace(stages)
+        flowOwner.run().addOrReplaceAction(primitiveCollector)
     }
 
     @Override
     void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
         LinkedHashMap aggregatedConfig = config.getConfig()
         LinkedHashMap stagesWithUndefinedSteps = [:]
         aggregatedConfig[KEY].each{ name, stageConfig ->
@@ -71,7 +72,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             List<String> undefinedSteps = []
             steps.each{ step ->
                 // FIXME: implement hasStep on namespace collector
-                if(!namespaceCollector.hasStep(step)){
+                if(!primitiveCollector.hasStep(step)){
                     undefinedSteps << step
                 }
             }

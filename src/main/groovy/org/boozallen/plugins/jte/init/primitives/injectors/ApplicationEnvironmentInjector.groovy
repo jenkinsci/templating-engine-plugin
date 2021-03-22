@@ -18,9 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -40,7 +40,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @SuppressWarnings('NoDef')
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
-        PrimitiveNamespace appEnvs = NamespaceCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace appEnvs = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate the namespace with application environments from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
@@ -59,8 +59,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         }
 
         // add the namespace to the collector and save it on the run
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
-        namespaceCollector.addNamespace(appEnvs)
-        flowOwner.run().addOrReplaceAction(namespaceCollector)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        primitiveCollector.addNamespace(appEnvs)
+        flowOwner.run().addOrReplaceAction(primitiveCollector)
     }
 }

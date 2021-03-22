@@ -18,9 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -39,8 +39,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
-        PrimitiveNamespace keywords = NamespaceCollector.createNamespace(KEY)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveNamespace keywords = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate namespace with keywords from pipeline config
         Class keywordClass = getPrimitiveClass()
@@ -53,8 +53,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         }
 
         // add the namespace to the collector and save it on the run
-        namespaceCollector.addNamespace(keywords)
-        flowOwner.run().addOrReplaceAction(namespaceCollector)
+        primitiveCollector.addNamespace(keywords)
+        flowOwner.run().addOrReplaceAction(primitiveCollector)
     }
 
 }

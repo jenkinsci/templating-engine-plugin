@@ -21,9 +21,9 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector.PrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
@@ -107,16 +107,16 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ libName, libConfig ->
             String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy".toString()
-            PrimitiveNamespace libNamespace = NamespaceCollector.createNamespace(libName)
+            TemplatePrimitiveNamespace libNamespace = TemplatePrimitiveCollector.createNamespace(libName)
             jteDir.list(includes).each{stepFile ->
                 libNamespace.add(stepFactory.createFromFilePath(stepFile, libName, libConfig))
             }
             libCollector.add(libNamespace)
         }
 
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
-        namespaceCollector.addNamespace(libCollector)
-        flowOwner.run().addOrReplaceAction(namespaceCollector)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        primitiveCollector.addNamespace(libCollector)
+        flowOwner.run().addOrReplaceAction(primitiveCollector)
     }
 
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){
@@ -131,9 +131,9 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         return providers
     }
 
-    class LibraryCollector extends PrimitiveNamespace{
-        List<PrimitiveNamespace> libraries = []
-        void add(PrimitiveNamespace library){
+    class LibraryCollector extends TemplatePrimitiveNamespace{
+        List<TemplatePrimitiveNamespace> libraries = []
+        void add(TemplatePrimitiveNamespace library){
             libraries.add(library)
         }
 

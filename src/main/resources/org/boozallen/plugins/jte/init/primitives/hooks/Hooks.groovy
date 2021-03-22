@@ -16,8 +16,8 @@
 package org.boozallen.plugins.jte.init.primitives.hooks
 
 import com.cloudbees.groovy.cps.NonCPS
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsThread
@@ -35,10 +35,10 @@ class Hooks implements Serializable{
     private static final long serialVersionUID = 1L
 
     @NonCPS
-    static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, NamespaceCollector namespaceCollector){
+    static List<AnnotatedMethod> discover(Class<? extends Annotation> hookType, TemplatePrimitiveCollector primitiveCollector){
         List<AnnotatedMethod> discovered = []
         Class stepWrapper = StepWrapperFactory.getPrimitiveClass()
-        List<TemplatePrimitive> stepWrappers = namespaceCollector.findAll{ var ->
+        List<TemplatePrimitive> stepWrappers = primitiveCollector.findAll{ var ->
             stepWrapper.getName() == var.getClass().getName()
         }
 
@@ -56,7 +56,7 @@ class Hooks implements Serializable{
     }
 
     static void invoke(Class<? extends Annotation> annotation, HookContext context = new HookContext()){
-        discover(annotation, NamespaceCollector.current()).each{ hook ->
+        discover(annotation, TemplatePrimitiveCollector.current()).each{ hook ->
             if(shouldInvoke(hook, context)){
                 hook.invoke(context)
             }

@@ -15,7 +15,7 @@
 */
 package org.boozallen.plugins.jte.init
 
-
+import hudson.model.InvisibleAction
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
@@ -38,9 +38,13 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
  * <li> determine the pipeline template for this run
  * </ol>
  * <p>
- * Created from {@link org.boozallen.plugins.jte.job.TemplateFlowDefinition}
+ * note: this is only still extends InvisibleAction and implements Serializable
+ * for backwords compatibility to avoid exceptions when trying to load
+ * builds on a previous version of the plugin.
+ *
+ * TODO: remove InvisibleAction extends Serializable when appropriate
  */
-class PipelineDecorator{
+class PipelineDecorator extends InvisibleAction implements Serializable{
 
     FlowExecutionOwner flowOwner
     PipelineConfigurationObject config

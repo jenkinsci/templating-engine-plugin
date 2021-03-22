@@ -17,9 +17,10 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.RunAfter
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -33,21 +34,21 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector])
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
-        NamespaceCollector.PrimitiveNamespace steps = NamespaceCollector.createNamespace(KEY)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveNamespace steps = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate namespace with no-op steps
         LinkedHashMap aggregatedConfig = config.getConfig()
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ step, _ ->
-            if(!namespaceCollector.hasStep(step)){
+            if(!primitiveCollector.hasStep(step)){
                 steps.add(stepFactory.createNullStep(step))
             }
         }
 
         // add the namespace to the collector and save it on the run
-        namespaceCollector.addNamespace(steps)
-        flowOwner.run().addOrReplaceAction(namespaceCollector)
+        primitiveCollector.addNamespace(steps)
+        flowOwner.run().addOrReplaceAction(primitiveCollector)
     }
 
 }

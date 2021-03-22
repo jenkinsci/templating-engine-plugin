@@ -182,7 +182,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
 
     /**
      * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it
-     * in a PrimitiveNamespace
+     * in a TemplatePrimitiveNamespace
      *
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
@@ -198,16 +198,16 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      */
     void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
 
-    NamespaceCollector getNamespaceCollector(FlowExecutionOwner flowOwner){
+    TemplatePrimitiveCollector getPrimitiveCollector(FlowExecutionOwner flowOwner){
         WorkflowRun run = flowOwner.run()
         if(!run){
             throw new JTEException("Invalid Context. Cannot determine run.")
         }
-        NamespaceCollector namespaceCollector = run.getAction(NamespaceCollector)
-        if(namespaceCollector == null){
-            namespaceCollector = new NamespaceCollector()
+        TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
+        if(primitiveCollector == null){
+            primitiveCollector = new TemplatePrimitiveCollector()
         }
-        return namespaceCollector
+        return primitiveCollector
     }
 
 }

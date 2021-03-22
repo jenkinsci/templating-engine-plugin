@@ -17,9 +17,10 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
 import org.boozallen.plugins.jte.init.primitives.RunAfter
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
@@ -33,8 +34,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @Override
     @RunAfter(LibraryStepInjector)
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
-        NamespaceCollector.PrimitiveNamespace steps = NamespaceCollector.createNamespace(KEY)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveNamespace steps = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate namespace with default steps from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
@@ -42,10 +43,10 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ stepName, stepConfig ->
             // if step already exists, print warning
-            if (namespaceCollector.hasStep(stepName)){
+            if (primitiveCollector.hasStep(stepName)){
                 ArrayList msg = [
                     "Configured step ${stepName} ignored.",
-                    "-- Loaded by the ${namespaceCollector.getStep(stepName).library} Library."
+                    "-- Loaded by the ${primitiveCollector.getStep(stepName).library} Library."
                 ]
                 logger.printWarning msg.join("\n")
             } else { // otherwise go ahead and create the default step implementation
@@ -55,8 +56,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         }
 
         // add the namespace to the collector and save it on the run
-        namespaceCollector.addNamespace(steps)
-        flowOwner.run().addOrReplaceAction(namespaceCollector)
+        primitiveCollector.addNamespace(steps)
+        flowOwner.run().addOrReplaceAction(primitiveCollector)
     }
 
 }
