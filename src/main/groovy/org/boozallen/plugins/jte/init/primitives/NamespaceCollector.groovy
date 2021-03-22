@@ -60,6 +60,10 @@ class NamespaceCollector extends InvisibleAction{
         }
     }
 
+    List<TemplatePrimitive> getPrimitives(){
+        return findAll{ true }
+    }
+
     static PrimitiveNamespace createNamespace(String name){
         return new PrimitiveNamespace(name: name)
     }

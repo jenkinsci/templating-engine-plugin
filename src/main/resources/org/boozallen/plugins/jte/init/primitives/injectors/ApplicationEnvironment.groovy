@@ -69,4 +69,8 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         throw new TemplateConfigException("Can't modify Application Environment '${long_name}'. Application Environments are immutable.")
     }
 
+    @Override @NonCPS String toString(){
+        return "Application Environment '${name}'"
+    }
+
 }

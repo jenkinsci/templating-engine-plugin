@@ -28,28 +28,16 @@ class Keyword extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
     String name
-    Class<? extends TemplatePrimitiveInjector> injector
     Object value
-    String preLockException = "Variable ${name} already exists as a Keyword."
-    String postLockException = "Variable ${name} is reserved as a template Keyword."
 
-    @NonCPS String getDescription(){ return "Keyword '${name}'" }
     @NonCPS @Override String getName(){ return name }
-    @NonCPS Class<? extends TemplatePrimitiveInjector> getInjector(){ return injector }
 
     @NonCPS Object getValue(CpsScript script){
         return value
     }
 
-    @NonCPS
-    void throwPreLockException(String msg){
-        msg += preLockException
-        throw new TemplateException(msg)
-    }
-
-    void throwPostLockException(String msg){
-        msg += postLockException
-        throw new TemplateException(msg)
+    @Override @NonCPS String toString(){
+        return "Keyword '${name}'"
     }
 
 }

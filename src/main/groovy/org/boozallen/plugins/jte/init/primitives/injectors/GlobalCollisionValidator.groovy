@@ -19,11 +19,12 @@ import hudson.Extension
 import hudson.model.Run
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.NamespaceCollector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
 /**
@@ -35,18 +36,32 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 
     @Override
     void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
-        WorkflowRun run = flowOwner.run()
-        if(!run) return
-        Set<String> collisions = checkPrimitiveCollisions(run)
+        NamespaceCollector namespaceCollector = getNamespaceCollector(flowOwner)
 
-        if( collisions ){
-            List<String> warnings = [ warningHeading ]
-            collisions.each{ name ->
-                warnings << "- ${name}"
+        Map primitivesByName = [:]
+        TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+        namespaceCollector.getPrimitives().each{ primitive ->
+            String name = primitive.getName()
+            if(!primitivesByName.containsKey(name)){
+                primitivesByName[name] = [] as List<TemplatePrimitive>
             }
-            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-            logger.printWarning(warnings.join("\n"))
+            primitivesByName[name] << primitive
         }
+
+        // check for collisions amongst the primitives
+        Map primitiveCollisions = primitivesByName.findAll{ key, value -> value.size() > 1 }
+        if(primitiveCollisions && !config.getJteBlockWrapper().permissive_initialization){
+            primitiveCollisions.each{ name, primitives ->
+                logger.printError("There are multiple primitives with the name '${name}'")
+                primitives.each{ primitive ->
+                    logger.printError("- ${primitive.toString()}")
+                }
+            }
+            throw new JTEException("Overlapping template primitives for names: ${primitiveCollisions.keySet()}")
+        }
+        List<String> primitives = []
+        List<String> jenkinsSteps = []
+        List<String> otherGlobalVars = []
     }
 
     // will probably become a method on the validation class

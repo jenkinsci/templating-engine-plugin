@@ -20,7 +20,6 @@ import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.util.AggregateException
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner

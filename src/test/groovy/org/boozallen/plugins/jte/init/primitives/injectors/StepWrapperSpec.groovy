@@ -18,7 +18,6 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.model.Result
 import hudson.model.TaskListener
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
@@ -620,7 +619,8 @@ class StepWrapperSpec extends Specification{
         run.getListener() >> listener
 
         given:
-        TemplateBinding binding = new TemplateBinding(run, false)
+        // TemplateBinding binding = new TemplateBinding(run, false)
+
         when:
         binding.setVariable(var, "_")
         then:

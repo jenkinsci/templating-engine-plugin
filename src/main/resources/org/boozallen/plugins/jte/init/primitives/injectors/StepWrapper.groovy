@@ -26,6 +26,7 @@ import org.boozallen.plugins.jte.init.primitives.hooks.BeforeStep
 import org.boozallen.plugins.jte.init.primitives.hooks.AfterStep
 import org.boozallen.plugins.jte.init.primitives.hooks.Notify
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
+import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.InvokerInvocationException
@@ -88,6 +89,11 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      */
     private HookContext hookContext
 
+    // flags to determine what type of step this is
+    private boolean isLibraryStep  = false
+    private boolean isDefaultStep  = false
+    private boolean isTemplateStep = false
+
     @NonCPS @Override String getName(){ return name }
     @NonCPS String getLibrary(){ return library }
 
@@ -105,6 +111,9 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         that.sourceFile = this.sourceFile
         that.config = this.config
         that.injector = this.injector
+        that.isLibraryStep = this.isLibraryStep
+        that.isDefaultStep = this.isDefaultStep
+        that.isTemplateStep = this.isTemplateStep
         return that
     }
 
@@ -203,6 +212,18 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
         StepWrapperFactory factory = new StepWrapperFactory(flowOwner)
         return factory.prepareScript(library, name, source, config, stageContext, hookContext)
+    }
+
+    @Override @NonCPS String toString(){
+        if(isLibraryStep){
+            return "Step '${name}' from the '${library}' Library"
+        } else if (isDefaultStep){
+            return "Default Step Implementation '${name}'"
+        } else if (isTemplateStep){
+            return "No-Op Template Step '${name}'"
+        } else {
+            throw new JTEException("StepWrapper origin could not be found")
+        }
     }
 
 }

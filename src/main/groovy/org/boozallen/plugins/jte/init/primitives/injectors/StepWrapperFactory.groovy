@@ -190,7 +190,8 @@ class StepWrapperFactory{
             config: config,
             sourceFile: filePath.absolutize().getRemote(),
             // parse to fail fast for step compilation issues
-            script: prepareScript(library, name, sourceText, config)
+            script: prepareScript(library, name, sourceText, config),
+            isLibraryStep: true
         )
     }
 
@@ -215,7 +216,8 @@ class StepWrapperFactory{
             config: stepConfig,
             sourceText: defaultStep,
             // parse to fail fast for step compilation issues
-            script: prepareScript("Default Step Implementation", name, defaultStep, stepConfig)
+            script: prepareScript("Default Step Implementation", name, defaultStep, stepConfig),
+            isDefaultStep: true
         )
     }
 
@@ -235,7 +237,8 @@ class StepWrapperFactory{
             config: config,
             sourceText: nullStep,
             // parse to fail fast for step compilation issues
-            script: prepareScript(null, stepName, nullStep, config)
+            script: prepareScript(null, stepName, nullStep, config),
+            isTemplateStep: true
         )
     }
 

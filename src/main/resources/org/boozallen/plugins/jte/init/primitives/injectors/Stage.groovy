@@ -59,4 +59,8 @@ class Stage extends TemplatePrimitive implements Serializable{
         }
     }
 
+    @Override @NonCPS String toString(){
+        return "Stage '${name}'"
+    }
+
 }

@@ -18,7 +18,6 @@ package org.boozallen.plugins.jte.util
 import hudson.Extension
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
 
-import org.boozallen.plugins.jte.init.primitives.PrimitiveNamespace
 
 import java.lang.reflect.Method
 
@@ -35,9 +34,7 @@ import java.lang.reflect.Method
         "org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper"
     ]
 
-    private final List<Class> permittedReceivers = [
-            PrimitiveNamespace
-    ]
+    private final List<Class> permittedReceivers = []
 
     @Override
     boolean permitsMethod(Method method, Object receiver, Object[] args) {
