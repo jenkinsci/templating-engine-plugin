@@ -15,15 +15,18 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
+import com.cloudbees.groovy.cps.NonCPS
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 
 import javax.annotation.Nonnull
 
-abstract class TemplatePrimitive extends GlobalVariable{
+abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
 
     @Override
+    @NonCPS
     Object getValue(@Nonnull CpsScript script) throws Exception {
+        // check for multiple primitives with this name
         return this
     }
 

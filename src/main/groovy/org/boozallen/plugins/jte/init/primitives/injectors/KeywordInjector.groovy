@@ -30,31 +30,23 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     private static final String KEY = "keywords"
 
-    static Class getPrimitiveClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("Keyword.groovy").text
-        return parseClass(classText)
-    }
-
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
         TemplatePrimitiveNamespace keywords = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate namespace with keywords from pipeline config
-        Class keywordClass = getPrimitiveClass()
         LinkedHashMap aggregatedConfig = config.getConfig()
         aggregatedConfig[KEY].each{ key, value ->
-            keywords.add(keywordClass.newInstance(
-                name: key,
-                value: value
-            ))
+            Keyword keyword = new Keyword(name: key, value: value)
+            keywords.add(keyword)
         }
 
         // add the namespace to the collector and save it on the run
-        primitiveCollector.addNamespace(keywords)
-        flowOwner.run().addOrReplaceAction(primitiveCollector)
+        if(keywords.getPrimitives()) {
+            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+            primitiveCollector.addNamespace(keywords)
+            flowOwner.run().addOrReplaceAction(primitiveCollector)
+        }
     }
 
 }

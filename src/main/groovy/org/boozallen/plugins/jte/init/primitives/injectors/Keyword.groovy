@@ -16,28 +16,20 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
-import org.boozallen.plugins.jte.init.primitives.TemplateException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  * JTE primitive that represents a pre-populated variable
  */
-class Keyword extends TemplatePrimitive implements Serializable{
+class Keyword extends TemplatePrimitive{
 
     private static final long serialVersionUID = 1L
     String name
     Object value
 
-    @NonCPS @Override String getName(){ return name }
-
-    @NonCPS Object getValue(CpsScript script){
-        return value
-    }
-
-    @Override @NonCPS String toString(){
-        return "Keyword '${name}'"
-    }
+    @Override String getName(){ return name }
+    @Override String toString(){ return "Keyword '${name}'" }
+    Object getValue(CpsScript script){ return value }
 
 }

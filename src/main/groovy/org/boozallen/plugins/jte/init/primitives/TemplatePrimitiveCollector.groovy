@@ -19,8 +19,11 @@ package org.boozallen.plugins.jte.init.primitives
 import hudson.Extension
 import hudson.model.InvisibleAction
 import hudson.model.Run
+import jenkins.model.RunAction2
 import jenkins.security.CustomClassFilter
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
+import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
@@ -30,7 +33,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.Nonnull
 
-class TemplatePrimitiveCollector extends InvisibleAction implements Serializable{
+class TemplatePrimitiveCollector extends InvisibleAction{
+
     List<TemplatePrimitiveNamespace> namespaces = []
 
     void addNamespace(TemplatePrimitiveNamespace namespace){
@@ -70,9 +74,8 @@ class TemplatePrimitiveCollector extends InvisibleAction implements Serializable
     }
 
     List<TemplatePrimitive> getStep(String name){
-        Class clazz = StepWrapperFactory.getPrimitiveClass()
         return findAll{ primitive ->
-            clazz.getName() == primitive.getClass().getName() &&
+            primitive instanceof StepWrapper &&
             primitive.getName() == name
         }
     }
@@ -81,6 +84,7 @@ class TemplatePrimitiveCollector extends InvisibleAction implements Serializable
         return findAll{ true }
     }
 
+    // FIXME: this doesn't belong here anymore. just use the constructor.
     static TemplatePrimitiveNamespace createNamespace(String name){
         return new TemplatePrimitiveNamespace(name: name)
     }
@@ -125,7 +129,16 @@ class TemplatePrimitiveCollector extends InvisibleAction implements Serializable
 
         @Override
         Object getValue(@Nonnull CpsScript script) throws Exception {
-            return TemplatePrimitiveCollector.current()
+            return this
+        }
+
+        Object getProperty(String property){
+            TemplatePrimitiveCollector collector = TemplatePrimitiveCollector.current()
+            TemplatePrimitiveNamespace namespace = collector.getNamespace(property)
+            if(namespace){
+                return namespace
+            }
+            throw new JTEException("JTE does not have Template Namespace ${property}")
         }
     }
 

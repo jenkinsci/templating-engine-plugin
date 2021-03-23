@@ -107,16 +107,20 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ libName, libConfig ->
             String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy".toString()
-            TemplatePrimitiveNamespace libNamespace = TemplatePrimitiveCollector.createNamespace(libName)
+            TemplatePrimitiveNamespace library = TemplatePrimitiveCollector.createNamespace(libName)
             jteDir.list(includes).each{stepFile ->
-                libNamespace.add(stepFactory.createFromFilePath(stepFile, libName, libConfig))
+                library.add(stepFactory.createFromFilePath(stepFile, libName, libConfig))
             }
-            libCollector.add(libNamespace)
+            if(library.getPrimitives()) {
+                libCollector.add(library)
+            }
         }
 
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
-        primitiveCollector.addNamespace(libCollector)
-        flowOwner.run().addOrReplaceAction(primitiveCollector)
+        if(libCollector.getLibraries()) {
+            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+            primitiveCollector.addNamespace(libCollector)
+            flowOwner.run().addOrReplaceAction(primitiveCollector)
+        }
     }
 
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){
@@ -132,6 +136,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     }
 
     class LibraryCollector extends TemplatePrimitiveNamespace{
+        String name = KEY
         List<TemplatePrimitiveNamespace> libraries = []
         void add(TemplatePrimitiveNamespace library){
             libraries.add(library)

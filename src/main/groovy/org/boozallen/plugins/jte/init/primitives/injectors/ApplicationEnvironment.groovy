@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.governance.config.dsl.TemplateConfigException
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 
@@ -57,7 +56,7 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         this.config = config.asImmutable()
     }
 
-    @NonCPS @Override String getName(){ return name }
+    @Override String getName(){ return name }
 
     Object getProperty(String name){
         def meta = ApplicationEnvironment.metaClass.getMetaProperty(name)
@@ -69,7 +68,7 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
         throw new TemplateConfigException("Can't modify Application Environment '${long_name}'. Application Environments are immutable.")
     }
 
-    @Override @NonCPS String toString(){
+    @Override String toString(){
         return "Application Environment '${name}'"
     }
 

@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.util
 
 import hudson.Extension
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
 
 
@@ -34,7 +35,9 @@ import java.lang.reflect.Method
         "org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper"
     ]
 
-    private final List<Class> permittedReceivers = []
+    private final List<Class> permittedReceivers = [
+            TemplatePrimitiveCollector.JTEVar
+    ]
 
     @Override
     boolean permitsMethod(Method method, Object receiver, Object[] args) {

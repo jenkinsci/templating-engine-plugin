@@ -30,13 +30,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     static private final String KEY = "application_environments"
 
-    static Class getPrimitiveClass() {
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("ApplicationEnvironment.groovy").text
-        return parseClass(classText)
-    }
-
     @SuppressWarnings('NoDef')
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
@@ -44,23 +37,24 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
         // populate the namespace with application environments from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
-        Class appEnvClass = getPrimitiveClass()
-        ArrayList createdEnvs = []
+        List<ApplicationEnvironment> createdEnvs = []
         aggregatedConfig[KEY].each { name, appEnvConfig ->
-            def env = appEnvClass.newInstance(name, appEnvConfig)
+            def env = new ApplicationEnvironment(name, appEnvConfig)
             createdEnvs << env
         }
         createdEnvs.eachWithIndex { env, index ->
-            def previous = index ? createdEnvs[index - 1] : null
-            def next = (index == (createdEnvs.size() - 1)) ? null : createdEnvs[index + 1]
+            ApplicationEnvironment previous = index ? createdEnvs[index - 1] : null
+            ApplicationEnvironment next = (index == (createdEnvs.size() - 1)) ? null : createdEnvs[index + 1]
             env.setPrevious(previous)
             env.setNext(next)
             appEnvs.add(env)
         }
 
         // add the namespace to the collector and save it on the run
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
-        primitiveCollector.addNamespace(appEnvs)
-        flowOwner.run().addOrReplaceAction(primitiveCollector)
+        if(appEnvs.getPrimitives()) {
+            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+            primitiveCollector.addNamespace(appEnvs)
+            flowOwner.run().addOrReplaceAction(primitiveCollector)
+        }
     }
 }

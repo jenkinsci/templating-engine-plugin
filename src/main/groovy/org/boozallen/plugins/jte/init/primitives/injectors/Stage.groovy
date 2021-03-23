@@ -16,17 +16,20 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import com.cloudbees.groovy.cps.NonCPS
+import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  *  represents a group of library steps to be called.
  */
 
 @SuppressWarnings("NoDef")
-class Stage extends TemplatePrimitive implements Serializable{
+class Stage extends TemplatePrimitive{
 
     private static final long serialVersionUID = 1L
     String name
@@ -39,28 +42,21 @@ class Stage extends TemplatePrimitive implements Serializable{
         this.steps = steps
     }
 
-    @NonCPS @Override String getName(){ return name }
+    @Override String getName(){ return name }
 
-    @SuppressWarnings("MethodParameterTypeRequired")
-    void call(args) {
-        TemplateLogger.createDuringRun().print "[Stage - ${name}]"
-        Map stageArgs
-        if( args instanceof Object[] && 0 < ((Object[])args).length){
-            stageArgs = ((Object[])args)[0]
-        } else {
-            stageArgs = args as Map
-        }
-        TemplatePrimitiveCollector primitiveCollector = TemplatePrimitiveCollector.current()
-        StageContext stageContext = new StageContext(name: name, args: stageArgs)
-        steps.each{ step ->
-            def clone = primitiveCollector.getStep(step).clone()
-            clone.setStageContext(stageContext)
-            clone.call()
-        }
+    @Override String toString(){
+        return "Stage '${name}'"
     }
 
-    @Override @NonCPS String toString(){
-        return "Stage '${name}'"
+    @Override Object getValue(CpsScript script){
+        return getCPSClass().newInstance(name: name, steps: steps)
+    }
+
+    private Class getCPSClass(){
+        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
+        String self = this.getMetaClass().getTheClass().getName()
+        String classText = uberClassLoader.loadClass(self).getResource("StageCPS.groovy").text
+        return TemplatePrimitiveInjector.parseClass(classText)
     }
 
 }

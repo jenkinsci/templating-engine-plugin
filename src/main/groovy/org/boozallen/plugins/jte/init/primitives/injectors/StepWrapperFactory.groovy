@@ -52,17 +52,6 @@ class StepWrapperFactory{
     }
 
     /**
-     * returns the CPS-transformed StepWrapper Class that will work during pipeline execution
-     * @return the StepWrapper Class
-     */
-    static Class getPrimitiveClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("StepWrapper.groovy").text
-        return TemplatePrimitiveInjector.parseClass(classText)
-    }
-
-    /**
      *  Parses source code and turns it into a CPS transformed executable
      *  script that's been autowired appropriately for JTE.
      *
@@ -179,14 +168,12 @@ class StepWrapperFactory{
      * @param config the library configuration for the step
      * @return a StepWrapper instance
      */
-    def createFromFilePath(FilePath filePath, String library, Map config){
-        Class stepWrapper = getPrimitiveClass()
+    StepWrapper createFromFilePath(FilePath filePath, String library, Map config){
         String name = filePath.getBaseName()
         String sourceText = filePath.readToString()
-        return stepWrapper.newInstance(
+        return new StepWrapper(
             name: name,
             library: library,
-            injector: LibraryStepInjector,
             config: config,
             sourceFile: filePath.absolutize().getRemote(),
             // parse to fail fast for step compilation issues
@@ -202,17 +189,15 @@ class StepWrapperFactory{
      * @param stepConfig
      * @return a StepWrapper instance
      */
-    def createDefaultStep(String name, Map stepConfig){
-        Class stepWrapper = getPrimitiveClass()
+    StepWrapper createDefaultStep(String name, Map stepConfig){
         ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
         String self = this.getMetaClass().getTheClass().getName()
         String defaultStep = uberClassLoader.loadClass(self).getResource("defaultStepImplementation.groovy").text
         // will be nice to eventually use the ?= operator when groovy version gets upgraded
         stepConfig.name = stepConfig.name ?: name
-        return stepWrapper.newInstance(
+        return new StepWrapper(
             name: name,
             library: null,
-            injector: DefaultStepInjector,
             config: stepConfig,
             sourceText: defaultStep,
             // parse to fail fast for step compilation issues
@@ -226,14 +211,12 @@ class StepWrapperFactory{
      * @param stepName the name of the step to be created
      * @return a no-op StepWrapper
      */
-    def createNullStep(String stepName){
-        Class stepWrapper = getPrimitiveClass()
+    StepWrapper createNullStep(String stepName){
         String nullStep = "def call(Object[] args){ println \"Step ${stepName} is not implemented.\" }"
         LinkedHashMap config = [:]
-        return stepWrapper.newInstance(
+        return new StepWrapper(
             name: stepName,
             library: null,
-            injector: TemplateMethodInjector,
             config: config,
             sourceText: nullStep,
             // parse to fail fast for step compilation issues

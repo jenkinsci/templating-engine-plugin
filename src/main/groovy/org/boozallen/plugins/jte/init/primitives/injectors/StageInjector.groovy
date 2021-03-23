@@ -33,33 +33,26 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     private static final String KEY = "stages"
 
-    static Class getPrimitiveClass(){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String classText = uberClassLoader.loadClass(self).getResource("Stage.groovy").text
-        return parseClass(classText)
-    }
-
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector, TemplateMethodInjector])
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         TemplatePrimitiveNamespace stages = TemplatePrimitiveCollector.createNamespace(KEY)
 
         // populate namespace with stages from pipeline config
-        Class stageClass = getPrimitiveClass()
         LinkedHashMap aggregatedConfig = config.getConfig()
         aggregatedConfig[KEY].each{ name, steps ->
             List<String> stepNames = steps.keySet() as List<String>
-            stages.add(stageClass.newInstance(
-                name: name,
-                steps: stepNames
-            ))
+            Stage stage = new Stage(name, stepNames)
+            stages.add(stage)
         }
 
-        // add the namespace to the collector and save it on the run
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
-        primitiveCollector.addNamespace(stages)
-        flowOwner.run().addOrReplaceAction(primitiveCollector)
+        // add namespace to collector if there are primitives
+        if(stages.getPrimitives()){
+            // add the namespace to the collector and save it on the run
+            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+            primitiveCollector.addNamespace(stages)
+            flowOwner.run().addOrReplaceAction(primitiveCollector)
+        }
     }
 
     @Override

@@ -15,21 +15,14 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import hudson.FilePath
-import org.boozallen.plugins.jte.init.primitives.TemplateException
+import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.init.primitives.hooks.Hooks
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
-import org.boozallen.plugins.jte.init.primitives.hooks.BeforeStep
-import org.boozallen.plugins.jte.init.primitives.hooks.AfterStep
-import org.boozallen.plugins.jte.init.primitives.hooks.Notify
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.JTEException
-import org.boozallen.plugins.jte.util.TemplateLogger
-import org.codehaus.groovy.runtime.InvokerHelper
-import org.codehaus.groovy.runtime.InvokerInvocationException
+import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
@@ -52,25 +45,21 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     String library
 
     /**
-     * The injector that created this step
-     */
-    Class<? extends TemplatePrimitiveInjector> injector
-    /**
      * The library configuration
      */
-    private LinkedHashMap config
+    LinkedHashMap config
 
     /**
      * The FilePath where the source text for this
      * library step can be found
      */
-    private String sourceFile
+    String sourceFile
 
     /**
      * Alternatively, store the source text in a variable.
      *   e.g. NullStep's and Default Step Implementation
      */
-    private String sourceText
+    String sourceText
 
     /**
      * A caching of the parsed source text used during invocation
@@ -81,21 +70,43 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      * optional StageContext. assumes nondefault value of this step is
      * running as part of a Stage
      */
-    private StageContext stageContext
+    StageContext stageContext
 
     /**
      * optional HookContext. assumes nondefault value if this step was
      * invoked because of a lifecycle hook
      */
-    private HookContext hookContext
+    HookContext hookContext
 
     // flags to determine what type of step this is
-    private boolean isLibraryStep  = false
-    private boolean isDefaultStep  = false
-    private boolean isTemplateStep = false
+    boolean isLibraryStep  = false
+    boolean isDefaultStep  = false
+    boolean isTemplateStep = false
 
-    @NonCPS @Override String getName(){ return name }
-    @NonCPS String getLibrary(){ return library }
+    @Override String getName(){ return name }
+    String getLibrary(){ return library }
+
+    @Override
+    Object getValue(CpsScript script){
+        Class stepwrapperCPS = getPrimitiveClass()
+        return stepwrapperCPS.newInstance(
+            name: this.name,
+            library: this.library,
+            sourceText: this.sourceText,
+            sourceFile: this.sourceFile,
+            config: this.config,
+            isLibraryStep: this.isLibraryStep,
+            isDefaultStep: this.isDefaultStep,
+            isTemplateStep: this.isTemplateStep
+        )
+    }
+
+    Class getPrimitiveClass(){
+        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
+        String self = this.getMetaClass().getTheClass().getName()
+        String classText = uberClassLoader.loadClass(self).getResource("StepWrapperCPS.groovy").text
+        return TemplatePrimitiveInjector.parseClass(classText)
+    }
 
     /**
      * clones this StepWrapper
@@ -110,7 +121,6 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         that.sourceText = this.sourceText
         that.sourceFile = this.sourceFile
         that.config = this.config
-        that.injector = this.injector
         that.isLibraryStep = this.isLibraryStep
         that.isDefaultStep = this.isDefaultStep
         that.isTemplateStep = this.isTemplateStep
@@ -123,7 +133,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      *  1. prior to first invocation
      *  2. after a pipeline is resumed following an ungraceful shut down
      */
-    @NonCPS StepWrapperScript getScript(){
+    StepWrapperScript getScript(){
         script = script ?: parseSource()
         return script
     }
@@ -138,58 +148,12 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         getScript().setHookContext(hookContext)
     }
 
-    /*
-        need a call method defined on method missing so that
-        CpsScript recognizes the StepWrapper as something it
-        should execute in the binding.
-    */
-    @SuppressWarnings("MethodReturnTypeRequired")
-    def call(Object... args) {
-        return invoke("call", args)
-    }
-
-    /*
-        all other method calls go through CpsScript.getProperty to
-        first retrieve the StepWrapper and then attempt to invoke a
-        method on it.
-    */
-    @SuppressWarnings(["MethodReturnTypeRequired", "MethodParameterTypeRequired"])
-    def methodMissing(String methodName, args){
-        return invoke(methodName, args)
-    }
-
-    /*
-        pass method invocations on the wrapper to the underlying
-        step implementation script.
-    */
-    @SuppressWarnings("MethodReturnTypeRequired")
-    def invoke(String methodName, Object... args){
-        String argsList = args.collect{ arg -> arg.getClass().simpleName }.join(", ")
-        if(InvokerHelper.getMetaClass(getScript()).respondsTo(getScript(), methodName, args)){
-            def result
-            HookContext context = new HookContext(step: name, library: library)
-            try{
-                Hooks.invoke(BeforeStep, context)
-                TemplateLogger.createDuringRun().print "[Step - ${library}/${name}.${methodName}(${argsList})]"
-                result = InvokerHelper.getMetaClass(getScript()).invokeMethod(getScript(), methodName, args)
-            } catch (x) {
-                throw new InvokerInvocationException(x)
-            } finally{
-                Hooks.invoke(AfterStep, context)
-                Hooks.invoke(Notify, context)
-            }
-            return result
-        }
-        throw new TemplateException("Step ${name} from the library ${library} does not have the method ${methodName}(${argsList})")
-    }
-
     /**
      * recompiles the StepWrapperScript if missing. This typically only happens if
      * Jenkins has ungracefully restarted and the pipeline is resuming
      * @return
      */
-    @NonCPS
-    private StepWrapperScript parseSource(){
+    StepWrapperScript parseSource(){
         CpsThread thread = CpsThread.current()
         if(!thread){
             throw new IllegalStateException("CpsThread not present.")
@@ -214,7 +178,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         return factory.prepareScript(library, name, source, config, stageContext, hookContext)
     }
 
-    @Override @NonCPS String toString(){
+    @Override String toString(){
         if(isLibraryStep){
             return "Step '${name}' from the '${library}' Library"
         } else if (isDefaultStep){
