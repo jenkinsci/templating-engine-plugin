@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import hudson.FilePath
 import org.boozallen.plugins.jte.init.PipelineDecorator
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
@@ -46,9 +47,9 @@ class LibraryStepInjectorSpec extends Specification{
         run() >> GroovyMock(JobChild){
             getParent() >> job
         }
+        getRootDir() >> new File(".")
     }
 
-    TemplateBinding templateBinding = Mock()
     LinkedHashMap config = [
             jte: [:],
             libraries: [:]
@@ -73,14 +74,7 @@ class LibraryStepInjectorSpec extends Specification{
         }
 
         @Override
-        void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){}
-
-        @Override
-        void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){}
-
-        @Override
-        void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig) {}
-
+        void loadLibrary(FlowExecutionOwner flowOwner, String libName, FilePath srcDir, FilePath libDir) {}
     }
 
     @WithoutJenkins
@@ -104,10 +98,10 @@ class LibraryStepInjectorSpec extends Specification{
         GovernanceTier.getHierarchy(_) >> [ t1 ]
 
         when:
-        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
+        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject)
 
         then:
-        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, libraryName, _)
+        1 * p1.loadLibrary(*_)
     }
 
     @WithoutJenkins
@@ -137,13 +131,13 @@ class LibraryStepInjectorSpec extends Specification{
         GovernanceTier.getHierarchy(_) >> [ t1 ]
 
         when:
-        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
+        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject)
 
         then:
-        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
-        0 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
-        1 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
-        0 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        1 * p1.loadLibrary(_, "libA", _, _)
+        0 * p1.loadLibrary(_, "libB", _, _)
+        1 * p2.loadLibrary(_, "libB", _, _)
+        0 * p2.loadLibrary(_, "libA", _, _)
     }
 
     @WithoutJenkins
@@ -177,13 +171,13 @@ class LibraryStepInjectorSpec extends Specification{
         GovernanceTier.getHierarchy(_) >> [ tier1, tier2 ]
 
         when:
-        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
+        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject)
 
         then:
-        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
-        0 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
-        0 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
-        1 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", _)
+        1 * p1.loadLibrary(flowExecutionOwner, "libA", _, _)
+        0 * p1.loadLibrary(flowExecutionOwner, "libB", _, _)
+        0 * p2.loadLibrary(flowExecutionOwner, "libA", _, _)
+        1 * p2.loadLibrary(flowExecutionOwner, "libB", _, _)
     }
 
     @WithoutJenkins
@@ -216,11 +210,11 @@ class LibraryStepInjectorSpec extends Specification{
         GovernanceTier.getHierarchy(_) >> [ tier1, tier2 ]
 
         when:
-        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
+        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject)
 
         then:
-        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
-        0 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
+        1 * p1.loadLibrary(flowExecutionOwner, "libA", _, _)
+        0 * p2.loadLibrary(flowExecutionOwner, "libA", _, _)
     }
 
     @WithoutJenkins
@@ -254,46 +248,11 @@ class LibraryStepInjectorSpec extends Specification{
         GovernanceTier.getHierarchy(_) >> [ t1, t2 ]
 
         when:
-        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
+        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject)
 
         then:
-        0 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
-        1 * p2.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", _)
-    }
-
-    @WithoutJenkins
-    def "library loader correctly passes step config"(){
-        setup:
-        config.libraries = [
-                libA: [
-                        fieldA: "A"
-                ],
-                libB: [
-                        fieldB: "B"
-                ]
-        ]
-
-        MockLibraryProvider p1 = Mock{
-            hasLibrary(flowExecutionOwner, "libA") >> true
-            hasLibrary(flowExecutionOwner, "libB") >> true
-        }
-
-        LibrarySource s1 = Mock{
-            getLibraryProvider() >> p1
-        }
-
-        GovernanceTier t1 = GroovyMock(global:true){
-            getLibrarySources() >> [ s1 ]
-        }
-
-        GovernanceTier.getHierarchy(_) >> [ t1 ]
-
-        when:
-        injector.injectPrimitives(flowExecutionOwner, pipelineConfigurationObject, templateBinding)
-
-        then:
-        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libA", [fieldA: "A"])
-        1 * p1.loadLibrarySteps(flowExecutionOwner, templateBinding, "libB", [fieldB: "B"])
+        0 * p1.loadLibrary(_, "libA", _, _)
+        1 * p2.loadLibrary(_, "libA", _, _)
     }
 
     @WithoutJenkins

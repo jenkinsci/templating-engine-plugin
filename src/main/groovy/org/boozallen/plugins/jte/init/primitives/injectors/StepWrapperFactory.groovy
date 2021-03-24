@@ -17,7 +17,6 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.FilePath
 import jenkins.model.Jenkins
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger

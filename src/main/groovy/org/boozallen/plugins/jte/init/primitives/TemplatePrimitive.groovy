@@ -16,18 +16,63 @@
 package org.boozallen.plugins.jte.init.primitives
 
 import com.cloudbees.groovy.cps.NonCPS
+import org.boozallen.plugins.jte.util.JTEException
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 
 import javax.annotation.Nonnull
 
+/**
+ * Framework constructs that make templates easier to write.
+ * Typically created by parsing the Pipeline Configuration.
+ */
 abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
+
+    private static final long serialVersionUID = 1L
+
+    /**
+     * The GlobalCollisionValidator will populate this list with all
+     * TemplatePrimitives sharing the same name if there is
+     * more than 1.
+     */
+    List<TemplatePrimitive> overloaded = []
+
+    String name
+    TemplatePrimitiveNamespace parent
 
     @Override
     @NonCPS
     Object getValue(@Nonnull CpsScript script) throws Exception {
-        // check for multiple primitives with this name
+        if(!overloaded.isEmpty()){
+            TemplateLogger logger = TemplateLogger.createDuringRun()
+            List<String> msg = [
+                "Attempted to access an overloaded primitive:  ${getName()}",
+                "Please use fully qualified names to access the primitives.",
+                "options: "
+            ]
+            overloaded.each{ primitive ->
+                msg.push("- ${primitive.getParentChain()}")
+            }
+            logger.printError(msg.join("\n"))
+            throw new JTEException("Attempted to access an overloaded primitive: ${getName()}")
+        }
         return this
+    }
+
+    void setOverloaded(List<TemplatePrimitive> overloaded){
+        this.overloaded = overloaded
+    }
+
+    String getParentChain(){
+        List<String> parts = [ getName() ]
+        TemplatePrimitiveNamespace parent = getParent()
+        while(parent){
+            parts.push(parent.getName())
+            parent = parent.getParent()
+        }
+        parts.push(TemplatePrimitiveCollector.JTEVar.KEY)
+        return parts.reverse().join(".")
     }
 
 }

@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 
@@ -30,6 +29,6 @@ class Keyword extends TemplatePrimitive{
 
     @Override String getName(){ return name }
     @Override String toString(){ return "Keyword '${name}'" }
-    Object getValue(CpsScript script){ return value }
+    @Override Object getValue(CpsScript script){ return value }
 
 }

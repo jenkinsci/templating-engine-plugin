@@ -15,14 +15,11 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-
 import hudson.Extension
 import hudson.model.InvisibleAction
 import hudson.model.Run
-import jenkins.model.RunAction2
 import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
-import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
@@ -33,55 +30,17 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.Nonnull
 
+/**
+ * Stores {@see TemplatePrimitive}s that have been created for a run
+ */
 class TemplatePrimitiveCollector extends InvisibleAction{
 
     List<TemplatePrimitiveNamespace> namespaces = []
-
-    void addNamespace(TemplatePrimitiveNamespace namespace){
-        namespaces.add(namespace)
-    }
-
-    TemplatePrimitiveNamespace getNamespace(String name){
-        return namespaces.find{namespace ->
-            namespace.getName() == name
-        }
-    }
 
     static List<GlobalVariable> getGlobalVariablesByName(String name, Run run){
         return GlobalVariable.forRun(run).findAll{ variable ->
             variable.getName() == name
         }
-    }
-
-    Set<String> getPrimitiveNames(){
-        Set<String> primitives = []
-        getNamespaces().each{ namespace ->
-            primitives.addAll(namespace.getPrimitives()*.getName())
-        }
-        return primitives
-    }
-
-    List<TemplatePrimitive> findAll(Closure condition){
-        List<TemplatePrimitive> primitives = []
-        getNamespaces().each{namespace ->
-            primitives.addAll( namespace.getPrimitives().findAll(condition) )
-        }
-        return primitives
-    }
-
-    boolean hasStep(String name){
-        return getStep(name) as boolean
-    }
-
-    List<TemplatePrimitive> getStep(String name){
-        return findAll{ primitive ->
-            primitive instanceof StepWrapper &&
-            primitive.getName() == name
-        }
-    }
-
-    List<TemplatePrimitive> getPrimitives(){
-        return findAll{ true }
     }
 
     // FIXME: this doesn't belong here anymore. just use the constructor.
@@ -105,16 +64,61 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         return run.getAction(TemplatePrimitiveCollector)
     }
 
+    void addNamespace(TemplatePrimitiveNamespace namespace){
+        namespaces.add(namespace)
+    }
+
+    TemplatePrimitiveNamespace getNamespace(String name){
+        return namespaces.find{ namespace ->
+            namespace.getName() == name
+        }
+    }
+
+    Set<String> getPrimitiveNames(){
+        Set<String> primitives = []
+        getNamespaces().each{ namespace ->
+            primitives.addAll(namespace.getPrimitives()*.getName())
+        }
+        return primitives
+    }
+
+    List<TemplatePrimitive> findAll(Closure condition){
+        List<TemplatePrimitive> primitives = []
+        getNamespaces().each{ namespace ->
+            primitives.addAll( namespace.getPrimitives().findAll(condition) )
+        }
+        return primitives
+    }
+
+    boolean hasStep(String name){
+        return getStep(name) as boolean
+    }
+
+    List<TemplatePrimitive> getStep(String name){
+        return findAll{ primitive ->
+            primitive instanceof StepWrapper &&
+            primitive.getName() == name
+        }
+    }
+
+    List<TemplatePrimitive> getPrimitives(){
+        return findAll{ true }
+    }
+
     /**
      * exposes the primitives populated on this action to the Run
      */
     @Extension static class TemplatePrimitiveProvider extends GlobalVariableSet{
         List<GlobalVariable> forRun(Run run){
             List<GlobalVariable> primitives = []
-            if(run == null) return primitives
+            if(run == null){
+                return primitives
+            }
             TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
             /* the run might not belong to JTE */
-            if(!primitiveCollector) return primitives
+            if(!primitiveCollector){
+                return primitives
+            }
             primitives.addAll(primitiveCollector.getPrimitives())
             primitives.add(new TemplatePrimitiveCollector.JTEVar())
             return primitives
@@ -122,9 +126,10 @@ class TemplatePrimitiveCollector extends InvisibleAction{
     }
 
     static class JTEVar extends GlobalVariable{
+        static final String KEY = "jte"
         @Override
         String getName() {
-            return "jte"
+            return KEY
         }
 
         @Override

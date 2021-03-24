@@ -63,7 +63,6 @@ abstract class LibraryProvider extends AbstractDescribableImpl<LibraryProvider>{
      */
     abstract String getLibrarySchema(FlowExecutionOwner flowOwner, String libName)
 
-
     /**
      * Copies the library's src files to the provided directory
      *

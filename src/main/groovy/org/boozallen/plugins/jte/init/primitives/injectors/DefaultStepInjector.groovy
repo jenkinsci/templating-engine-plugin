@@ -51,7 +51,9 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
                 logger.printWarning msg.join("\n")
             } else { // otherwise go ahead and create the default step implementation
                 logger.print "Creating step ${stepName} from the default step implementation."
-                steps.add(stepFactory.createDefaultStep(stepName, stepConfig))
+                StepWrapper step = stepFactory.createDefaultStep(stepName, stepConfig)
+                step.addParent(steps)
+                steps.add(step)
             }
         }
 

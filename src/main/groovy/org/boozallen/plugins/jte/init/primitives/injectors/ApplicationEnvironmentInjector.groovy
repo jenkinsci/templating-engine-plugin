@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
@@ -39,7 +38,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         LinkedHashMap aggregatedConfig = config.getConfig()
         List<ApplicationEnvironment> createdEnvs = []
         aggregatedConfig[KEY].each { name, appEnvConfig ->
-            def env = new ApplicationEnvironment(name, appEnvConfig)
+            ApplicationEnvironment env = new ApplicationEnvironment(name, appEnvConfig)
+            env.setParent(appEnvs)
             createdEnvs << env
         }
         createdEnvs.eachWithIndex { env, index ->
@@ -57,4 +57,5 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             flowOwner.run().addOrReplaceAction(primitiveCollector)
         }
     }
+
 }

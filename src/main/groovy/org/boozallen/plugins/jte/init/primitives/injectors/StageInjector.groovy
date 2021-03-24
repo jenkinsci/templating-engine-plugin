@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.RunAfter
@@ -43,6 +42,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         aggregatedConfig[KEY].each{ name, steps ->
             List<String> stepNames = steps.keySet() as List<String>
             Stage stage = new Stage(name, stepNames)
+            stage.setParent(stages)
             stages.add(stage)
         }
 

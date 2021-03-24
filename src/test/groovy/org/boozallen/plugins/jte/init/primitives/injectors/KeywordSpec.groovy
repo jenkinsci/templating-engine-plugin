@@ -31,7 +31,7 @@ class KeywordSpec extends Specification{
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: "keywords{ x = 11 }",
-            template: 'assert binding.hasVariable("x")'
+            template: 'assert x == 11'
         )
 
         expect:

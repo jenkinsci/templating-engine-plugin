@@ -42,7 +42,9 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ step, _ ->
             if(!primitiveCollector.hasStep(step)){
-                steps.add(stepFactory.createNullStep(step))
+                StepWrapper stepWrapper = stepFactory.createNullStep(step)
+                stepWrapper.setParent(steps)
+                steps.add(stepWrapper)
             }
         }
 

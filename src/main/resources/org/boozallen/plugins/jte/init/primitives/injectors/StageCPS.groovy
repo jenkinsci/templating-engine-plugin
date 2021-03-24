@@ -15,9 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import groovy.transform.InheritConstructors
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.JTEException
@@ -30,6 +28,7 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 @SuppressWarnings("NoDef")
 @InheritConstructors
 class StageCPS extends Stage{
+
     @SuppressWarnings("MethodParameterTypeRequired")
     void call(args) {
         TemplateLogger.createDuringRun().print "[Stage - ${getName()}]"

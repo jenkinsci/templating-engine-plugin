@@ -30,8 +30,8 @@ class ApplicationEnvironmentSpec extends Specification{
     def "Injector populates binding"(){
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: "application_environments{ dev }",
-            template: 'assert binding.hasVariable("dev")'
+            config: "application_environments{ dev{ someField = true } }",
+            template: 'assert dev.someField'
         )
 
         expect:
@@ -156,15 +156,15 @@ class ApplicationEnvironmentSpec extends Specification{
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: """
             application_environments{
-                dev
-                test
-                prod
+                dev{ field = 1 }
+                test{ field = 2 }
+                prod{ field = 3 }
             }
             """,
             template: """
-            assert binding.hasVariable("dev")
-            assert binding.hasVariable("test")
-            assert binding.hasVariable("prod")
+            assert dev.field == 1
+            assert test.field == 2
+            assert prod.field == 3
             """
         )
 

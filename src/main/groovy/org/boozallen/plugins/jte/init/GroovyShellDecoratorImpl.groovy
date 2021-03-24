@@ -22,6 +22,7 @@ import org.boozallen.plugins.jte.init.primitives.hooks.Init
 import org.boozallen.plugins.jte.init.primitives.hooks.Notify
 import org.boozallen.plugins.jte.init.primitives.hooks.Validate
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
+import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.ModuleNode
 import org.codehaus.groovy.ast.builder.AstBuilder
@@ -33,7 +34,6 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
-import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
@@ -57,19 +57,17 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
 
     @Override
     void configureShell(@CheckForNull CpsFlowExecution context, GroovyShell shell) {
-        if (!context) {
+        if (!isFromJTE(context)) {
             return
         }
-        if(isFromJTE(context)){
-            // add loaded libraries `src` directories to the classloader
-            File jte = context.getOwner().getRootDir()
-            File srcDir = new File(jte, "jte/src")
-            if (srcDir.exists()){
-                if(srcDir.isDirectory()) {
-                    shell.getClassLoader().addURL(srcDir.toURI().toURL())
-                } else {
-                    LOGGER.log(Level.WARNING, "${srcDir.getPath()} is not a directory.")
-                }
+        // add loaded libraries `src` directories to the classloader
+        File jte = context.getOwner().getRootDir()
+        File srcDir = new File(jte, "jte/src")
+        if (srcDir.exists()){
+            if(srcDir.isDirectory()) {
+                shell.getClassLoader().addURL(srcDir.toURI().toURL())
+            } else {
+                LOGGER.log(Level.WARNING, "${srcDir.getPath()} is not a directory.")
             }
         }
     }
@@ -80,9 +78,6 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
     }
 
     /**
-     * For all scripts, adds a star import for Lifecycle Hooks so that library steps need not
-     * import them explicitly to use them.
-     *
      * For the JTE pipeline template, customizes the compiler so that the template is wrapped
      * in a try-finally block so that the @Validation and @Init Lifecycle Hooks can be invoked
      * prior to template execution and @CleanUp and @Notify Lifecycle Hooks can be invoked post
@@ -90,44 +85,43 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
      */
     @Override
     void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
-        if(isFromJTE(execution)){
+        if (isFromJTE(execution)) {
             cc.addCompilationCustomizers(new CompilationCustomizer(CompilePhase.SEMANTIC_ANALYSIS) {
 
                 @Override
-                void call(SourceUnit source,
-                          GeneratorContext context,
-                          ClassNode classNode) throws CompilationFailedException {
-                    if(!isTemplate(classNode)){
+                void call(SourceUnit source, GeneratorContext context, ClassNode classNode) throws CompilationFailedException {
+                    if (!isTemplate(classNode)) {
                         return
                     }
+                    // represents the AST of the user-provided template
                     ModuleNode template = source.getAST()
                     List<Statement> statements = template.getStatementBlock().getStatements()
 
-                    /*
-                        TODO:
-                        The references to Hook, Validate, Init, CleanUp, and Notify
-                        are actually coming from HookInjector.
-                        Need to come back to this and figure out how to use AstBuilder
-                        to reference classes.  Right now, the AST getting produces is
-                        trying to find those names as variables in the binding.
-                        So i put them in the binding for now </shrug>
-                    */
-                    ImportCustomizer ic = new ImportCustomizer()
-                    ic.addImports("org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper")
-                    cc.addCompilationCustomizers(ic)
-//                    BlockStatement wrapper = (new AstBuilder().buildFromCode(CompilePhase.SEMANTIC_ANALYSIS){
-//                        try{
-//                            HooksWrapper.invoke(Validate)
-//                            HooksWrapper.invoke(Init)
-//                            // <-- this is where the template AST statements get injected
-//                        } finally{
-//                            HooksWrapper.invoke(CleanUp)
-//                            HooksWrapper.invoke(Notify)
-//                        }
-//                    }).first()
-                    BlockStatement wrapper = (new AstBuilder().buildFromSpec{
-                        block{
-                            tryCatch{
+                    /* We want to seamlessly wrap the template in code for hooks like:
+                     *
+                     *   try{
+                     *     Hooks.invoke(Validation)
+                     *     Hooks.invoke(Init)
+                     *     --> Insert Template Code Here <--
+                     *   } finally {
+                     *     Hooks.invoke(CleanUp)
+                     *     Hooks.invoke(Notify)
+                     *   }
+                     */
+
+                    // 1. get the AST for the code in the comment above without the template
+                    BlockStatement wrapper = getTemplateWrapperAST()
+                    // 2. inject the user's pipeline template statements
+                    wrapper.getStatements().first().getTryStatement().addStatements(statements)
+                    // 3. replace the compiled template with our new AST
+                    statements.clear()
+                    statements.add(0, wrapper)
+                }
+
+                BlockStatement getTemplateWrapperAST() {
+                    List<ASTNode> statements = new AstBuilder().buildFromSpec {
+                        block {
+                            tryCatch {
                                 block {
                                     expression {
                                         staticMethodCall(HooksWrapper, 'invoke') {
@@ -144,8 +138,8 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                                         }
                                     }
                                 }
-                                block{
-                                    block{
+                                block {
+                                    block {
                                         expression {
                                             staticMethodCall(HooksWrapper, 'invoke') {
                                                 argumentList {
@@ -164,12 +158,9 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                                 }
                             }
                         }
-                    }).first()
-
-                    wrapper.getStatements().first().getTryStatement().addStatements(statements)
-                    statements.clear()
-                    statements.add(0, wrapper)
-                };
+                    }
+                    return statements.first()
+                }
 
                 /*
                     need to ensure we're only modifying AST for the template.
@@ -183,12 +174,13 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
                     to understand where "evaluate" method comes from see:
                     https://github.com/jenkinsci/workflow-cps-plugin/blob/workflow-cps-2.80/src/main/java/org/jenkinsci/plugins/workflow/cps/CpsScript.java#L178-L182
                  */
-                boolean isTemplate(ClassNode classNode){
+
+                boolean isTemplate(ClassNode classNode) {
                     return classNode.getName() == "WorkflowScript"
                 }
             })
         }
-    };
+    }
 
     /**
      * determines if the current pipeline is using JTE

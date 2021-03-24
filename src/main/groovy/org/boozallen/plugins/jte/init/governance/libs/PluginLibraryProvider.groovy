@@ -20,7 +20,6 @@ import hudson.FilePath
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
 import jenkins.model.Jenkins
-import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -134,7 +133,6 @@ class PluginLibraryProvider extends LibraryProvider{
 
         return true
     }
-
 
     @Override
     void loadLibrary(FlowExecutionOwner flowOwner, String libName, FilePath srcDir, FilePath libDir){

@@ -15,13 +15,9 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
-import com.cloudbees.groovy.cps.NonCPS
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
-import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
-import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**

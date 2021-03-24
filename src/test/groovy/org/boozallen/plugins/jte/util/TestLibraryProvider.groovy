@@ -19,7 +19,6 @@ import hudson.Extension
 import hudson.FilePath
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
-import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
@@ -34,45 +33,29 @@ class TestLibraryProvider extends LibraryProvider{
     }
 
     @Override
-    void logLibraryLoading(FlowExecutionOwner flowOwner, String libName){}
-
-    @Override
-    void loadLibraryClasses(FlowExecutionOwner flowOwner, String libName){
-        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
-        FilePath jte = buildRootDir.child("jte")
+    void loadLibrary(FlowExecutionOwner flowOwner, String libName, FilePath srcDir, FilePath libDir){
         if(hasLibrary(flowOwner, libName)){
             TestLibrary library = getLibrary(libName)
+
+            // copy src
             library.src.each{ path, contents ->
-                FilePath src = jte.child(path)
+                FilePath src = srcDir.child(path)
                 if(src.exists()){
                     throw new JTEException("src file '${path}' exists already exists")
                 }
                 src.write(contents, "UTF-8")
             }
-        }
-    }
-
-    @Override
-    void loadLibrarySteps(FlowExecutionOwner flowOwner, Binding binding, String libName, Map libConfig){
-        FilePath buildRootDir = new FilePath(flowOwner.getRootDir())
-        FilePath rootDir = buildRootDir.child("jte/${libName}")
-        rootDir.mkdirs()
-        if(hasLibrary(flowOwner, libName)){
-            TestLibrary library = getLibrary(libName)
 
             // copy resources
             library.resources.each{ path, contents ->
-                FilePath resource = rootDir.child("resources/${path}")
+                FilePath resource = libDir.child("resources/${path}")
                 resource.write(contents, "UTF-8")
             }
 
             // load steps
-            StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
             library.steps.each{ name, text ->
-                FilePath step = rootDir.child("steps/${name}.groovy")
+                FilePath step = libDir.child("steps/${name}.groovy")
                 step.write(text, "UTF-8")
-                def s = stepFactory.createFromFilePath(step, binding, libName, libConfig)
-                binding.setVariable(name, s)
             }
         }
     }

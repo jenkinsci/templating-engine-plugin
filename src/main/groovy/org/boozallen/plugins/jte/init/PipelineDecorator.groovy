@@ -46,6 +46,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
  */
 class PipelineDecorator extends InvisibleAction implements Serializable{
 
+    private static final long serialVersionUID = 1L
     FlowExecutionOwner flowOwner
     PipelineConfigurationObject config
     String template

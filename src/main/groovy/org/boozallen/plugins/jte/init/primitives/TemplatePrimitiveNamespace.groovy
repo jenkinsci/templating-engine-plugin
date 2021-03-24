@@ -15,12 +15,39 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-import org.jenkinsci.plugins.workflow.cps.GlobalVariable
+import org.boozallen.plugins.jte.util.JTEException
 
+/**
+ * Stores a collection of TemplatePrimitives
+ */
 class TemplatePrimitiveNamespace implements Serializable {
+
+    private static final long serialVersionUID = 1L
     String name
-    List<GlobalVariable> primitives = []
-    void add(GlobalVariable primitive){
+    List<TemplatePrimitive> primitives = []
+    void add(TemplatePrimitive primitive){
         primitives.add(primitive)
     }
+
+    TemplatePrimitiveNamespace parent = null
+
+    TemplatePrimitiveNamespace getParent(){ return parent }
+    void setParent(TemplatePrimitiveNamespace parent){ this.parent = parent }
+
+    Object getProperty(String property){
+        TemplatePrimitive primitive = primitives.find{ p -> p.getName() == property }
+        if(primitive){
+            return primitive.getValue(null)
+        }
+        throw new JTEException("Primitive ${property} not found in ${name}")
+    }
+
+    Object methodMissing(String methodName, Object args){
+        TemplatePrimitive primitive = primitives.find{ p -> p.getName() == methodName }
+        if(primitive){
+            return primitive.getValue(null).call(args)
+        }
+        throw new JTEException("Primitive ${methodName} not found in ${name}")
+    }
+
 }

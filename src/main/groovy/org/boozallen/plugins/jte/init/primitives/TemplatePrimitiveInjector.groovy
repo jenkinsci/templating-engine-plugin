@@ -90,6 +90,43 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
     }
 
     /**
+     * Used to validate the pipeline configuration is structurally correct
+     * @param flowOwner the run's flowOwner
+     * @param config the aggregated pipeline configuration
+     */
+    void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+
+    /**
+     * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it
+     * in a TemplatePrimitiveNamespace
+     *
+     * @param flowOwner the run's flowOwner
+     * @param config the aggregated pipeline configuration
+     */
+    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+
+    /**
+     * A second pass allowing the different injector's to inspect what TemplatePrimitives
+     * have been created and respond accordingly
+     *
+     * @param flowOwner the run's flowOwner
+     * @param config the aggregated pipeline configuration
+     */
+    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+
+    TemplatePrimitiveCollector getPrimitiveCollector(FlowExecutionOwner flowOwner){
+        WorkflowRun run = flowOwner.run()
+        if(!run){
+            throw new JTEException("Invalid Context. Cannot determine run.")
+        }
+        TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
+        if(primitiveCollector == null){
+            primitiveCollector = new TemplatePrimitiveCollector()
+        }
+        return primitiveCollector
+    }
+
+    /**
      * Invokes a specific phase of initialization
      *
      * @param phase the phase to invoke
@@ -171,43 +208,6 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         }
 
         return graph
-    }
-
-    /**
-     * Used to validate the pipeline configuration is structurally correct
-     * @param flowOwner the run's flowOwner
-     * @param config the aggregated pipeline configuration
-     */
-    void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
-
-    /**
-     * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it
-     * in a TemplatePrimitiveNamespace
-     *
-     * @param flowOwner the run's flowOwner
-     * @param config the aggregated pipeline configuration
-     */
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
-
-    /**
-     * A second pass allowing the different injector's to inspect what TemplatePrimitives
-     * have been created and respond accordingly
-     *
-     * @param flowOwner the run's flowOwner
-     * @param config the aggregated pipeline configuration
-     */
-    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
-
-    TemplatePrimitiveCollector getPrimitiveCollector(FlowExecutionOwner flowOwner){
-        WorkflowRun run = flowOwner.run()
-        if(!run){
-            throw new JTEException("Invalid Context. Cannot determine run.")
-        }
-        TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
-        if(primitiveCollector == null){
-            primitiveCollector = new TemplatePrimitiveCollector()
-        }
-        return primitiveCollector
     }
 
 }

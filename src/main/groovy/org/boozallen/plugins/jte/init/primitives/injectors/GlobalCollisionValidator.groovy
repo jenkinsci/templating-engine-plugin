@@ -43,32 +43,39 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
         primitiveCollector.getPrimitives().each{ primitive ->
             String name = primitive.getName()
             if(!primitivesByName.containsKey(name)){
-                primitivesByName[name] = [] as List<TemplatePrimitive>
+                primitivesByName[name] = []
             }
             primitivesByName[name] << primitive
         }
 
         // check for collisions amongst the primitives
         Map primitiveCollisions = primitivesByName.findAll{ key, value -> value.size() > 1 }
-        if(primitiveCollisions && !config.getJteBlockWrapper().permissive_initialization){
+        boolean dontAllowDuplicates = !config.getJteBlockWrapper().permissive_initialization
+        if(primitiveCollisions){
             primitiveCollisions.each{ name, primitives ->
-                logger.printError("There are multiple primitives with the name '${name}'")
-                primitives.each{ primitive ->
-                    logger.printError("- ${primitive.toString()}")
+                primitives.each{ TemplatePrimitive p -> p.setOverloaded(primitives) }
+                if(dontAllowDuplicates) {
+                    logger.printError("There are multiple primitives with the name '${name}'")
+                    primitives.each { primitive ->
+                        logger.printError("- ${primitive.toString()}")
+                    }
                 }
             }
-            throw new JTEException("Overlapping template primitives for names: ${primitiveCollisions.keySet()}")
+            if(dontAllowDuplicates) {
+                throw new JTEException("Overlapping template primitives for names: ${primitiveCollisions.keySet()}")
+            }
         }
-        List<String> primitives = []
-        List<String> jenkinsSteps = []
-        List<String> otherGlobalVars = []
+        // TODO: check for collisions with other global variables
+        // TODO: check for collisions with Jenkins DSL Steps
     }
 
     // will probably become a method on the validation class
     Set<String> checkPrimitiveCollisions(Run run){
         Set<String> collisions = []
         TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
-        if(!primitiveCollector) return collisions
+        if(!primitiveCollector){
+            return collisions
+        }
         Set<String> registry = primitiveCollector.getPrimitiveNames()
         List<String> functionNames = StepDescriptor.all()*.functionName
         collisions = registry.intersect(functionNames)

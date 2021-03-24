@@ -16,9 +16,12 @@
 package org.boozallen.plugins.jte.util
 
 import hudson.Extension
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
+import org.boozallen.plugins.jte.init.primitives.injectors.LibraryStepInjector
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
-
 
 import java.lang.reflect.Method
 
@@ -28,15 +31,16 @@ import java.lang.reflect.Method
 @Extension class SandboxWhitelist extends AbstractWhitelist {
 
     private final List<String> permittedReceiverStrings = [
-        "org.boozallen.plugins.jte.init.primitives.injectors.ApplicationEnvironment",
-        "org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper",
-        "org.boozallen.plugins.jte.init.primitives.injectors.Stage",
         "org.boozallen.plugins.jte.init.primitives.hooks.Hooks",
-        "org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper"
+        "org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperCPS"
     ]
 
     private final List<Class> permittedReceivers = [
-            TemplatePrimitiveCollector.JTEVar
+        TemplatePrimitive,
+        TemplatePrimitiveCollector.JTEVar,
+        TemplatePrimitiveNamespace,
+        LibraryStepInjector.LibraryCollector,
+        HooksWrapper
     ]
 
     @Override

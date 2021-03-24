@@ -23,7 +23,6 @@ import hudson.plugins.git.SubmoduleConfig
 import hudson.plugins.git.extensions.GitSCMExtension
 import jenkins.plugins.git.GitSampleRepoRule
 import jenkins.scm.api.SCMFileSystem
-import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperFactory
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TestFlowExecutionOwner
@@ -123,43 +122,6 @@ class ScmLibraryProviderSpec extends Specification{
 
     }
 
-    def "loadLibrary puts step into binding"(){
-        given:
-        ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
-        repo.init()
-        repo.write("${libraryName}/steps/someStep.groovy", "void call(){ println 'the step' }")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
-        GitSCM scm = createSCM(repo)
-        p.setScm(scm)
-
-        WorkflowJob job = jenkins.createProject(WorkflowJob)
-        FilePath f = jenkins.getInstance().getWorkspaceFor(job)
-        owner.getRootDir() >> new File(f.getRemote())
-
-        GroovySpy(StepWrapperFactory, global:true)
-        new StepWrapperFactory(_) >> Mock(StepWrapperFactory){
-            createFromFilePath(*_) >> { args ->
-                String name = args[0].getBaseName()
-                return new StepWrapper(name)
-            }
-        }
-
-        FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
-        fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
-
-        def binding = new Binding()
-
-        when:
-        p.loadLibrarySteps(owner, binding, libraryName, [:])
-
-        then:
-        binding.hasVariable("someStep")
-    }
-
     @Unroll
     @WithoutJenkins
     def "when baseDir='#baseDir' then prefixBaseDir('#arg') is #expected "(){
@@ -198,13 +160,16 @@ class ScmLibraryProviderSpec extends Specification{
         FilePath f = jenkins.getInstance().getWorkspaceFor(job)
         File rootDir = new File(f.getRemote())
         owner.getRootDir() >> rootDir
+        FilePath srcDir = new FilePath(rootDir).child("jte")
+        FilePath libDir = srcDir.child(libraryName)
+
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
         FileSystemWrapper.createFromSCM(owner, scm) >> fsw
 
         when:
-        p.loadLibraryClasses(owner, libraryName)
+        p.loadLibrary(owner, libraryName, srcDir, libDir)
 
         then:
         File s = new File(rootDir, "jte/src/boozallen/Utility.groovy")
@@ -225,6 +190,8 @@ class ScmLibraryProviderSpec extends Specification{
         WorkflowJob job = jenkins.createProject(WorkflowJob)
         FilePath f = jenkins.getInstance().getWorkspaceFor(job)
         File rootDir = new File(f.getRemote())
+        FilePath srcDir = new FilePath(rootDir).child("jte")
+        FilePath libDir = srcDir.child(libraryName)
         owner.getRootDir() >> rootDir
 
         // put existing class file
@@ -238,7 +205,7 @@ class ScmLibraryProviderSpec extends Specification{
         FileSystemWrapper.createFromSCM(owner, scm) >> fsw
 
         when:
-        p.loadLibraryClasses(owner, libraryName)
+        p.loadLibrary(owner, libraryName, srcDir, libDir)
 
         then:
         thrown(JTEException)

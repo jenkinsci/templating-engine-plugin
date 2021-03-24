@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
@@ -28,7 +29,6 @@ import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
@@ -106,10 +106,13 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         LibraryCollector libCollector = new LibraryCollector()
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ libName, libConfig ->
-            String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy".toString()
+            String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy"
             TemplatePrimitiveNamespace library = TemplatePrimitiveCollector.createNamespace(libName)
-            jteDir.list(includes).each{stepFile ->
-                library.add(stepFactory.createFromFilePath(stepFile, libName, libConfig))
+            library.setParent(libCollector)
+            jteDir.list(includes).each{ stepFile ->
+                StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig)
+                step.setParent(library)
+                library.add(step)
             }
             if(library.getPrimitives()) {
                 libCollector.add(library)
@@ -136,20 +139,30 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     }
 
     class LibraryCollector extends TemplatePrimitiveNamespace{
+
         String name = KEY
         List<TemplatePrimitiveNamespace> libraries = []
+
         void add(TemplatePrimitiveNamespace library){
             libraries.add(library)
         }
 
-        List<GlobalVariable> getPrimitives(){
-            List<GlobalVariable> steps = []
-            libraries.each{library ->
+        List<TemplatePrimitive> getPrimitives(){
+            List<TemplatePrimitive> steps = []
+            libraries.each{ library ->
                 steps.addAll(library.getPrimitives())
             }
             return steps
         }
-    }
 
+        Object getProperty(String property){
+            TemplatePrimitiveNamespace library = libraries.find{ lib -> lib.getName() == property }
+            if(library){
+                return library
+            }
+            throw new JTEException("Library ${property} not found")
+        }
+
+    }
 
 }
