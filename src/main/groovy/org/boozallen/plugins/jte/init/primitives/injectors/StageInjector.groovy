@@ -35,7 +35,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector, TemplateMethodInjector])
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        TemplatePrimitiveNamespace stages = TemplatePrimitiveCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace stages = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate namespace with stages from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
@@ -64,7 +64,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             List<String> steps = stageConfig.keySet() as List<String>
             List<String> undefinedSteps = []
             steps.each{ step ->
-                // FIXME: implement hasStep on namespace collector
                 if(!primitiveCollector.hasStep(step)){
                     undefinedSteps << step
                 }

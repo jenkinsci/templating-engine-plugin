@@ -35,7 +35,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @RunAfter(LibraryStepInjector)
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
-        TemplatePrimitiveNamespace steps = TemplatePrimitiveCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace steps = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate namespace with default steps from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()

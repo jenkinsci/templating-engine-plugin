@@ -43,11 +43,6 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         }
     }
 
-    // FIXME: this doesn't belong here anymore. just use the constructor.
-    static TemplatePrimitiveNamespace createNamespace(String name){
-        return new TemplatePrimitiveNamespace(name: name)
-    }
-
     /**
      * During execution, this can be used to fetch the current
      * run's TemplatePrimitiveCollector if present.

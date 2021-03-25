@@ -31,7 +31,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        TemplatePrimitiveNamespace keywords = TemplatePrimitiveCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace keywords = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate namespace with keywords from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()

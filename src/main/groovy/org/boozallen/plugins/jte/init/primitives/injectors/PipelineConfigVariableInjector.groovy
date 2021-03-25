@@ -37,7 +37,7 @@ import javax.annotation.Nonnull
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
         PipelineConfigGlobalVariable pipelineConfig = new PipelineConfigGlobalVariable(config.getConfig())
-        TemplatePrimitiveNamespace pipelineConfigNamespace = TemplatePrimitiveCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace pipelineConfigNamespace = new TemplatePrimitiveNamespace(name: KEY)
         pipelineConfig.setParent(pipelineConfigNamespace)
         pipelineConfigNamespace.add(pipelineConfig)
 

@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
-import hudson.model.Run
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
@@ -32,14 +31,12 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
  */
 @Extension class GlobalCollisionValidator extends TemplatePrimitiveInjector{
 
-    static String warningHeading = "JTE Primitives overrode Plugin provided steps and/or variables:"
-
     @Override
     void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
+        TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
 
-        Map primitivesByName = [:]
-        TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+        Map<String, List<TemplatePrimitive>> primitivesByName= [:]
         primitiveCollector.getPrimitives().each{ primitive ->
             String name = primitive.getName()
             if(!primitivesByName.containsKey(name)){
@@ -48,7 +45,12 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
             primitivesByName[name] << primitive
         }
 
-        // check for collisions amongst the primitives
+        checkForPrimitiveCollisions(primitivesByName, config, logger)
+        checkForGlobalVariableCollisions(primitivesByName, flowOwner, logger)
+        checkForJenkinsStepCollisions(primitivesByName, logger)
+    }
+
+    void checkForPrimitiveCollisions(Map<String, List<TemplatePrimitive>> primitivesByName, PipelineConfigurationObject config, TemplateLogger logger){
         Map primitiveCollisions = primitivesByName.findAll{ key, value -> value.size() > 1 }
         boolean dontAllowDuplicates = !config.getJteBlockWrapper().permissive_initialization
         if(primitiveCollisions){
@@ -56,8 +58,8 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
                 primitives.each{ TemplatePrimitive p -> p.setOverloaded(primitives) }
                 if(dontAllowDuplicates) {
                     logger.printError("There are multiple primitives with the name '${name}'")
-                    primitives.each { primitive ->
-                        logger.printError("- ${primitive.toString()}")
+                    primitives.eachWithIndex { primitive, idx ->
+                        logger.printError("  ${idx+1}. ${primitive.toString()}")
                     }
                 }
             }
@@ -65,27 +67,34 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
                 throw new JTEException("Overlapping template primitives for names: ${primitiveCollisions.keySet()}")
             }
         }
-        // TODO: check for collisions with other global variables
-        // TODO: check for collisions with Jenkins DSL Steps
     }
 
-    // will probably become a method on the validation class
-    Set<String> checkPrimitiveCollisions(Run run){
-        Set<String> collisions = []
-        TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
-        if(!primitiveCollector){
-            return collisions
+    void checkForGlobalVariableCollisions(Map<String, List<TemplatePrimitive>> primitivesByName, FlowExecutionOwner flowOwner, TemplateLogger logger){
+        List<String> msg = ["Template Primitives are colliding with Global Variables: "]
+        primitivesByName.keySet().each{ String name ->
+            List<GlobalVariable> vars
+            vars = TemplatePrimitiveCollector.getGlobalVariablesByName(name, flowOwner.run())
+            vars = vars.findAll{ variable -> !(variable in TemplatePrimitive) }
+            if(vars){
+                vars.eachWithIndex{ variable, idx ->
+                    msg << "  ${idx+1}. ${name}: ${variable}"
+                }
+                logger.printWarning(msg.join("\n"))
+            }
         }
-        Set<String> registry = primitiveCollector.getPrimitiveNames()
-        List<String> functionNames = StepDescriptor.all()*.functionName
-        collisions = registry.intersect(functionNames)
-
-        // FIXME: now that we're using GV's for primitives, this changes
-        collisions += registry.collect { key ->
-            GlobalVariable.byName(key, run)
-        }.findAll{ g -> null != g }
-
-        return new ArrayList<String>(collisions as Collection<String>)
     }
 
+    void checkForJenkinsStepCollisions(Map<String, List<TemplatePrimitive>> primitivesByName, TemplateLogger logger){
+        List<String> functionNames = StepDescriptor.all().collect { step ->
+            step.getFunctionName()
+        }
+        List<String> stepCollisions = primitivesByName.keySet().intersect(functionNames)
+        if(!stepCollisions.isEmpty()) {
+            List<String> msg = ["Template Primitives are overwriting Jenkins steps with the following names:"]
+            stepCollisions.eachWithIndex { step, idx ->
+                msg << "  ${idx+1}. ${step}"
+            }
+            logger.printWarning(msg.join("\n"))
+        }
+    }
 }

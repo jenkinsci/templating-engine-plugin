@@ -35,7 +35,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 /**
  * Loads libraries from the pipeline configuration
  */
-@Extension class LibraryStepInjector extends TemplatePrimitiveInjector {
+@Extension class LibraryStepInjector extends TemplatePrimitiveInjector{
 
     private static final String KEY = "libraries"
 
@@ -103,11 +103,11 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         }
 
         // actually create the StepWrappers
-        LibraryCollector libCollector = new LibraryCollector()
+        LibraryNamespace libCollector = new LibraryNamespace()
         StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
         aggregatedConfig[KEY].each{ libName, libConfig ->
             String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy"
-            TemplatePrimitiveNamespace library = TemplatePrimitiveCollector.createNamespace(libName)
+            TemplatePrimitiveNamespace library = new TemplatePrimitiveNamespace(name: libName)
             library.setParent(libCollector)
             jteDir.list(includes).each{ stepFile ->
                 StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig)
@@ -136,33 +136,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             source.getLibraryProvider()
         } - null
         return providers
-    }
-
-    class LibraryCollector extends TemplatePrimitiveNamespace{
-
-        String name = KEY
-        List<TemplatePrimitiveNamespace> libraries = []
-
-        void add(TemplatePrimitiveNamespace library){
-            libraries.add(library)
-        }
-
-        List<TemplatePrimitive> getPrimitives(){
-            List<TemplatePrimitive> steps = []
-            libraries.each{ library ->
-                steps.addAll(library.getPrimitives())
-            }
-            return steps
-        }
-
-        Object getProperty(String property){
-            TemplatePrimitiveNamespace library = libraries.find{ lib -> lib.getName() == property }
-            if(library){
-                return library
-            }
-            throw new JTEException("Library ${property} not found")
-        }
-
     }
 
 }

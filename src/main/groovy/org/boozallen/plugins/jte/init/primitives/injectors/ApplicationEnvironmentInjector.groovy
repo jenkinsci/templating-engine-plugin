@@ -32,7 +32,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @SuppressWarnings('NoDef')
     @Override
     void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
-        TemplatePrimitiveNamespace appEnvs = TemplatePrimitiveCollector.createNamespace(KEY)
+        TemplatePrimitiveNamespace appEnvs = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate the namespace with application environments from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
