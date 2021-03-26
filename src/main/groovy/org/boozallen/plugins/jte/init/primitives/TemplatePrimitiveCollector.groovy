@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
+import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.cps.GlobalVariableSet
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -57,6 +58,15 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
         WorkflowRun run = flowOwner.run()
         return run.getAction(TemplatePrimitiveCollector)
+    }
+
+    @SuppressWarnings("ReturnNullFromCatchBlock") // that's literally the point of this method
+    static TemplatePrimitiveCollector currentNoException(){
+        try{
+            return current()
+        } catch(IllegalStateException e){
+            return null
+        }
     }
 
     void addNamespace(TemplatePrimitiveNamespace namespace){
@@ -116,8 +126,29 @@ class TemplatePrimitiveCollector extends InvisibleAction{
             }
             primitives.addAll(primitiveCollector.getPrimitives())
             primitives.add(new TemplatePrimitiveCollector.JTEVar())
+            primitives.add(new TemplatePrimitiveCollector.StepsVar())
             return primitives
         }
+    }
+
+    static class StepsVar extends GlobalVariable{
+        static final String KEY = "steps"
+
+        DSL dsl
+
+        @Override
+        String getName(){
+            return KEY
+        }
+
+        @Override
+        Object getValue(CpsScript script){
+            if(dsl){ return dsl }
+            WorkflowRun run = script.$buildNoException()
+            dsl = new DSL(run.asFlowExecutionOwner())
+            return dsl
+        }
+
     }
 
     static class JTEVar extends GlobalVariable{

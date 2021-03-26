@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init
 
 import hudson.Extension
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
 import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
@@ -40,6 +41,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
 import javax.annotation.CheckForNull
+import java.lang.reflect.Field
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -60,6 +62,12 @@ class GroovyShellDecoratorImpl extends GroovyShellDecorator {
         if (!isFromJTE(context)) {
             return
         }
+
+        // use our custom binding that checks for collisions
+        Field shellBinding = GroovyShell.getDeclaredField("context")
+        shellBinding.setAccessible(true)
+        shellBinding.set(shell, new TemplateBinding())
+
         // add loaded libraries `src` directories to the classloader
         File jte = context.getOwner().getRootDir()
         File srcDir = new File(jte, "jte/src")

@@ -22,7 +22,6 @@ import jenkins.model.Jenkins
 /**
  * Extension point to register particular variable names for protection
  * to prevent TemplatePrimitive's from overriding them
- * TODO: need to figure out if we still want to use this
  */
 @SuppressWarnings(['EmptyMethodInAbstractClass'])
 abstract class ReservedVariableName implements ExtensionPoint{

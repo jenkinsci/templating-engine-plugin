@@ -42,14 +42,16 @@ class GlobalCollisionValidatorSpec extends Specification{
     TemplateLogger logger = Mock()
     Map<String, List<TemplatePrimitive>> primitivesByName = [:]
     DummyExecutionOwner flowOwner = Mock()
-    PipelineConfigurationObject config = Mock(){
+    PipelineConfigurationObject config = Mock{
         getJteBlockWrapper() >> [ permissive_initialization: false ]
     }
 
     /* it's unnecessarily difficult to mock Owner.run() */
     class DummyExecutionOwner extends FlowExecutionOwner{
 
-        WorkflowRun run(){}
+        WorkflowRun run(){
+            return null
+        }
 
         @Override
         FlowExecution get() throws IOException {
@@ -228,7 +230,6 @@ class GlobalCollisionValidatorSpec extends Specification{
         noExceptionThrown()
         1 * logger.printWarning(_)
     }
-
 
     @Ignore("functionality works. not sure why JenkinsRule is freezing the test")
     def "checkForJenkinsStepCollisions: No Collisions = No Logs"(){

@@ -36,7 +36,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
 
-        Map<String, List<TemplatePrimitive>> primitivesByName= [:]
+        Map<String, List<TemplatePrimitive>> primitivesByName = [:]
         primitiveCollector.getPrimitives().each{ primitive ->
             String name = primitive.getName()
             if(!primitivesByName.containsKey(name)){
@@ -59,7 +59,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
                 if(dontAllowDuplicates) {
                     logger.printError("There are multiple primitives with the name '${name}'")
                     primitives.eachWithIndex { primitive, idx ->
-                        logger.printError("  ${idx+1}. ${primitive.toString()}")
+                        logger.printError("  ${idx + 1}. ${primitive.toString()}")
                     }
                 }
             }
@@ -77,7 +77,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
             vars = vars.findAll{ variable -> !(variable in TemplatePrimitive) }
             if(vars){
                 vars.eachWithIndex{ variable, idx ->
-                    msg << "  ${idx+1}. ${name}: ${variable}"
+                    msg << "  ${idx + 1}. ${name}: ${variable}"
                 }
                 logger.printWarning(msg.join("\n"))
             }
@@ -92,9 +92,10 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
         if(!stepCollisions.isEmpty()) {
             List<String> msg = ["Template Primitives are overwriting Jenkins steps with the following names:"]
             stepCollisions.eachWithIndex { step, idx ->
-                msg << "  ${idx+1}. ${step}"
+                msg << "  ${idx + 1}. ${step}"
             }
             logger.printWarning(msg.join("\n"))
         }
     }
+
 }

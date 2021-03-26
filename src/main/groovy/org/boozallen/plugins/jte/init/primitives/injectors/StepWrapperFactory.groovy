@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.FilePath
 import jenkins.model.Jenkins
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -96,11 +97,14 @@ class StepWrapperFactory{
         }
         /*
          * set whatever runtime specific contexts are required for this step, such as:
-         *       1. the library configuration
-         *       2. the base directory from which to fetch library resources
-         *       3. an optional StageContext
-         *       4. an optional HookContext
+         *
+         * 1. our custom binding that prevents collisions
+         * 2. the library configuration
+         * 3. the base directory from which to fetch library resources
+         * 4. an optional StageContext
+         * 5. an optional HookContext
          */
+        // script.setBinding(new TemplateBinding())
         script.setConfig(config)
         script.setBuildRootDir(flowOwner.getRootDir())
         script.setResourcesPath("jte/${library}/resources")
