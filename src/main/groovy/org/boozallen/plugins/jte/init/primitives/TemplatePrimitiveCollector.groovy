@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.init.primitives
 
 import hudson.Extension
 import hudson.model.InvisibleAction
+import hudson.model.Job
 import hudson.model.Run
 import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
@@ -128,6 +129,20 @@ class TemplatePrimitiveCollector extends InvisibleAction{
             primitives.add(new TemplatePrimitiveCollector.JTEVar())
             primitives.add(new TemplatePrimitiveCollector.StepsVar())
             return primitives
+        }
+
+        /**
+         * The forRun method is used to fetch variables everywhere that it matters
+         *
+         * Right now, the only way to exclude JTE variables from the /pipeline-syntax/globals page
+         * is to return an empty list from forJob
+         *
+         * @param job the job to fetch global variables for
+         * @return an empty list of global variables
+         */
+        @Override
+        List<GlobalVariable> forJob(Job job){
+            return [];
         }
     }
 
