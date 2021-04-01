@@ -142,7 +142,7 @@ class TemplatePrimitiveCollector extends InvisibleAction{
          */
         @Override
         List<GlobalVariable> forJob(Job job){
-            return [];
+            return []
         }
     }
 
