@@ -89,7 +89,6 @@ class StepWrapperFactory{
             // tell StepWrapperShellDecorator this is a step
             exec.metaClass[StepWrapperShellDecorator.FLAG] = true
             script = exec.parseScript() as StepWrapperScript
-            script.$initialize()
         } catch(any){
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
             logger.printError("Failed to parse step text. Library: ${library}. Step: ${name}.")
@@ -104,7 +103,8 @@ class StepWrapperFactory{
          * 4. an optional StageContext
          * 5. an optional HookContext
          */
-        // script.setBinding(new TemplateBinding())
+        script.setBinding(new TemplateBinding())
+        script.$initialize()
         script.setConfig(config)
         script.setBuildRootDir(flowOwner.getRootDir())
         script.setResourcesPath("jte/${library}/resources")

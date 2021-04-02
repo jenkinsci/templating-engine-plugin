@@ -42,24 +42,24 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     /**
      * The name of the library that's contributed the step
      */
-    String library
+    protected String library
 
     /**
      * The library configuration
      */
-    LinkedHashMap config
+    protected LinkedHashMap config
 
     /**
      * The FilePath where the source text for this
      * library step can be found
      */
-    String sourceFile
+    protected String sourceFile
 
     /**
      * Alternatively, store the source text in a variable.
      *   e.g. NullStep's and Default Step Implementation
      */
-    String sourceText
+    protected String sourceText
 
     /**
      * A caching of the parsed source text used during invocation
@@ -70,24 +70,25 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
      * optional StageContext. assumes nondefault value of this step is
      * running as part of a Stage
      */
-    StageContext stageContext
+    protected StageContext stageContext
 
     /**
      * optional HookContext. assumes nondefault value if this step was
      * invoked because of a lifecycle hook
      */
-    HookContext hookContext
+    protected HookContext hookContext
 
     // flags to determine what type of step this is
-    boolean isLibraryStep  = false
-    boolean isDefaultStep  = false
-    boolean isTemplateStep = false
+    protected boolean isLibraryStep  = false
+    protected boolean isDefaultStep  = false
+    protected boolean isTemplateStep = false
 
     @Override String getName(){ return name }
     String getLibrary(){ return library }
 
     @Override
     Object getValue(CpsScript script){
+        isOverloaded()
         Class stepwrapperCPS = getPrimitiveClass()
         def s = stepwrapperCPS.newInstance(
             name: this.name,

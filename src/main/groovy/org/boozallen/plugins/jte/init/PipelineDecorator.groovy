@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -50,6 +51,7 @@ class PipelineDecorator extends InvisibleAction implements Serializable{
     FlowExecutionOwner flowOwner
     PipelineConfigurationObject config
     String template
+    transient TemplateBinding binding
 
     PipelineDecorator(FlowExecutionOwner flowOwner) {
         this.flowOwner = flowOwner

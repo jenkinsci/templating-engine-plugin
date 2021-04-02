@@ -29,6 +29,9 @@ class Keyword extends TemplatePrimitive{
 
     @Override String getName(){ return name }
     @Override String toString(){ return "Keyword '${name}'" }
-    @Override Object getValue(CpsScript script){ return value }
+    @Override Object getValue(CpsScript script){
+        isOverloaded()
+        return value
+    }
 
 }

@@ -50,6 +50,13 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
         checkForJenkinsStepCollisions(primitivesByName, logger)
     }
 
+    /*
+
+        [
+          build: [ maven, gradle ]
+        ]
+     */
+
     void checkForPrimitiveCollisions(Map<String, List<TemplatePrimitive>> primitivesByName, PipelineConfigurationObject config, TemplateLogger logger){
         Map primitiveCollisions = primitivesByName.findAll{ key, value -> value.size() > 1 }
         boolean dontAllowDuplicates = !config.getJteBlockWrapper().permissive_initialization
