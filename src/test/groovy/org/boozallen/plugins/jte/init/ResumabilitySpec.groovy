@@ -25,100 +25,100 @@ import org.boozallen.plugins.jte.util.TestUtil
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep
 
-class ResumabilitySpec extends Specification{
+class ResumabilitySpec extends Specification {
 
     @Rule RestartableJenkinsRule story = new RestartableJenkinsRule()
 
-    def setup(){
+    def setup() {
         TestLibraryProvider libProvider = new TestLibraryProvider()
-        libProvider.addStep("gradle", "build", """
+        libProvider.addStep('gradle', 'build', '''
         void call(){
             println "build step from test gradle library"
         }
-        """)
-        story.then{ jenkins -> libProvider.addGlobally() }
+        ''')
+        story.then { jenkins -> libProvider.addGlobally() }
     }
 
     @Ignore
-    def "Pipeline resumes after graceful restart"(){
+    def "Pipeline resumes after graceful restart"() {
         when:
-        story.then{ jenkins ->
+        story.then { jenkins ->
             WorkflowJob p = TestUtil.createAdHoc(
-                template: """
+                template: '''
                 println "running before sleep"
                 semaphore "wait"
                 println "running after sleep"
-                """, jenkins, "p"
+                ''', jenkins, 'p'
             )
             WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart("wait/1", b)
+            SemaphoreStep.waitForStart('wait/1', b)
         }
 
         then:
-        story.then{ jenkins ->
-            SemaphoreStep.success("wait/1", true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName("p", WorkflowJob)
+        story.then { jenkins ->
+            SemaphoreStep.success('wait/1', true)
+            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
             WorkflowRun b = p.getLastBuild()
             jenkins.waitForCompletion(b)
-            jenkins.assertLogContains("running after sleep", b)
+            jenkins.assertLogContains('running after sleep', b)
         }
     }
 
     @Ignore
-    def "Stages succeed after pipeline graceful restart"(){
+    def "Stages succeed after pipeline graceful restart"() {
         when:
-        story.then{ jenkins ->
+        story.then { jenkins ->
             WorkflowJob p = TestUtil.createAdHoc(
-                config: """
+                config: '''
                 libraries{ gradle }
                 stages{ ci{ build } }
-                """,
-                template: """
+                ''',
+                template: '''
                 println "running before sleep"
                 semaphore "wait"
                 ci()
-                """, jenkins, "p"
+                ''', jenkins, 'p'
             )
             WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart("wait/1", b)
+            SemaphoreStep.waitForStart('wait/1', b)
         }
 
         then:
-        story.then{ jenkins ->
-            SemaphoreStep.success("wait/1", true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName("p", WorkflowJob)
+        story.then { jenkins ->
+            SemaphoreStep.success('wait/1', true)
+            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
             WorkflowRun b = p.getLastBuild()
             jenkins.waitForCompletion(b)
-            jenkins.assertLogContains("build step from test gradle library", b)
+            jenkins.assertLogContains('build step from test gradle library', b)
         }
     }
 
     @Ignore
-    def "Steps succeed after pipeline graceful restart"(){
+    def "Steps succeed after pipeline graceful restart"() {
         when:
-        story.then{ jenkins ->
+        story.then { jenkins ->
             WorkflowJob p = TestUtil.createAdHoc(
-                config: """
+                config: '''
                 libraries{ gradle }
                 stages{ ci{ build } }
-                """,
-                template: """
+                ''',
+                template: '''
                 println "running before sleep"
                 semaphore "wait"
                 build()
-                """, jenkins, "p"
+                ''', jenkins, 'p'
             )
             WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart("wait/1", b)
+            SemaphoreStep.waitForStart('wait/1', b)
         }
 
         then:
-        story.then{ jenkins ->
-            SemaphoreStep.success("wait/1", true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName("p", WorkflowJob)
+        story.then { jenkins ->
+            SemaphoreStep.success('wait/1', true)
+            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
             WorkflowRun b = p.getLastBuild()
             jenkins.waitForCompletion(b)
-            jenkins.assertLogContains("build step from test gradle library", b)
+            jenkins.assertLogContains('build step from test gradle library', b)
         }
     }
 

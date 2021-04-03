@@ -26,12 +26,12 @@ import org.jvnet.hudson.test.JenkinsRule
 import org.jvnet.hudson.test.WithoutJenkins
 import spock.lang.Specification
 
-class GovernanceTierSpec extends Specification{
+class GovernanceTierSpec extends Specification {
 
     @Rule JenkinsRule jenkins = new JenkinsRule()
 
     @WithoutJenkins
-    def "new GovernanceTier's PipelienConfigurationProvider defaults to NullPipelineConfigurationProvider"(){
+    def "new GovernanceTier's PipelienConfigurationProvider defaults to NullPipelineConfigurationProvider"() {
         when:
         GovernanceTier tier = new GovernanceTier()
 
@@ -40,7 +40,7 @@ class GovernanceTierSpec extends Specification{
     }
 
     @WithoutJenkins
-    def "getConfig() returns configurationProvider's PipelineConfigurationObject"(){
+    def "getConfig() returns configurationProvider's PipelineConfigurationObject"() {
         when:
         PipelineConfigurationObject configObject = Mock()
         PipelineConfigurationProvider configProvider = Mock()
@@ -52,7 +52,7 @@ class GovernanceTierSpec extends Specification{
         tier.getConfig(Mock(FlowExecutionOwner)) == configObject
     }
 
-    def "hierarchy: top-level job without global config"(){
+    def "hierarchy: top-level job without global config"() {
         setup:
         WorkflowJob job = jenkins.createProject(WorkflowJob)
 
@@ -63,7 +63,7 @@ class GovernanceTierSpec extends Specification{
         hierarchy.isEmpty()
     }
 
-    def "hierarchy: top-level job with global config"(){
+    def "hierarchy: top-level job with global config"() {
         setup:
         WorkflowJob job = jenkins.createProject(WorkflowJob)
         GovernanceTier tier = Mock()
@@ -76,7 +76,7 @@ class GovernanceTierSpec extends Specification{
         hierarchy == [ tier ]
     }
 
-    def "hierarchy: folder job without global config"(){
+    def "hierarchy: folder job without global config"() {
         setup:
         Folder folder = jenkins.createProject(Folder, jenkins.createUniqueProjectName())
         GovernanceTier folderTier = new GovernanceTier()
@@ -92,7 +92,7 @@ class GovernanceTierSpec extends Specification{
         hierarchy == [ folderTier ]
     }
 
-    def "hierarchy: folder job with global config"(){
+    def "hierarchy: folder job with global config"() {
         setup:
         GovernanceTier globalTier = new GovernanceTier()
         TemplateGlobalConfig.get().setTier(globalTier)

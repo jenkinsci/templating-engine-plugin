@@ -23,65 +23,65 @@ import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class JteBlockValidatorSpec extends Specification{
+class JteBlockValidatorSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
 
-    def "empty jte block succeeds"(){
+    def "empty jte block succeeds"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: "jte{}",
-                template: """
+                config: 'jte{}',
+                template: '''
                 assert 1 == 1
-                """
+                '''
         )
 
         expect:
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "non-existent jte block succeeds"(){
+    def "non-existent jte block succeeds"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                template: """
+                template: '''
                 assert 1 == 1
-                """
+                '''
         )
 
         expect:
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "jte block with boolean allow_scm_jenkins succeeds"(){
+    def "jte block with boolean allow_scm_jenkins succeeds"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """jte{
+                config: '''jte{
                     allow_scm_jenkinsfile = false
                     pipeline_template = "my_template"
                 }
-                """,
-                template: """
+                ''',
+                template: '''
                 assert 1 == 1
-                """
+                '''
         )
 
         expect:
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "jte block with wrong field fails"(){
+    def "jte block with wrong field fails"() {
         def run
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """jte{
+                config: '''jte{
                     bad_field = "false"
                     allow_scm_jenkinsfile = false
                     pipeline_template = "my_template"
                 }
-                """,
-                template: """
+                ''',
+                template: '''
                 assert 1 == 1
-                """
+                '''
         )
 
         when:
@@ -90,21 +90,21 @@ class JteBlockValidatorSpec extends Specification{
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains(JteBlockValidator.ERROR_HEADER, run)
-        jenkins.assertLogContains("bad_field", run)
+        jenkins.assertLogContains('bad_field', run)
     }
 
-    def "jte block with wrong type fails"(){
+    def "jte block with wrong type fails"() {
         def run
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """jte{
+                config: '''jte{
                     allow_scm_jenkinsfile = 0
                     pipeline_template = "my_template"
                 }
-                """,
-                template: """
+                ''',
+                template: '''
                 assert 1 == 1
-                """
+                '''
         )
 
         expect:
@@ -114,7 +114,7 @@ class JteBlockValidatorSpec extends Specification{
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains(JteBlockValidator.ERROR_HEADER, run)
-        jenkins.assertLogContains("pipeline_template", run)
+        jenkins.assertLogContains('pipeline_template', run)
     }
 
 }

@@ -25,31 +25,31 @@ import spock.lang.Unroll
 /**
  * to be mocked so Spock can find "run" method
  */
-class ConfigValidatorSpec extends Specification{
+class ConfigValidatorSpec extends Specification {
 
     private ConfigValidator validator
 
-    void setup(){
+    void setup() {
         EnvActionImpl env = Mock()
-        env.getProperty("someField") >> "envProperty"
+        env.getProperty('someField') >> 'envProperty'
 
         GroovySpy(EnvActionImpl, global:true)
         EnvActionImpl.forRun(_) >> env
 
-        FlowExecutionOwner flowOwner = Mock(TestFlowExecutionOwner){
-            run() >> GroovyMock(WorkflowRun){
+        FlowExecutionOwner flowOwner = Mock(TestFlowExecutionOwner) {
+            run() >> GroovyMock(WorkflowRun) {
                 getRootDir() >> Mock(File)
             }
-            getListener() >> Mock(TaskListener){
+            getListener() >> Mock(TaskListener) {
                 getLogger() >> Mock(PrintStream)
             }
         }
         validator = new ConfigValidator(flowOwner)
     }
 
-    def "invalid required key throws exception"(){
+    def "invalid required key throws exception"() {
         setup:
-        String schema = "fields{ required{ example = String } }"
+        String schema = 'fields{ required{ example = String } }'
         LinkedHashMap config = [ example: 11 ]
 
         when:
@@ -60,10 +60,10 @@ class ConfigValidatorSpec extends Specification{
         ex.getMessage().contains("Field 'example' must be a String")
     }
 
-    def "valid required key does not throw exception"(){
+    def "valid required key does not throw exception"() {
         setup:
-        String schema = "fields{ required{ example = String } }"
-        LinkedHashMap config = [ example: "a string" ]
+        String schema = 'fields{ required{ example = String } }'
+        LinkedHashMap config = [ example: 'a string' ]
 
         when:
         validator.validate(schema, config)
@@ -74,7 +74,7 @@ class ConfigValidatorSpec extends Specification{
 
     def "missing required key throws exception"() {
         setup:
-        String schema = "fields{ required{ example = String } }"
+        String schema = 'fields{ required{ example = String } }'
         LinkedHashMap config = [:]
 
         when:
@@ -85,9 +85,9 @@ class ConfigValidatorSpec extends Specification{
         ex.getMessage().contains("Missing required field 'example'")
     }
 
-    def "invalid optional key throws exception"(){
+    def "invalid optional key throws exception"() {
         setup:
-        String schema = "fields{ optional{ example = String } }"
+        String schema = 'fields{ optional{ example = String } }'
         LinkedHashMap config = [ example: 11 ]
 
         when:
@@ -98,9 +98,9 @@ class ConfigValidatorSpec extends Specification{
         ex.getMessage().contains("Field 'example' must be a String")
     }
 
-    def "missing optional key is okay"(){
+    def "missing optional key is okay"() {
         setup:
-        String schema = "fields{ optional{ example = String } }"
+        String schema = 'fields{ optional{ example = String } }'
         LinkedHashMap config = [:]
 
         when:
@@ -110,9 +110,9 @@ class ConfigValidatorSpec extends Specification{
         notThrown(AggregateException)
     }
 
-    def "keys not in schema throw exception"(){
+    def "keys not in schema throw exception"() {
         setup:
-        String schema = "fields{ required{ example = String } }"
+        String schema = 'fields{ required{ example = String } }'
         LinkedHashMap config = [ nope: 11 ]
 
         when:
@@ -123,9 +123,9 @@ class ConfigValidatorSpec extends Specification{
         ex.getMessage().contains("Field 'nope' is not used.")
     }
 
-    def "nested required keys are validated"(){
+    def "nested required keys are validated"() {
         setup:
-        String schema = "fields{ required{ nested{ example = String } } }"
+        String schema = 'fields{ required{ nested{ example = String } } }'
         LinkedHashMap config = [ nested: [ example: 11 ] ]
 
         when:
@@ -136,9 +136,9 @@ class ConfigValidatorSpec extends Specification{
         ex.getMessage().contains("Field 'nested.example' must be a String")
     }
 
-    def "nested optional keys are validated"(){
+    def "nested optional keys are validated"() {
         setup:
-        String schema = "fields{ optional{ nested{ example = String } } }"
+        String schema = 'fields{ optional{ nested{ example = String } } }'
         LinkedHashMap config = [ nested: [ example: 11 ] ]
 
         when:
@@ -149,9 +149,9 @@ class ConfigValidatorSpec extends Specification{
         ex.getMessage().contains("Field 'nested.example' must be a String")
     }
 
-    def "aggregate exception has all errors"(){
+    def "aggregate exception has all errors"() {
         setup:
-        String schema = """
+        String schema = '''
         fields{
             required{
                 fieldA = String
@@ -160,10 +160,10 @@ class ConfigValidatorSpec extends Specification{
             optional{
                 fieldC = boolean
             }
-        }"""
+        }'''
         LinkedHashMap config = [
             fieldA: 11,
-            fieldB: "a string",
+            fieldB: 'a string',
             fieldC: 11
         ]
 
@@ -179,7 +179,7 @@ class ConfigValidatorSpec extends Specification{
     }
 
     @Unroll
-    def "when config value is '#actual' and expected type/value is #expected then result is #result"(){
+    def "when config value is '#actual' and expected type/value is #expected then result is #result"() {
         expect:
         validator.validateType(Mock(TemplateLogger), actual, expected) == result
 
@@ -189,8 +189,8 @@ class ConfigValidatorSpec extends Specification{
         false       |      boolean      | false
         true        |      Boolean      | false
         false       |      Boolean      | false
-        "nope"      |      boolean      | true
-        "hey"       |      String       | false
+        'nope'      |      boolean      | true
+        'hey'       |      String       | false
         "${4}"      |      String       | false
         4           |      String       | true
         4           |      Integer      | false
@@ -201,15 +201,15 @@ class ConfigValidatorSpec extends Specification{
         1.0         |      Double       | false
         1           |      Number       | false
         1.0         |      Number       | false
-        "hey"       |     ~/.*he.*/     | false
-        "heyyy"     |     ~/^hey.*/     | false
-        "hi"        |     ~/^hey.*/     | true
-        "hi"        |    ["hi", "hey"]  | false
-        "opt3"      |  ["opt1", "opt2"] | true
-        [ "a" ]     |       List        | false
-        "a"         |       List        | true
-        [ "a" ]     |  ArrayList        | false
-        "a"         |  ArrayList        | true
+        'hey'       |     ~/.*he.*/     | false
+        'heyyy'     |     ~/^hey.*/     | false
+        'hi'        |     ~/^hey.*/     | true
+        'hi'        |    ['hi', 'hey']  | false
+        'opt3'      |  ['opt1', 'opt2'] | true
+        [ 'a' ]     |       List        | false
+        'a'         |       List        | true
+        [ 'a' ]     |  ArrayList        | false
+        'a'         |  ArrayList        | true
     }
 
 }

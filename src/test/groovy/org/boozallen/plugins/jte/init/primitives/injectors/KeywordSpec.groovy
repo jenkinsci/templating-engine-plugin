@@ -16,21 +16,23 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.model.Result
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class KeywordSpec extends Specification{
+class KeywordSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
 
-    def "injector inserts keyword into binding"(){
+    def "injector inserts keyword into binding"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: "keywords{ x = 11 }",
+            config: 'keywords{ x = 11 }',
             template: 'assert x == 11'
         )
 
@@ -38,7 +40,7 @@ class KeywordSpec extends Specification{
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "retrieving keyword from binding results in value"(){
+    def "retrieving keyword from binding results in value"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'keywords{ x = "foo" }',
@@ -49,7 +51,7 @@ class KeywordSpec extends Specification{
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "retrieving namespaced keyword from binding results in value"(){
+    def "retrieving namespaced keyword from binding results in value"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
                 config: 'keywords{ x = "foo" }',
@@ -60,47 +62,47 @@ class KeywordSpec extends Specification{
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "inject multiple keywords"(){
+    def "inject multiple keywords"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             keywords{
                 x = "foo"
                 y = "bar"
             }
-            """,
-            template: """
+            ''',
+            template: '''
             assert x == "foo"
             assert y == "bar"
-            """
+            '''
         )
 
         expect:
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "inject multiple keywords namespaced and not"(){
+    def "inject multiple keywords namespaced and not"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: """
+                config: '''
             keywords{
                 x = "foo"
                 y = "bar"
             }
-            """, template: """
+            ''', template: '''
             assert x == "foo"
             assert jte.keywords.y == "bar"
-            """
+            '''
         )
 
         expect:
         jenkins.buildAndAssertSuccess(job)
     }
 
-    def "override during initialization throws error"(){
+    def "override during initialization throws error"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             keywords{
                 x = "foo"
             }
@@ -108,27 +110,45 @@ class KeywordSpec extends Specification{
             application_environments{
                 x
             }
-            """,
-            template: "println x"
+            ''',
+            template: 'println x'
         )
 
         expect:
         jenkins.assertBuildStatus(Result.FAILURE, job.scheduleBuild2(0))
     }
 
-    def "override post initialization throws error"(){
+    def "override post initialization throws error"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             keywords{
                 x = "foo"
             }
-            """,
+            ''',
             template: 'x = "oops"'
         )
 
         expect:
         jenkins.assertBuildStatus(Result.FAILURE, job.scheduleBuild2(0))
+    }
+
+    def "getParentChain returns the correct path"() {
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: "keywords{ x = 'foo' }",
+            template: "assert x == 'foo'"
+        )
+        WorkflowRun run = job.scheduleBuild2(0).waitForStart()
+        jenkins.waitForCompletion(run)
+        TemplatePrimitiveCollector c = run.getAction(TemplatePrimitiveCollector)
+        Keyword keyword = c.findAll { primitive ->
+            primitive.getName() == 'x'
+        }.first()
+
+        expect:
+        jenkins.assertBuildStatusSuccess(run)
+        keyword.getParentChain() == 'jte.keywords.x'
     }
 
 }

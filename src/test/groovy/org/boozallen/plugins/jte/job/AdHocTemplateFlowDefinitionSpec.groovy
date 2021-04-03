@@ -42,7 +42,7 @@ class AdHocTemplateFlowDefinitionSpec extends Specification {
     TestFlowExecutionOwner flowOwner
     PrintStream logger = Mock()
 
-    def setup(){
+    def setup() {
         WorkflowJob job = GroovyMock()
         job.asBoolean() >> true
         WorkflowRun run = GroovyMock()
@@ -54,10 +54,10 @@ class AdHocTemplateFlowDefinitionSpec extends Specification {
         flowOwner.run() >> run
     }
 
-    GitSCM createSCM(GitSampleRepoRule _repo){
+    GitSCM createSCM(GitSampleRepoRule _repo) {
         return new GitSCM(
                 GitSCM.createRepoList(_repo.toString(), null),
-                Collections.singletonList(new BranchSpec("*/master")),
+                Collections.singletonList(new BranchSpec('*/master')),
                 false,
                 Collections.<SubmoduleConfig>emptyList(),
                 null,
@@ -68,23 +68,23 @@ class AdHocTemplateFlowDefinitionSpec extends Specification {
 
     def "Scm Adhoc hasConfig, hasTemplate return false if empty path"() {
         ScmAdHocTemplateFlowDefinitionConfiguration flowDefConfig =
-                new ScmAdHocTemplateFlowDefinitionConfiguration(new NullSCM(), "", "")
+                new ScmAdHocTemplateFlowDefinitionConfiguration(new NullSCM(), '', '')
 
         expect:
         !flowDefConfig.hasConfig(flowOwner)
         !flowDefConfig.hasTemplate(flowOwner)
     }
 
-    def "Scm AdHoc ... getTemplate: returns contents of scm template file, empty config path -> null config"(){
+    def "Scm AdHoc ... getTemplate: returns contents of scm template file, empty config path -> null config"() {
         given:
-        String baseDir = "pipeline-configuration"
-        String pipelineConfigPath = ""
+        String baseDir = 'pipeline-configuration'
+        String pipelineConfigPath = ''
         String pipelineTemplatePath = "${baseDir}/pipeline_templates/someTemplate"
-        String pipelineTemplateContents = "the template"
+        String pipelineTemplateContents = 'the template'
         repo.init()
         repo.write(pipelineTemplatePath, pipelineTemplateContents)
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         ScmAdHocTemplateFlowDefinitionConfiguration flowDefConfig =
                 new ScmAdHocTemplateFlowDefinitionConfiguration(scm, pipelineConfigPath, pipelineTemplatePath)
@@ -104,24 +104,24 @@ class AdHocTemplateFlowDefinitionSpec extends Specification {
         definition.getPipelineConfiguration(flowOwner) == null
     }
 
-    def "Scm AdHoc ...getTemplate, getConfig: returns contents"(){
+    def "Scm AdHoc ...getTemplate, getConfig: returns contents"() {
         given:
         PipelineConfigurationObject configurationObject
         PipelineConfigurationObject definitionConfig
-        String baseDir = "pipeline-configuration"
+        String baseDir = 'pipeline-configuration'
         String pipelineConfigPath = "${baseDir}/pipeline_templates/pipeline_config.0.groovy"
-        String pipelineConfigContents = """
+        String pipelineConfigContents = '''
 keywords{
   main = "/(M|m)ain/"
 }
-"""
+'''
         String pipelineTemplatePath = "${baseDir}/pipeline_templates/someTemplate"
-        String pipelineTemplateContents = "the template"
+        String pipelineTemplateContents = 'the template'
         repo.init()
         repo.write(pipelineTemplatePath, pipelineTemplateContents)
         repo.write(pipelineConfigPath, pipelineConfigContents)
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         ScmAdHocTemplateFlowDefinitionConfiguration flowDefConfig =
                 new ScmAdHocTemplateFlowDefinitionConfiguration(scm, pipelineConfigPath, pipelineTemplatePath)
@@ -142,8 +142,8 @@ keywords{
         flowDefConfig.getTemplate(flowOwner) == pipelineTemplateContents
         definition.getTemplate(flowOwner) == pipelineTemplateContents
         configurationObject != null
-        configurationObject.config?.keywords?.main == "/(M|m)ain/"
-        definitionConfig.config?.keywords?.main == "/(M|m)ain/"
+        configurationObject.config?.keywords?.main == '/(M|m)ain/'
+        definitionConfig.config?.keywords?.main == '/(M|m)ain/'
     }
 
 }

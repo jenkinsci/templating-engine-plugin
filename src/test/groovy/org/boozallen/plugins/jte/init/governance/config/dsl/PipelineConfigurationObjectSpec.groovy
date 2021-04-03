@@ -25,10 +25,10 @@ import spock.lang.Specification
 class PipelineConfigurationObjectSpec extends Specification {
 
     ArrayList templateLogs = []
-    PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner){
+    PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner) {
         run() >> GroovyMock(WorkflowRun)
-        getListener() >> GroovyMock(TaskListener){
-            getLogger() >> Mock(PrintStream){
+        getListener() >> GroovyMock(TaskListener) {
+            getLogger() >> Mock(PrintStream) {
                 println(_) >> { msg ->
                     templateLogs << msg[0]
                     println msg[0]
@@ -40,9 +40,9 @@ class PipelineConfigurationObjectSpec extends Specification {
 
     PipelineConfigurationObject aggregatedConfig
 
-    def setup(){
+    def setup() {
         EnvActionImpl env = Mock()
-        env.getProperty("someField") >> "envProperty"
+        env.getProperty('someField') >> 'envProperty'
 
         GroovySpy(EnvActionImpl, global:true)
         EnvActionImpl.forRun(_) >> env
@@ -57,47 +57,47 @@ class PipelineConfigurationObjectSpec extends Specification {
          * ============
          */
         String name = specificationContext.currentIteration.name
-        String header = name.collect{ "=" }.join("")
+        String header = name.collect { '=' }.join('')
         println "${header}\n${name}\n${header}"
     }
 
-    def "First join results in correct aggregated config"(){
+    def "First join results in correct aggregated config"() {
         given:
-        aggregatedConfig += dsl.parse("""
+        aggregatedConfig += dsl.parse('''
             a = 1
             b = 2
             x{
                 y = "whatever"
             }
-        """)
+        ''')
 
         expect:
         aggregatedConfig.config == [
             a: 1,
             b: 2,
             x: [
-                y: "whatever"
+                y: 'whatever'
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a set to 1",
-            "- b set to 2",
-            "- x.y set to whatever",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a set to 1',
+            '- b set to 2',
+            '- x.y set to whatever',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "merge block: add key"(){
+    def "merge block: add key"() {
         given:
-        String config1 = "@merge a{ x = 1 }"
-        String config2 = "a{ y = 2 }"
+        String config1 = '@merge a{ x = 1 }'
+        String config2 = 'a{ y = 2 }'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -110,34 +110,34 @@ class PipelineConfigurationObjectSpec extends Specification {
                 y: 2
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge:",
-            "- a",
-            "Subsequent May Override: None",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge:',
+            '- a',
+            'Subsequent May Override: None',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.y set to 2",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.y set to 2',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "merge block: can't override existing key"(){
+    def "merge block: can't override existing key"() {
         given:
-        String config1 = "@merge a{ x = 1 }"
-        String config2 = "a{ x = 2 }"
+        String config1 = '@merge a{ x = 1 }'
+        String config2 = 'a{ x = 2 }'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -149,34 +149,34 @@ class PipelineConfigurationObjectSpec extends Specification {
                 x: 1
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge:",
-            "- a",
-            "Subsequent May Override: None",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge:',
+            '- a',
+            'Subsequent May Override: None',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored:",
-            "- a.x",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored:',
+            '- a.x',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "merge block: log duplicated key"(){
+    def "merge block: log duplicated key"() {
         given:
-        String config1 = "@merge a{ x = 1 }"
-        String config2 = "a{ x = 1 }"
+        String config1 = '@merge a{ x = 1 }'
+        String config2 = 'a{ x = 1 }'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -188,34 +188,34 @@ class PipelineConfigurationObjectSpec extends Specification {
                 x: 1
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge:",
-            "- a",
-            "Subsequent May Override: None",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge:',
+            '- a',
+            'Subsequent May Override: None',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated:",
-            "- a.x",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated:',
+            '- a.x',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override block: change key value"(){
+    def "override block: change key value"() {
         given:
-        String config1 = "@override a{ x = 1 }"
-        String config2 = "a{ x = 2 }"
+        String config1 = '@override a{ x = 1 }'
+        String config2 = 'a{ x = 2 }'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -227,34 +227,34 @@ class PipelineConfigurationObjectSpec extends Specification {
                 x: 2
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- a",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- a',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted: None",
-            "Configurations Changed:",
-            "- a.x changed from 1 to 2",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted: None',
+            'Configurations Changed:',
+            '- a.x changed from 1 to 2',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override block: leave block as-is if not declared"(){
+    def "override block: leave block as-is if not declared"() {
         given:
-        String config1 = "@override a{ x = 1 }"
-        String config2 = "b{ y = 1 }"
+        String config1 = '@override a{ x = 1 }'
+        String config2 = 'b{ y = 1 }'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -269,43 +269,43 @@ class PipelineConfigurationObjectSpec extends Specification {
                 y: 1
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- a",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- a',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- b.y set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- b.y set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override block: delete previous configuration"(){
+    def "override block: delete previous configuration"() {
         given:
-        String config1 = """
+        String config1 = '''
         @override a{
             x = 1
             y = 2
         }
-        """
-        String config2 = """
+        '''
+        String config2 = '''
         a{
             y = 3
         }
-        """
+        '''
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -317,48 +317,48 @@ class PipelineConfigurationObjectSpec extends Specification {
                 y: 3
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.x set to 1",
-            "- a.y set to 2",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- a",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.x set to 1',
+            '- a.y set to 2',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- a',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted:",
-            "- a.x",
-            "Configurations Changed:",
-            "- a.y changed from 2 to 3",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted:',
+            '- a.x',
+            'Configurations Changed:',
+            '- a.y changed from 2 to 3',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override nested block"(){
+    def "override nested block"() {
         given:
-        String config1 = """
+        String config1 = '''
         a{
             @override b{
                 c = 1
             }
         }
-        """
-        String config2 = """
+        '''
+        String config2 = '''
         a{
             b{
                 c = 2
             }
         }
-        """
+        '''
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -372,48 +372,48 @@ class PipelineConfigurationObjectSpec extends Specification {
                 ]
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.b.c set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- a.b",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.b.c set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- a.b',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted: None",
-            "Configurations Changed:",
-            "- a.b.c changed from 1 to 2",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted: None',
+            'Configurations Changed:',
+            '- a.b.c changed from 1 to 2',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override nested field"(){
+    def "override nested field"() {
         given:
-        String config1 = """
+        String config1 = '''
         a{
             b{
                 @override c = 1
                 d = 2
             }
         }
-        """
-        String config2 = """
+        '''
+        String config2 = '''
         a{
             b{
                 c = 2
                 d = 4
             }
         }
-        """
+        '''
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -428,36 +428,36 @@ class PipelineConfigurationObjectSpec extends Specification {
                 ]
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- a.b.c set to 1",
-            "- a.b.d set to 2",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- a.b.c",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- a.b.c set to 1',
+            '- a.b.d set to 2',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- a.b.c',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted: None",
-            "Configurations Changed:",
-            "- a.b.c changed from 1 to 2",
-            "Configurations Duplicated: None",
-            "Configurations Ignored:",
-            "- a.b.d",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted: None',
+            'Configurations Changed:',
+            '- a.b.c changed from 1 to 2',
+            'Configurations Duplicated: None',
+            'Configurations Ignored:',
+            '- a.b.d',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override root field"(){
+    def "override root field"() {
         given:
-        String config1 = "@override x = 1"
-        String config2 = "x = 2"
+        String config1 = '@override x = 1'
+        String config2 = 'x = 2'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -465,34 +465,34 @@ class PipelineConfigurationObjectSpec extends Specification {
 
         then:
         aggregatedConfig.config == [ x: 2 ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- x",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- x',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added: None",
-            "Configurations Deleted: None",
-            "Configurations Changed:",
-            "- x changed from 1 to 2",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added: None',
+            'Configurations Deleted: None',
+            'Configurations Changed:',
+            '- x changed from 1 to 2',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
-    def "override root field with block"(){
+    def "override root field with block"() {
         given:
-        String config1 = "@override x = 1"
-        String config2 = "x{ y = 1 }"
+        String config1 = '@override x = 1'
+        String config2 = 'x{ y = 1 }'
 
         when:
         aggregatedConfig += dsl.parse(config1)
@@ -504,38 +504,38 @@ class PipelineConfigurationObjectSpec extends Specification {
                 y: 1
             ]
         ]
-        TestUtil.assertOrder(templateLogs.join("\n"), [
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- x set to 1",
-            "Configurations Deleted: None",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override:",
-            "- x",
+        TestUtil.assertOrder(templateLogs.join('\n'), [
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- x set to 1',
+            'Configurations Deleted: None',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override:',
+            '- x',
 
-            "Pipeline Configuration Modifications",
-            "Configurations Added:",
-            "- x.y set to 1",
-            "Configurations Deleted:",
-            "- x",
-            "Configurations Changed: None",
-            "Configurations Duplicated: None",
-            "Configurations Ignored: None",
-            "Subsequent May Merge: None",
-            "Subsequent May Override: None"
+            'Pipeline Configuration Modifications',
+            'Configurations Added:',
+            '- x.y set to 1',
+            'Configurations Deleted:',
+            '- x',
+            'Configurations Changed: None',
+            'Configurations Duplicated: None',
+            'Configurations Ignored: None',
+            'Subsequent May Merge: None',
+            'Subsequent May Override: None'
         ])
     }
 
     def "GitHub Issue #174"() {
         given:
-        String config = """
+        String config = '''
         keywords{
           master = ~/[Mm](aster|ain)/
         }
-        """
+        '''
         PipelineConfigurationObject obj = dsl.parse(config)
 
         when:

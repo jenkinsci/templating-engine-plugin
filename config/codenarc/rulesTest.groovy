@@ -218,7 +218,7 @@ ruleset {
     MissingBlankLineAfterPackage
 //    SpaceAfterCatch
     SpaceAfterClosingBrace
-    SpaceAfterComma
+//    SpaceAfterComma
 //    SpaceAfterFor
 //    SpaceAfterIf
     SpaceAfterOpeningBrace{

@@ -17,30 +17,32 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.model.Result
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class StageSpec extends Specification{
+class StageSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
 
-    def setupSpec(){
+    def setupSpec() {
         TestLibraryProvider libProvider = new TestLibraryProvider()
-        libProvider.addStep("gradle", "build", """
+        libProvider.addStep('gradle', 'build', '''
         void call(){
             println "build step from test gradle library"
         }
-        """)
-        libProvider.addStep("gradle", "unit_test", """
+        ''')
+        libProvider.addStep('gradle', 'unit_test', '''
         void call(){
             println "unit_test step from test gradle library"
         }
-        """)
-        libProvider.addStep("gradle", "printStageArgs", """
+        ''')
+        libProvider.addStep('gradle', 'printStageArgs', """
         void call(){
             println "x=\${stageContext.args.x}"
         }
@@ -48,11 +50,11 @@ class StageSpec extends Specification{
         libProvider.addGlobally()
     }
 
-    def "validate stage executes single step"(){
+    def "validate stage executes single step"() {
         given:
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             libraries{
                 gradle
             }
@@ -62,8 +64,8 @@ class StageSpec extends Specification{
                     build
                 }
             }
-            """,
-            template: "ci()"
+            ''',
+            template: 'ci()'
         )
 
         when:
@@ -71,13 +73,13 @@ class StageSpec extends Specification{
 
         then:
         jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains("build step from test gradle library", run)
+        jenkins.assertLogContains('build step from test gradle library', run)
     }
 
-    def "validate stage logs its entrypoint"(){
+    def "validate stage logs its entrypoint"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             libraries{
                 gradle
             }
@@ -87,19 +89,19 @@ class StageSpec extends Specification{
                     build
                 }
             }
-            """,
-            template: "ci()"
+            ''',
+            template: 'ci()'
         )
 
         expect:
-        jenkins.assertLogContains("[Stage - ci]", job.scheduleBuild2(0).get())
+        jenkins.assertLogContains('[Stage - ci]', job.scheduleBuild2(0).get())
     }
 
-    def "validate stage executes multiple steps"(){
+    def "validate stage executes multiple steps"() {
         given:
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             libraries{
                 gradle
             }
@@ -110,8 +112,8 @@ class StageSpec extends Specification{
                     unit_test
                 }
             }
-            """,
-            template: "ci()"
+            ''',
+            template: 'ci()'
         )
 
         when:
@@ -120,8 +122,8 @@ class StageSpec extends Specification{
         then:
         jenkins.assertBuildStatusSuccess(run)
         TestUtil.assertOrder(jenkins.getLog(run), [
-            "build step from test gradle library",
-            "unit_test step from test gradle library"
+            'build step from test gradle library',
+            'unit_test step from test gradle library'
         ])
     }
 
@@ -129,7 +131,7 @@ class StageSpec extends Specification{
         given:
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             libraries{
                 gradle
             }
@@ -139,7 +141,7 @@ class StageSpec extends Specification{
                     printStageArgs
                 }
             }
-            """,
+            ''',
             template: 'ci(x: "foo")'
         )
 
@@ -148,7 +150,7 @@ class StageSpec extends Specification{
 
         then:
         jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains("x=foo", run)
+        jenkins.assertLogContains('x=foo', run)
     }
 
     def "validate namespaced stage arguments are passed through to steps"() {
@@ -172,13 +174,13 @@ class StageSpec extends Specification{
 
         then:
         jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains("x=foo", run)
+        jenkins.assertLogContains('x=foo', run)
     }
 
-    def "validate override during initialization throws exception"(){
+    def "validate override during initialization throws exception"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             libraries{
                 gradle
             }
@@ -192,18 +194,18 @@ class StageSpec extends Specification{
             keywords{
                 ci = "oops"
             }
-            """,
-            template: "ci()"
+            ''',
+            template: 'ci()'
         )
 
         expect:
         jenkins.assertBuildStatus(Result.FAILURE, job.scheduleBuild2(0))
     }
 
-    def "validate override post initialization throws exception"(){
+    def "validate override post initialization throws exception"() {
         given:
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: """
+            config: '''
             libraries{
                 gradle
             }
@@ -213,12 +215,40 @@ class StageSpec extends Specification{
                     build
                 }
             }
-            """,
+            ''',
             template: 'ci = "oops"'
         )
 
         expect:
         jenkins.assertBuildStatus(Result.FAILURE, job.scheduleBuild2(0))
+    }
+
+    def "getParentChain returns the correct path"() {
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+                gradle
+            }
+
+            stages{
+                ci{
+                    build
+                }
+            }
+            ''',
+            template: 'println "doesnt matter"'
+        )
+        WorkflowRun run = job.scheduleBuild2(0).waitForStart()
+        jenkins.waitForCompletion(run)
+        TemplatePrimitiveCollector c = run.getAction(TemplatePrimitiveCollector)
+        Stage stage = c.findAll { primitive ->
+            primitive.getName() == 'ci'
+        }.first()
+
+        expect:
+        jenkins.assertBuildStatusSuccess(run)
+        stage.getParentChain() == 'jte.stages.ci'
     }
 
 }

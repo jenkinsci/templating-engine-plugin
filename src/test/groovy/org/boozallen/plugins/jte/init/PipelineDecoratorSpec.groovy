@@ -23,12 +23,12 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class PipelineDecoratorSpec extends Specification{
+class PipelineDecoratorSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
 
     @WithoutJenkins
-    def "retrieve jte.allow_scm_jenkinsfile"(){
+    def "retrieve jte.allow_scm_jenkinsfile"() {
         when:
         def jte = new PipelineDecorator.JteBlockWrapper( [allow_scm_jenkinsfile:false])
 
@@ -37,7 +37,7 @@ class PipelineDecoratorSpec extends Specification{
     }
 
     @WithoutJenkins
-    def "retrieve default true for jte.allow_scm_jenkinsfile when jte block is empty"(){
+    def "retrieve default true for jte.allow_scm_jenkinsfile when jte block is empty"() {
         when:
         def jte = new PipelineDecorator.JteBlockWrapper([:])
 
@@ -46,7 +46,7 @@ class PipelineDecoratorSpec extends Specification{
     }
 
     @WithoutJenkins
-    def "throws exception on extra config"(){
+    def "throws exception on extra config"() {
         when:
         new PipelineDecorator.JteBlockWrapper([extra:true])
 

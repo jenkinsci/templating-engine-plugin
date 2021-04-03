@@ -17,6 +17,6 @@ package org.boozallen.plugins.jte.init.governance.libs
 
 import spock.lang.Specification
 
-class LibraryProviderSpec extends Specification{
+class LibraryProviderSpec extends Specification {
 
 }

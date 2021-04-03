@@ -27,10 +27,10 @@ class TestFlowExecutionOwner extends FlowExecutionOwner {
 
     @Override FlowExecution get() { return null }
     @Override File getRootDir() { return null }
-    @Override Queue.Executable getExecutable(){ return null }
+    @Override Queue.Executable getExecutable() { return null }
     @Override String getUrl() { return null }
     @Override boolean equals(Object o) { return this == o }
     @Override int hashCode() { return 0 }
-    WorkflowRun run(){ return null }
+    WorkflowRun run() { return null }
 
 }

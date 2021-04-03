@@ -36,7 +36,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class ScmLibraryProviderSpec extends Specification{
+class ScmLibraryProviderSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
     @Rule GitSampleRepoRule repo = new GitSampleRepoRule()
@@ -44,7 +44,7 @@ class ScmLibraryProviderSpec extends Specification{
     TestFlowExecutionOwner owner
     PrintStream logger = Mock()
 
-    def setup(){
+    def setup() {
         WorkflowJob job = jenkins.createProject(WorkflowJob)
         job.asBoolean() >> true
         WorkflowRun run = GroovyMock()
@@ -56,14 +56,14 @@ class ScmLibraryProviderSpec extends Specification{
         owner.run() >> run
     }
 
-    def "hasLibrary returns true when library exists, has steps directory with any *.groovy files"(){
+    def "hasLibrary returns true when library exists, has steps directory with any *.groovy files"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
         repo.write("${libraryName}/steps/someStep.groovy", "void call(){ println 'the step' }")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -76,14 +76,14 @@ class ScmLibraryProviderSpec extends Specification{
         p.hasLibrary(owner, libraryName)
     }
 
-    def "hasLibrary returns true when library exists, has steps directory with any *.groovy files, multiple directories down"(){
+    def "hasLibrary returns true when library exists, has steps directory with any *.groovy files, multiple directories down"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
         repo.write("${libraryName}/steps/dir1/dir2/someStep.groovy", "void call(){ println 'the step' }")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -96,10 +96,10 @@ class ScmLibraryProviderSpec extends Specification{
         p.hasLibrary(owner, libraryName)
     }
 
-    def "hasLibrary returns false when library does not exist"(){
+    def "hasLibrary returns false when library does not exist"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
@@ -113,10 +113,11 @@ class ScmLibraryProviderSpec extends Specification{
         !p.hasLibrary(owner, libraryName)
     }
 
-    static class StepWrapper{
+    static class StepWrapper {
+
         String name
 
-        StepWrapper(String name){
+        StepWrapper(String name) {
             this.name = name
         }
 
@@ -124,7 +125,7 @@ class ScmLibraryProviderSpec extends Specification{
 
     @Unroll
     @WithoutJenkins
-    def "when baseDir='#baseDir' then prefixBaseDir('#arg') is #expected "(){
+    def "when baseDir='#baseDir' then prefixBaseDir('#arg') is #expected "() {
         setup:
         ScmLibraryProvider libSource = new ScmLibraryProvider()
         libSource.setBaseDir(baseDir)
@@ -134,25 +135,25 @@ class ScmLibraryProviderSpec extends Specification{
 
         where:
         baseDir    | arg    || expected
-        " someDir" | "lib"  || "someDir/lib"
-        "someDir " | "lib"  || "someDir/lib"
-        "someDir"  | " lib" || "someDir/lib"
-        "someDir"  | "lib " || "someDir/lib"
-        "someDir"  | null   || "someDir"
-        "someDir"  | ""     || "someDir"
-        null       | "lib"  || "lib"
-        ""         | "lib"  || "lib"
-        null       | null   || ""
+        ' someDir' | 'lib'  || 'someDir/lib'
+        'someDir ' | 'lib'  || 'someDir/lib'
+        'someDir'  | ' lib' || 'someDir/lib'
+        'someDir'  | 'lib ' || 'someDir/lib'
+        'someDir'  | null   || 'someDir'
+        'someDir'  | ''     || 'someDir'
+        null       | 'lib'  || 'lib'
+        ''         | 'lib'  || 'lib'
+        null       | null   || ''
     }
 
-    def "SCM library with class gets put into the build dir src directory "(){
+    def "SCM library with class gets put into the build dir src directory "() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
-        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", 'package boozallen; class Utility{} ')
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -160,7 +161,7 @@ class ScmLibraryProviderSpec extends Specification{
         FilePath f = jenkins.getInstance().getWorkspaceFor(job)
         File rootDir = new File(f.getRemote())
         owner.getRootDir() >> rootDir
-        FilePath srcDir = new FilePath(rootDir).child("jte")
+        FilePath srcDir = new FilePath(rootDir).child('jte')
         FilePath libDir = srcDir.child(libraryName)
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
@@ -172,30 +173,30 @@ class ScmLibraryProviderSpec extends Specification{
         p.loadLibrary(owner, libraryName, srcDir, libDir)
 
         then:
-        File s = new File(rootDir, "jte/src/boozallen/Utility.groovy")
+        File s = new File(rootDir, 'jte/src/boozallen/Utility.groovy')
         assert s.exists()
     }
 
-    def "SCM library with class throws exception if class already exists"(){
+    def "SCM library with class throws exception if class already exists"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
-        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", 'package boozallen; class Utility{} ')
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
         WorkflowJob job = jenkins.createProject(WorkflowJob)
         FilePath f = jenkins.getInstance().getWorkspaceFor(job)
         File rootDir = new File(f.getRemote())
-        FilePath srcDir = new FilePath(rootDir).child("jte")
+        FilePath srcDir = new FilePath(rootDir).child('jte')
         FilePath libDir = srcDir.child(libraryName)
         owner.getRootDir() >> rootDir
 
         // put existing class file
-        File exists = new File(rootDir, "jte/src/boozallen/Utility.groovy")
+        File exists = new File(rootDir, 'jte/src/boozallen/Utility.groovy')
         exists.mkdirs()
         exists.createNewFile()
 
@@ -211,14 +212,14 @@ class ScmLibraryProviderSpec extends Specification{
         thrown(JTEException)
     }
 
-    def "hasLibrary returns true when only src directory present"(){
+    def "hasLibrary returns true when only src directory present"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
-        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", 'package boozallen; class Utility{} ')
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -235,14 +236,14 @@ class ScmLibraryProviderSpec extends Specification{
         p.hasLibrary(owner, libraryName)
     }
 
-    def "hasLibrary returns true when only steps directory present"(){
+    def "hasLibrary returns true when only steps directory present"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
-        repo.write("${libraryName}/steps/build.groovy", "void call(){}")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.write("${libraryName}/steps/build.groovy", 'void call(){}')
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -259,15 +260,15 @@ class ScmLibraryProviderSpec extends Specification{
         p.hasLibrary(owner, libraryName)
     }
 
-    def "hasLibrary returns true when both steps and src are present"(){
+    def "hasLibrary returns true when both steps and src are present"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
-        repo.write("${libraryName}/src/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
-        repo.write("${libraryName}/steps/build.groovy", "void call(){}")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.write("${libraryName}/src/boozallen/Utility.groovy", 'package boozallen; class Utility{} ')
+        repo.write("${libraryName}/steps/build.groovy", 'void call(){}')
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -284,14 +285,14 @@ class ScmLibraryProviderSpec extends Specification{
         p.hasLibrary(owner, libraryName)
     }
 
-    def "hasLibrary returns false if only resources directory present"(){
+    def "hasLibrary returns false if only resources directory present"() {
         given:
         ScmLibraryProvider p = new ScmLibraryProvider()
-        String libraryName = "someLibrary"
+        String libraryName = 'someLibrary'
         repo.init()
-        repo.write("${libraryName}/resources/boozallen/Utility.groovy", "package boozallen; class Utility{} ")
-        repo.git("add", "*")
-        repo.git("commit", "--message=init")
+        repo.write("${libraryName}/resources/boozallen/Utility.groovy", 'package boozallen; class Utility{} ')
+        repo.git('add', '*')
+        repo.git('commit', '--message=init')
         GitSCM scm = createSCM(repo)
         p.setScm(scm)
 
@@ -308,10 +309,10 @@ class ScmLibraryProviderSpec extends Specification{
         !p.hasLibrary(owner, libraryName)
     }
 
-    GitSCM createSCM(GitSampleRepoRule _repo){
+    GitSCM createSCM(GitSampleRepoRule _repo) {
         return new GitSCM(
             GitSCM.createRepoList(_repo.toString(), null),
-            Collections.singletonList(new BranchSpec("*/master")),
+            Collections.singletonList(new BranchSpec('*/master')),
             false,
             Collections.<SubmoduleConfig>emptyList(),
             null,

@@ -25,17 +25,17 @@ import org.jvnet.hudson.test.JenkinsRule
 /**
  * provides common utility methods to tests
  */
-class TestUtil{
+class TestUtil {
 
     /**
      * creates a Pipeline Job with JTE via AdHocTemplateFlowDefinition
      * @param args named parameters.  template and config expected keys
      * @param jenkins the JenkinsRule for the test
      */
-    static WorkflowJob createAdHoc(LinkedHashMap args, JenkinsRule jenkins, String name = null){
+    static WorkflowJob createAdHoc(LinkedHashMap args, JenkinsRule jenkins, String name = null) {
         WorkflowJob job =  name ? jenkins.createProject(WorkflowJob, name) : jenkins.createProject(WorkflowJob)
-        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(args.containsKey("config"), args.config)
-        ConsoleDefaultPipelineTemplate pipelineTemplate = new ConsoleDefaultPipelineTemplate(args.containsKey("template"), args.template)
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(args.containsKey('config'), args.config)
+        ConsoleDefaultPipelineTemplate pipelineTemplate = new ConsoleDefaultPipelineTemplate(args.containsKey('template'), args.template)
         def templateConfiguration = new ConsoleAdHocTemplateFlowDefinitionConfiguration(pipelineTemplate, pipelineConfig)
 
         def definition = new AdHocTemplateFlowDefinition(templateConfiguration)
@@ -47,8 +47,8 @@ class TestUtil{
      * asserts the strings listed in @param order appear
      * in the @param log in the specified order
      */
-    static void assertOrder(String log, ArrayList order){
-        assert log ==~ /(?s).*${order.join(".*")}.*/ :
+    static void assertOrder(String log, ArrayList order) {
+        assert log ==~ /(?s).*${order.join('.*')}.*/ :
         "Strings ${order.inspect()} do not appear in the order specified in:\n${log.trim()}"
     }
 

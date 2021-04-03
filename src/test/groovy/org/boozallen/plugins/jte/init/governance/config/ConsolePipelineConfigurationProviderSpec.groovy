@@ -21,24 +21,24 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import spock.lang.Specification
 
-class ConsolePipelineConfigurationProviderSpec extends Specification{
+class ConsolePipelineConfigurationProviderSpec extends Specification {
 
-    def "when pipeline configuration is provided getConfig returns correct config object"(){
+    def "when pipeline configuration is provided getConfig returns correct config object"() {
         given:
-        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(true, "a =1 ")
+        ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(true, 'a =1 ')
         ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(false, null)
 
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
         // mocks necessary to parse config
-        FlowExecutionOwner mockOwner = GroovyMock{
+        FlowExecutionOwner mockOwner = GroovyMock {
             run() >> GroovyMock(WorkflowRun)
             asBoolean() >> true
         }
 
         EnvActionImpl env = Mock()
-        env.getProperty("someField") >> "envProperty"
+        env.getProperty('someField') >> 'envProperty'
 
         GroovySpy(EnvActionImpl, global:true)
         EnvActionImpl.forRun(_) >> env
@@ -50,7 +50,7 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
         conf.getConfig() == [ a: 1 ]
     }
 
-    def "when pipeline configuration is not provided getConfig returns null"(){
+    def "when pipeline configuration is not provided getConfig returns null"() {
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(false, null)
@@ -58,13 +58,13 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
         def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
         // mocks necessary to parse config
-        FlowExecutionOwner mockOwner = GroovyMock{
+        FlowExecutionOwner mockOwner = GroovyMock {
             run() >> GroovyMock(WorkflowRun)
             asBoolean() >> true
         }
 
         EnvActionImpl env = Mock()
-        env.getProperty("someField") >> "envProperty"
+        env.getProperty('someField') >> 'envProperty'
 
         GroovySpy(EnvActionImpl, global:true)
         EnvActionImpl.forRun(_) >> env
@@ -76,11 +76,11 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
         conf == null
     }
 
-    def "When Jenkinsfile is provided, getJenkinsfile returns Jenkinsfile"(){
+    def "When Jenkinsfile is provided, getJenkinsfile returns Jenkinsfile"() {
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(false, null)
-        ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(true, "default jenkinsfile")
+        ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(true, 'default jenkinsfile')
 
         def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
@@ -88,50 +88,50 @@ class ConsolePipelineConfigurationProviderSpec extends Specification{
         String jenkinsfile = c.getJenkinsfile()
 
         then:
-        jenkinsfile == "default jenkinsfile"
+        jenkinsfile == 'default jenkinsfile'
     }
 
-    def "fetch nonexistent named template returns null"(){
+    def "fetch nonexistent named template returns null"() {
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = []
         ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(false, null)
         ConsoleDefaultPipelineTemplate template = new ConsoleDefaultPipelineTemplate(false, null)
         def c = new ConsolePipelineConfigurationProvider(template, pipelineConfig, pipelineCatalog)
 
-        FlowExecutionOwner mockOwner = GroovyMock{
+        FlowExecutionOwner mockOwner = GroovyMock {
             run() >> GroovyMock(WorkflowRun)
             asBoolean() >> true
         }
 
         when:
-        String namedTemplate = c.getTemplate(mockOwner, "nonexistent")
+        String namedTemplate = c.getTemplate(mockOwner, 'nonexistent')
 
         then:
         namedTemplate == null
     }
 
-    def "fetch named template returns correct template"(){
+    def "fetch named template returns correct template"() {
         given:
         List<ConsoleNamedPipelineTemplate> pipelineCatalog = [
             new ConsoleNamedPipelineTemplate(
-                name: "myCoolTemplate",
-                template: "named template!"
+                name: 'myCoolTemplate',
+                template: 'named template!'
             )
         ]
         def c = new ConsolePipelineConfigurationProvider(new ConsoleDefaultPipelineTemplate(false, null),
                 new ConsolePipelineConfiguration(false, null),
                 pipelineCatalog)
 
-        FlowExecutionOwner mockOwner = GroovyMock{
+        FlowExecutionOwner mockOwner = GroovyMock {
             run() >> GroovyMock(WorkflowRun)
             asBoolean() >> true
         }
 
         when:
-        String namedTemplate = c.getTemplate(mockOwner, "myCoolTemplate")
+        String namedTemplate = c.getTemplate(mockOwner, 'myCoolTemplate')
 
         then:
-        namedTemplate == "named template!"
+        namedTemplate == 'named template!'
     }
 
 }

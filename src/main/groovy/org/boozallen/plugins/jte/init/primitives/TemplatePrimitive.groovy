@@ -41,22 +41,6 @@ abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
     String name
     TemplatePrimitiveNamespace parent
 
-    protected void isOverloaded(){
-        if(!overloaded.isEmpty()){
-            TemplateLogger logger = TemplateLogger.createDuringRun()
-            List<String> msg = [
-                    "Attempted to access an overloaded primitive:  ${getName()}",
-                    "Please use fully qualified names to access the primitives.",
-                    "options: "
-            ]
-            overloaded.each{ primitive ->
-                msg.push("- ${primitive.getParentChain()}")
-            }
-            logger.printError(msg.join("\n"))
-            throw new JTEException("Attempted to access an overloaded primitive: ${getName()}")
-        }
-    }
-
     @Override
     @NonCPS
     Object getValue(@Nonnull CpsScript script) throws Exception {
@@ -77,6 +61,22 @@ abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
         }
         parts.push(TemplatePrimitiveCollector.JTEVar.KEY)
         return parts.reverse().join(".")
+    }
+
+    protected void isOverloaded(){
+        if(!overloaded.isEmpty()){
+            TemplateLogger logger = TemplateLogger.createDuringRun()
+            List<String> msg = [
+                    "Attempted to access an overloaded primitive:  ${getName()}",
+                    "Please use fully qualified names to access the primitives.",
+                    "options: "
+            ]
+            overloaded.each{ primitive ->
+                msg.push("- ${primitive.getParentChain()}")
+            }
+            logger.printError(msg.join("\n"))
+            throw new JTEException("Attempted to access an overloaded primitive: ${getName()}")
+        }
     }
 
 }

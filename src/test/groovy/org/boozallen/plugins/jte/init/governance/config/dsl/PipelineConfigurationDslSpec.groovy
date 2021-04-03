@@ -23,30 +23,30 @@ import spock.lang.Specification
 class PipelineConfigurationDslSpec extends Specification {
 
     EnvVars env = GroovyMock(EnvVars)
-    PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner){
-        run() >> GroovyMock(WorkflowRun){
+    PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner) {
+        run() >> GroovyMock(WorkflowRun) {
             getEnvironment(_) >> env
         }
         asBoolean() >> true
     })
 
-    def "include Jenkins env var in configuration"(){
+    def "include Jenkins env var in configuration"() {
         setup:
-        env.get("someField", _) >> "envProperty"
-        String config = "a = env.someField"
+        env.get('someField', _) >> 'envProperty'
+        String config = 'a = env.someField'
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.config == [ a: "envProperty" ]
+        configObject.config == [ a: 'envProperty' ]
         configObject.merge.isEmpty()
         configObject.override.isEmpty()
     }
 
-    def 'Empty Config File'(){
+    def 'Empty Config File'() {
         setup:
-        String config = ""
+        String config = ''
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
@@ -57,13 +57,13 @@ class PipelineConfigurationDslSpec extends Specification {
         configObject.override.isEmpty()
     }
 
-    def 'Flat Keys Configuration'(){
+    def 'Flat Keys Configuration'() {
         setup:
-        String config = """
+        String config = '''
         a = 3
         b = "hi"
         c = true
-        """
+        '''
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
@@ -71,14 +71,14 @@ class PipelineConfigurationDslSpec extends Specification {
         then:
         configObject.config == [
             a: 3,
-            b: "hi",
+            b: 'hi',
             c: true
         ]
     }
 
-    def 'Nested Keys Configuration'(){
+    def 'Nested Keys Configuration'() {
         setup:
-        String config = """
+        String config = '''
         random = "hi"
         application_environments{
             dev{
@@ -93,14 +93,14 @@ class PipelineConfigurationDslSpec extends Specification {
                 field = "hey"
             }
         }
-        """
+        '''
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
         configObject.config == [
-            random: "hi",
+            random: 'hi',
             application_environments: [
                 dev: [
                     field: true
@@ -111,93 +111,93 @@ class PipelineConfigurationDslSpec extends Specification {
             ],
             blah: [
                 another: [
-                    field: "hey"
+                    field: 'hey'
                 ]
             ]
         ]
     }
 
-    def 'One Merge First Key'(){
+    def 'One Merge First Key'() {
         setup:
-        String config = "@merge application_environments{}"
+        String config = '@merge application_environments{}'
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.merge == [ "application_environments" ] as Set
+        configObject.merge == [ 'application_environments' ] as Set
     }
 
-    def 'One Merge Nested Key'(){
+    def 'One Merge Nested Key'() {
         setup:
-        String config = """
+        String config = '''
         application_environments{
             @merge dev{}
         }
-        """
+        '''
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.merge == [ "application_environments.dev" ] as Set
+        configObject.merge == [ 'application_environments.dev' ] as Set
     }
 
-    def 'Multi-Merge'(){
+    def 'Multi-Merge'() {
         setup:
-        String config = """
+        String config = '''
         application_environments{
             @merge dev{}
             @merge test{}
         }
-        """
+        '''
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.merge == [ "application_environments.dev", "application_environments.test" ] as Set
+        configObject.merge == [ 'application_environments.dev', 'application_environments.test' ] as Set
     }
 
-    def 'One Override First Key'(){
+    def 'One Override First Key'() {
         when:
-        String config = "@override application_environments{}"
+        String config = '@override application_environments{}'
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.override == [ "application_environments" ] as Set
+        configObject.override == [ 'application_environments' ] as Set
     }
 
-    def 'One Override Nested Key'(){
+    def 'One Override Nested Key'() {
         when:
-        String config = """
+        String config = '''
         application_environments{
             @override dev{}
         }
-        """
+        '''
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.override == [ "application_environments.dev" ] as Set
+        configObject.override == [ 'application_environments.dev' ] as Set
     }
 
-    def 'Multi-Override'(){
+    def 'Multi-Override'() {
         setup:
-        String config = """
+        String config = '''
         application_environments{
             @override dev{}
             @override test{}
         }
-        """
+        '''
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.override == [ "application_environments.dev", "application_environments.test" ] as Set
+        configObject.override == [ 'application_environments.dev', 'application_environments.test' ] as Set
     }
 
-    def 'File Access Throws Security Exception'(){
+    def 'File Access Throws Security Exception'() {
         setup:
         String config = 'password = new File("/etc/passwd").text'
 
@@ -208,9 +208,9 @@ class PipelineConfigurationDslSpec extends Specification {
         thrown(SecurityException)
     }
 
-    def "nested blank entry results in empty hashmap"(){
+    def "nested blank entry results in empty hashmap"() {
         setup:
-        String config = "application_environments{ dev }"
+        String config = 'application_environments{ dev }'
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
@@ -223,9 +223,9 @@ class PipelineConfigurationDslSpec extends Specification {
         ]
     }
 
-    def "root blank entry results in empty hashmap"(){
+    def "root blank entry results in empty hashmap"() {
         setup:
-        String config = "field"
+        String config = 'field'
 
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
@@ -234,9 +234,9 @@ class PipelineConfigurationDslSpec extends Specification {
         configObject.getConfig() == [ field: [:] ]
     }
 
-    def "syntax validation for unquoted values"(){
+    def "syntax validation for unquoted values"() {
         setup:
-        String config = "a = b"
+        String config = 'a = b'
 
         when:
         dsl.parse(config)
@@ -246,13 +246,13 @@ class PipelineConfigurationDslSpec extends Specification {
         ex.message.contains('did you mean: a = "b"')
     }
 
-    def "syntax validation for setting configs equal to blocks"(){
+    def "syntax validation for setting configs equal to blocks"() {
         setup:
-        String config = """
+        String config = '''
         a = b{
             field = true
         }
-        """
+        '''
 
         when:
         dsl.parse(config)
@@ -261,11 +261,11 @@ class PipelineConfigurationDslSpec extends Specification {
         thrown(TemplateConfigException)
     }
 
-    def "array lists are appropriately serialized"(){
+    def "array lists are appropriately serialized"() {
         setup:
         String config = "field = [ 'a', 'b-c', 'c d' ]"
         Map expectedConfig = [
-            field: [ "a", "b-c", 'c d' ]
+            field: [ 'a', 'b-c', 'c d' ]
         ]
         def originalConfig, reparsedConfig
 
@@ -278,7 +278,7 @@ class PipelineConfigurationDslSpec extends Specification {
         reparsedConfig.config == expectedConfig
     }
 
-    def "maps keys are appropriately serialized"(){
+    def "maps keys are appropriately serialized"() {
         setup:
         String config = "field = [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]"
         Map expectedConfig = [
@@ -292,12 +292,12 @@ class PipelineConfigurationDslSpec extends Specification {
         reparsedConfig = dsl.parse(serializeText)
 
         then:
-        serializeText.contains("[")
+        serializeText.contains('[')
         originalConfig.config == expectedConfig
         reparsedConfig.config == expectedConfig
     }
 
-    def "maps and blocks are appropriately serialized"(){
+    def "maps and blocks are appropriately serialized"() {
         setup:
         String config = """field = [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ]
 keywords{
@@ -306,7 +306,7 @@ keywords{
 """
         Map expectedConfig = [
                 field: [ 'a': 'String a', 'b-c' : 'String b-c', 'c d' : 'String c d' ],
-                keywords: [ 'dev': "/[Dd]ev[elop|eloper]?/" ]
+                keywords: [ 'dev': '/[Dd]ev[elop|eloper]?/' ]
         ]
         def originalConfig, reparsedConfig, serializeText
 
@@ -316,16 +316,16 @@ keywords{
         reparsedConfig = dsl.parse(serializeText)
 
         then:
-        serializeText.contains("[")
-        serializeText.contains("{")
+        serializeText.contains('[')
+        serializeText.contains('{')
         originalConfig.config == expectedConfig
         reparsedConfig.config == expectedConfig
     }
 
-    def "Double Quote String block keys with hyphens are appropriately serialized"(){
+    def "Double Quote String block keys with hyphens are appropriately serialized"() {
         setup:
         String config = "\"some-block\"{}"
-        Map expectedConfig = [ "some-block": [:] ]
+        Map expectedConfig = [ 'some-block': [:] ]
         def originalConfig, reparsedConfig
 
         when:
@@ -337,10 +337,10 @@ keywords{
         reparsedConfig.config == expectedConfig
     }
 
-    def "Single Quote String block keys with hyphens are appropriately serialized"(){
+    def "Single Quote String block keys with hyphens are appropriately serialized"() {
         setup:
         String config = "'some-block'{}"
-        Map expectedConfig = [ "some-block": [:] ]
+        Map expectedConfig = [ 'some-block': [:] ]
         def originalConfig, reparsedConfig
 
         when:
