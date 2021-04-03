@@ -124,3 +124,13 @@ sourceSets {
 groovydoc{
     source fileTree("src/main/groovy")
 }
+
+/**
+ * this is necessary so that the groovydocs show up as the javadocs
+ * on the jenkins plugin site
+ */
+task javadocJar(type: Jar) {
+    description "An archive of the JavaDocs for Maven Central"
+    classifier "javadoc"
+    from groovydoc
+}
