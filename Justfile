@@ -68,6 +68,52 @@ release version branch=`git branch --show-current`:
   # publish the JPI
   ./gradlew publish
 
+# when done with a branch in your fork, run `just finish` to delete the local/remote branch and resync with upstream
+finish:
+  #!/bin/bash
+
+  # make sure we arent deleting main or a release branch
+  current_branch=$(git rev-parse --abbrev-ref HEAD)
+  if [[ "${current_branch}" =~ (main|release/.*) ]]; then 
+    echo "you probably shouldn't delete ${current_branch}"
+    echo "this recipe is for feature branches on your fork"
+    exit 1
+  fi 
+
+  # make sure there arent local changes
+  if ! git diff-index --quiet HEAD --; then
+    echo "There are local changes: "
+    git status 
+    exit 1
+  fi 
+
+  # confirm theres a remote called origin
+  remotes=($(git remote))
+  if [[ ! " ${remotes[@]} " =~ " origin " ]]; then
+    echo "missing git remote origin"
+    exit 1
+  fi
+
+  # confirm theres a remote called upstream 
+  # and that its pointing at the right repo
+  if [[ " ${remotes[@]} " =~ " upstream " ]]; then
+    upstream_url=$(git remote get-url upstream)
+    if [[ ! "${upstream_url}" =~ "jenkinsci/templating-engine-plugin" ]]; then
+      echo "Git upstream url doesn't seem right: ${upstream_url}"
+      exit 1
+    fi
+  else 
+    echo "Missing git remote upstream"
+    exit 1
+  fi
+
+  # re-sync main & delete the previous branch
+  git fetch -a 
+  git checkout main
+  git merge upstream/main
+  git branch -d $current_branch
+  git push origin --delete $current_branch
+ 
 # run a containerized jenkins instace
 run flags='': 
   docker pull jenkins/jenkins:lts
