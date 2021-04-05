@@ -111,6 +111,7 @@ finish:
   git fetch -a 
   git checkout main
   git merge upstream/main
+  git push origin main
   git branch -d $current_branch
   git push origin --delete $current_branch
  
