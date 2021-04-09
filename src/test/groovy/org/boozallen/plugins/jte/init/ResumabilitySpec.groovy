@@ -34,12 +34,14 @@ class ResumabilitySpec extends Specification {
         libProvider.addStep('gradle', 'build', '''
         void call(){
             println "build step from test gradle library"
+            node{
+                sh "echo hi"
+            }
         }
         ''')
         story.then { jenkins -> libProvider.addGlobally() }
     }
 
-    @Ignore
     def "Pipeline resumes after graceful restart"() {
         when:
         story.then { jenkins ->
@@ -58,13 +60,13 @@ class ResumabilitySpec extends Specification {
         story.then { jenkins ->
             SemaphoreStep.success('wait/1', true)
             WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
-            WorkflowRun b = p.getLastBuild()
-            jenkins.waitForCompletion(b)
-            jenkins.assertLogContains('running after sleep', b)
+            WorkflowRun run = p.getLastBuild()
+            jenkins.waitForCompletion(run)
+            jenkins.assertBuildStatusSuccess(run)
+            jenkins.assertLogContains('running after sleep', run)
         }
     }
 
-    @Ignore
     def "Stages succeed after pipeline graceful restart"() {
         when:
         story.then { jenkins ->
@@ -76,6 +78,7 @@ class ResumabilitySpec extends Specification {
                 template: '''
                 println "running before sleep"
                 semaphore "wait"
+                println "running after sleep"
                 ci()
                 ''', jenkins, 'p'
             )
@@ -87,9 +90,10 @@ class ResumabilitySpec extends Specification {
         story.then { jenkins ->
             SemaphoreStep.success('wait/1', true)
             WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
-            WorkflowRun b = p.getLastBuild()
-            jenkins.waitForCompletion(b)
-            jenkins.assertLogContains('build step from test gradle library', b)
+            WorkflowRun run = p.getLastBuild()
+            jenkins.waitForCompletion(run)
+            jenkins.assertBuildStatusSuccess(run)
+            jenkins.assertLogContains('build step from test gradle library', run)
         }
     }
 

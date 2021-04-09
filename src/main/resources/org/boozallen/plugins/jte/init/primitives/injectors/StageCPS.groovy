@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import com.cloudbees.groovy.cps.NonCPS
 import groovy.transform.InheritConstructors
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
@@ -38,17 +39,22 @@ class StageCPS extends Stage{
         } else {
             stageArgs = args as Map
         }
-        TemplatePrimitiveCollector primitiveCollector = TemplatePrimitiveCollector.current()
         StageContext stageContext = new StageContext(name: getName(), args: stageArgs)
-        getSteps().each{ step ->
-            List<StepWrapper> s = primitiveCollector.getStep(step)
+        getSteps().each{ stepName ->
+            List<StepWrapper> s = this.getStepWrappers(stepName)
             if(s.size() > 1){
-                throw new JTEException("Found more than one step for '${step}'")
+                throw new JTEException("Found more than one step for '${stepName}'")
             }
-            StepWrapper clone = s.first()
+            StepWrapper clone = s.first().clone()
             clone.setStageContext(stageContext)
             clone.getValue().call()
         }
+    }
+
+    @NonCPS
+    List<StepWrapper> getStepWrappers(String stepName){
+        TemplatePrimitiveCollector primitiveCollector = TemplatePrimitiveCollector.current()
+        return primitiveCollector.getSteps(stepName)
     }
 
 }

@@ -46,7 +46,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             if (primitiveCollector.hasStep(stepName)){
                 ArrayList msg = [
                     "Configured step ${stepName} ignored.",
-                    "-- Loaded by the ${primitiveCollector.getStep(stepName).library} Library."
+                    "-- Loaded by the ${primitiveCollector.getSteps(stepName).library} Library."
                 ]
                 logger.printWarning msg.join("\n")
             } else { // otherwise go ahead and create the default step implementation

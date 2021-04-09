@@ -97,10 +97,10 @@ class TemplatePrimitiveCollector extends InvisibleAction{
     }
 
     boolean hasStep(String name){
-        return getStep(name) as boolean
+        return getSteps(name) as boolean
     }
 
-    List<TemplatePrimitive> getStep(String name){
+    List<TemplatePrimitive> getSteps(String name){
         return findAll{ primitive ->
             primitive instanceof StepWrapper &&
             primitive.getName() == name
