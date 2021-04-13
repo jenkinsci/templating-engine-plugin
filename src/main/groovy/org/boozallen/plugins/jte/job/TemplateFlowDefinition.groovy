@@ -57,7 +57,7 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         // For restart from stage.  Needs initializeJTE to be run.
         for (Action a : actions) {
             if (a instanceof CpsFlowFactoryAction2) {
-                return ((CpsFlowFactoryAction2) a).create(this, owner, actions);
+                return ((CpsFlowFactoryAction2) a).create(this, owner, actions)
             }
         }
 
