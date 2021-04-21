@@ -19,10 +19,12 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class ConsolePipelineConfigurationProviderSpec extends Specification {
 
+    @Ignore
     def "when pipeline configuration is provided getConfig returns correct config object"() {
         given:
         ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(true, 'a =1 ')

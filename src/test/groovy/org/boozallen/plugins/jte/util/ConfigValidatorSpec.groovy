@@ -15,10 +15,13 @@
 */
 package org.boozallen.plugins.jte.util
 
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import hudson.model.TaskListener
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+import org.junit.ClassRule
+import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -27,23 +30,16 @@ import spock.lang.Unroll
  */
 class ConfigValidatorSpec extends Specification {
 
-    private ConfigValidator validator
+    @ClassRule @Shared JenkinsRule jenkins = new JenkinsRule()
+    @Shared ConfigValidator validator
 
-    void setup() {
-        EnvActionImpl env = Mock()
-        env.getProperty('someField') >> 'envProperty'
-
-        GroovySpy(EnvActionImpl, global:true)
-        EnvActionImpl.forRun(_) >> env
-
-        FlowExecutionOwner flowOwner = Mock(TestFlowExecutionOwner) {
-            run() >> GroovyMock(WorkflowRun) {
-                getRootDir() >> Mock(File)
-            }
-            getListener() >> Mock(TaskListener) {
-                getLogger() >> Mock(PrintStream)
-            }
-        }
+    def setupSpec(){
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        job.setDefinition(new CpsFlowDefinition("println 'hi'"))
+        job.scheduleBuild2(0).waitForStart()
+        WorkflowRun r = job.getLastBuild()
+        jenkins.waitForCompletion(r)
+        FlowExecutionOwner flowOwner = r.asFlowExecutionOwner()
         validator = new ConfigValidator(flowOwner)
     }
 

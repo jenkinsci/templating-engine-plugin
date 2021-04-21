@@ -15,31 +15,39 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
-import hudson.EnvVars
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+import org.junit.ClassRule
+import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Shared
 import spock.lang.Specification
 
 class PipelineConfigurationDslSpec extends Specification {
 
-    EnvVars env = GroovyMock(EnvVars)
-    PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner) {
-        run() >> GroovyMock(WorkflowRun) {
-            getEnvironment(_) >> env
-        }
-        asBoolean() >> true
-    })
+    @Shared static PipelineConfigurationDsl dsl
+    @ClassRule @Shared JenkinsRule jenkins = new JenkinsRule()
+
+    @SuppressWarnings("AssignmentToStaticFieldFromInstanceMethod")
+    def setupSpec(){
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        job.setDefinition(new CpsFlowDefinition("println 'hi'"))
+        job.scheduleBuild2(0).waitForStart()
+        WorkflowRun r = job.getLastBuild()
+        jenkins.waitForCompletion(r)
+        FlowExecutionOwner flowOwner = r.asFlowExecutionOwner()
+        dsl = new PipelineConfigurationDsl(flowOwner)
+    }
 
     def "include Jenkins env var in configuration"() {
         setup:
-        env.get('someField', _) >> 'envProperty'
-        String config = 'a = env.someField'
-
+        String config = "a = env.BUILD_NUMBER"
         when:
         PipelineConfigurationObject configObject = dsl.parse(config)
 
         then:
-        configObject.config == [ a: 'envProperty' ]
+        configObject.config == [ a: '1' ]
         configObject.merge.isEmpty()
         configObject.override.isEmpty()
     }

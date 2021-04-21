@@ -17,48 +17,45 @@ package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import hudson.model.TaskListener
 import org.boozallen.plugins.jte.util.TestUtil
-import org.jenkinsci.plugins.workflow.cps.EnvActionImpl
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
+import org.junit.ClassRule
+import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Shared
 import spock.lang.Specification
 
 class PipelineConfigurationObjectSpec extends Specification {
 
-    ArrayList templateLogs = []
-    PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(GroovyMock(FlowExecutionOwner) {
-        run() >> GroovyMock(WorkflowRun)
-        getListener() >> GroovyMock(TaskListener) {
-            getLogger() >> Mock(PrintStream) {
-                println(_) >> { msg ->
-                    templateLogs << msg[0]
-                    println msg[0]
-                }
-            }
-        }
-        asBoolean() >> true
-    })
+    @Shared static PipelineConfigurationDsl dsl
+    @ClassRule @Shared JenkinsRule jenkins = new JenkinsRule()
 
     PipelineConfigurationObject aggregatedConfig
+    @Shared List<String> templateLogs = []
 
-    def setup() {
-        EnvActionImpl env = Mock()
-        env.getProperty('someField') >> 'envProperty'
+    @SuppressWarnings("AssignmentToStaticFieldFromInstanceMethod")
+    def setupSpec(){
+        FlowExecutionOwner flowOwner = GroovyMock {
+            run() >> GroovyMock(WorkflowRun)
+            getListener() >> GroovyMock(TaskListener) {
+                getLogger() >> Mock(PrintStream) {
+                    println(_) >> { msg ->
+                        templateLogs << msg[0]
+                        println msg[0]
+                    }
+                }
+            }
+            asBoolean() >> true
+        }
+        dsl = new PipelineConfigurationDsl(flowOwner)
+    }
 
-        GroovySpy(EnvActionImpl, global:true)
-        EnvActionImpl.forRun(_) >> env
-
+    def setup(){
         aggregatedConfig = new PipelineConfigurationObject(dsl.getFlowOwner())
         aggregatedConfig.firstConfig = true
+    }
 
-        /**
-         * at beginning of test.. log to std out:
-         * ============
-         * name of test
-         * ============
-         */
-        String name = specificationContext.currentIteration.name
-        String header = name.collect { '=' }.join('')
-        println "${header}\n${name}\n${header}"
+    def cleanup(){
+        templateLogs.clear()
     }
 
     def "First join results in correct aggregated config"() {

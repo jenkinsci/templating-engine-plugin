@@ -14,11 +14,11 @@ repositories {
 }
 
 group = 'org.jenkins-ci.plugins'
-version = '2.0.4'
+version = '2.2'
 description = 'Allows users to create tool-agnostic, templated pipelines to be shared by multiple teams'
 
 jenkinsPlugin {
-    coreVersion = '2.138.1'
+    coreVersion = '2.176.4'
     shortName = 'templating-engine'
     displayName = 'Templating Engine'
     url = 'https://github.com/jenkinsci/templating-engine-plugin'
@@ -48,6 +48,7 @@ dependencies {
     implementation 'org.jenkins-ci.plugins:scm-api:2.2.7'
     implementation 'org.jenkins-ci.plugins:junit:1.24'
     implementation 'org.jenkins-ci.plugins:github-branch-source:2.5.1'
+    implementation 'org.jenkins-ci.plugins:script-security:1.76'
     implementation 'org.jgrapht:jgrapht-core:1.4.0'
 
     // unit test dependencies

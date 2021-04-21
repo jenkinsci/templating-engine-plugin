@@ -22,6 +22,8 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
 import org.boozallen.plugins.jte.init.primitives.injectors.LibraryNamespace
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationBuilder
+import org.boozallen.plugins.jte.init.governance.config.dsl.DslEnvVar
 
 import java.lang.reflect.Method
 
@@ -36,11 +38,13 @@ import java.lang.reflect.Method
     ]
 
     private final List<Class> permittedReceivers = [
-            TemplatePrimitive,
-            TemplatePrimitiveCollector.JTEVar,
-            TemplatePrimitiveNamespace,
-            LibraryNamespace,
-            HooksWrapper
+        TemplatePrimitive,
+        TemplatePrimitiveCollector.JTEVar,
+        TemplatePrimitiveNamespace,
+        LibraryNamespace,
+        HooksWrapper,
+        PipelineConfigurationBuilder,
+        DslEnvVar
     ]
 
     @Override

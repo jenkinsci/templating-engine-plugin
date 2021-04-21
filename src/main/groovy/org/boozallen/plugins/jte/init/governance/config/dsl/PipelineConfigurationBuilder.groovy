@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import static PipelineConfigurationDsl.ConfigBlockMap
+import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted
 import org.codehaus.groovy.runtime.GStringImpl
 
 /**
@@ -25,6 +26,7 @@ import org.codehaus.groovy.runtime.GStringImpl
  * configuration into a LinkedHashMap and populate a {@link PipelineConfigurationObject}
  * that has been injected into the binding by {@link PipelineConfigurationDsl}.
  */
+@SuppressWarnings('AbstractClassWithPublicConstructor')
 abstract class PipelineConfigurationBuilder extends Script{
 
     List objectStack = []
@@ -32,10 +34,14 @@ abstract class PipelineConfigurationBuilder extends Script{
     Boolean recordMergeKey = false
     Boolean recordOverrideKey = false
 
+    @SuppressWarnings('UnnecessaryConstructor') @Whitelisted PipelineConfigurationBuilder(){
+        super()
+    }
+
     /*
         used purely to catch syntax errors such as:
 
-        1. someone trying to set a configuraiton key to an unquoted string
+        1. someone trying to set a configuration key to an unquoted string
 
             a = b
             vs
@@ -61,15 +67,18 @@ abstract class PipelineConfigurationBuilder extends Script{
 
     }
 
+    @Whitelisted
     void setMergeToTrue(){
         recordMergeKey = true
     }
 
+    @Whitelisted
     void setOverrideToTrue(){
         recordOverrideKey = true
     }
 
     @SuppressWarnings(['MethodParameterTypeRequired', 'NoDef'])
+    @Whitelisted
     BuilderMethod methodMissing(String name, args){
         objectStack.push([:])
         nodeStack.push(name)
@@ -83,7 +92,7 @@ abstract class PipelineConfigurationBuilder extends Script{
         if (objectStack.size()){
             objectStack.last() << [ (nodeName): nodeConfig ]
         } else {
-            pipelineConfig.config << [ (name): nodeConfig]
+            getBinding().getVariable("pipelineConfig").config << [ (name): nodeConfig]
         }
         return BuilderMethod.METHOD_MISSING(name)
     }
@@ -112,7 +121,7 @@ abstract class PipelineConfigurationBuilder extends Script{
         if (objectStack.size()){
             objectStack.last()[name] = v
         } else {
-            pipelineConfig.config[name] = v
+            getBinding().getVariable("pipelineConfig").config[name] = v
         }
     }
 
@@ -121,7 +130,19 @@ abstract class PipelineConfigurationBuilder extends Script{
         if (objectStack.size()){
             objectStack.last()[name] = [:]
         } else {
-            pipelineConfig.config[name] = [:]
+            getBinding().getVariable("pipelineConfig").config[name] = [:]
+        }
+        return BuilderMethod.PROPERTY_MISSING(name)
+    }
+
+    Object getProperty(String name){
+        recordMergeOrOverride(name)
+        if (objectStack.size()){
+            objectStack.last()[name] = [:]
+        } else if (name == "env"){
+            return getBinding().getVariable("env")
+        } else {
+            getBinding().getVariable("pipelineConfig").config[name] = [:]
         }
         return BuilderMethod.PROPERTY_MISSING(name)
     }
@@ -136,11 +157,11 @@ abstract class PipelineConfigurationBuilder extends Script{
             key += (key.length() ? ".${name}" : name)
         }
         if(recordMergeKey){
-            pipelineConfig.merge << key
+            getBinding().getVariable("pipelineConfig").merge << key
             recordMergeKey = false
         }
         if(recordOverrideKey){
-            pipelineConfig.override << key
+            getBinding().getVariable("pipelineConfig").override << key
             recordOverrideKey = false
         }
     }

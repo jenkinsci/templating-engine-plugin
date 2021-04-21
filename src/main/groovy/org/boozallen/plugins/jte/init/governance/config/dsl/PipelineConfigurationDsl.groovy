@@ -16,9 +16,8 @@
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import org.apache.commons.lang.StringEscapeUtils
-import org.codehaus.groovy.control.CompilerConfiguration
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.kohsuke.groovy.sandbox.SandboxTransformer
 
 import java.util.regex.Pattern
 
@@ -37,6 +36,27 @@ class PipelineConfigurationDsl {
 
     }
 
+    /*
+        without this, something like:
+        application_environments{
+          dev
+        }
+
+        results in MissingPropertyException thrown for "dev"
+     */
+    static class DslBinding extends Binding {
+        PipelineConfigurationObject pipelineConfig
+        DslEnvVar env
+
+        @Override Object getVariable(String property){
+            switch (property){
+                case "pipelineConfig": return pipelineConfig
+                case "env": return env
+                default: return PipelineConfigurationBuilder.BuilderMethod.PROPERTY_MISSING
+            }
+        }
+    }
+
     FlowExecutionOwner flowOwner
 
     PipelineConfigurationDsl(FlowExecutionOwner flowOwner){
@@ -50,26 +70,20 @@ class PipelineConfigurationDsl {
 
         PipelineConfigurationObject pipelineConfig = new PipelineConfigurationObject(flowOwner)
         DslEnvVar env = new DslEnvVar(flowOwner)
-        Binding ourBinding = new Binding(
+        DslBinding ourBinding = new DslBinding(
             pipelineConfig: pipelineConfig,
             env: env
         )
 
-        CompilerConfiguration cc = new CompilerConfiguration()
-        cc.addCompilationCustomizers(new SandboxTransformer())
-        cc.scriptBaseClass = PipelineConfigurationBuilder.name
-
-        GroovyShell sh = new GroovyShell(this.getClass().getClassLoader(), ourBinding, cc)
         String processedScriptText = scriptText.replaceAll("@merge", "setMergeToTrue();")
-                                               .replaceAll("@override", "setOverrideToTrue();")
+                .replaceAll("@override", "setOverrideToTrue();")
 
-        DslSandbox sandbox = new DslSandbox(env)
-        sandbox.register()
-        try {
-            sh.evaluate(processedScriptText)
-        } finally {
-            sandbox.unregister()
-        }
+        SecureGroovyScript script = new SecureGroovyScript("""
+@groovy.transform.BaseScript org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationBuilder _
+${processedScriptText}
+""", true)
+        script.configuringWithNonKeyItem()
+        script.evaluate(this.getClass().getClassLoader(), ourBinding, flowOwner.listener)
 
         return pipelineConfig
     }
