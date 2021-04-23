@@ -52,7 +52,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             } else { // otherwise go ahead and create the default step implementation
                 logger.print "Creating step ${stepName} from the default step implementation."
                 StepWrapper step = stepFactory.createDefaultStep(stepName, stepConfig)
-                step.addParent(steps)
+                step.setParent(steps)
                 steps.add(step)
             }
         }
