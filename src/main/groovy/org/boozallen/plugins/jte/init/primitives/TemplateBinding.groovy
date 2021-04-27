@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-import org.boozallen.plugins.jte.init.primitives.injectors.PipelineConfigVariableInjector
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 
