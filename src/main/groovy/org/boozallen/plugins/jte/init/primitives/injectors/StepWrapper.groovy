@@ -18,7 +18,9 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.FilePath
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.JTEException
@@ -86,9 +88,11 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     @Override String getName(){ return name }
     String getLibrary(){ return library }
 
-    @Override
-    Object getValue(CpsScript script){
-        isOverloaded()
+    Object getValue(CpsScript script, Boolean skipOverloaded = false){
+        // if permissive_initialization is true, overloaded is okay
+        if(! skipOverloaded){
+            isOverloaded()
+        }
         Class stepwrapperCPS = getPrimitiveClass()
         def s = stepwrapperCPS.newInstance(
             name: this.name,

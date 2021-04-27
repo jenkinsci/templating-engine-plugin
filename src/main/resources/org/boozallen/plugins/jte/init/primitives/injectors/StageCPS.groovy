@@ -47,7 +47,7 @@ class StageCPS extends Stage{
             }
             StepWrapper clone = s.first().clone()
             clone.setStageContext(stageContext)
-            clone.getValue().call()
+            clone.getValue(null).call()
         }
     }
 
