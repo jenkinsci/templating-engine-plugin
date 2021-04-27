@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.primitives
 
 import org.boozallen.plugins.jte.util.JTEException
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 
 /**
  * Stores a collection of TemplatePrimitives
@@ -38,7 +37,7 @@ class TemplatePrimitiveNamespace implements Serializable {
     Object getProperty(String property){
         TemplatePrimitive primitive = primitives.find{ p -> p.getName() == property }
         if(primitive){
-            return primitive.getValue( (CpsScript) null, true)
+            return primitive.getValue(null, true)
         }
         throw new JTEException("Primitive ${property} not found in ${name}")
     }
