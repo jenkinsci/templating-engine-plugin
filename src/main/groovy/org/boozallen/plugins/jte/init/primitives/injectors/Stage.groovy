@@ -44,6 +44,7 @@ class Stage extends TemplatePrimitive{
         return "Stage '${name}'"
     }
 
+    @SuppressWarnings("UnusedMethodParameter")
     Object getValue(CpsScript script, Boolean skipOverloaded = false){
         if(! skipOverloaded){
             isOverloaded()

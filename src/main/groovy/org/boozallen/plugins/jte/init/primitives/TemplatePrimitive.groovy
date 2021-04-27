@@ -41,6 +41,7 @@ abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
     String name
     TemplatePrimitiveNamespace parent
 
+    @SuppressWarnings("UnusedMethodParameter")
     @NonCPS
     Object getValue(@Nonnull CpsScript script, Boolean skipOverloaded = false) throws Exception {
         if(! skipOverloaded){

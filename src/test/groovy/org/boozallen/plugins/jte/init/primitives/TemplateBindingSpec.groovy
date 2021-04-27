@@ -148,9 +148,9 @@ class TemplateBindingSpec extends Specification {
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
-            libraries{ 
+            libraries{
               maven
-              gradle 
+              gradle
             }
             jte{
               permissive_initialization = true
