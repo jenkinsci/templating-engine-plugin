@@ -141,7 +141,7 @@ class TemplateBindingSpec extends Specification {
 
     def "Invoking overloaded step via namespace works when permissive_initialization is true"(){
         given:
-//        CpsVmExecutorService.FAIL_ON_MISMATCH = false
+        CpsVmExecutorService.FAIL_ON_MISMATCH = false // needed for unit test.
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('maven', 'build', 'void call(){ println "build from maven" }')
         libProvider.addStep('gradle', 'build', 'void call(){ println "build from gradle" }')

@@ -176,17 +176,4 @@ class RestartFromStageSpec extends Specification {
         jenkins.assertLogContains('contents:Hi I was stashed', b2)
     }
 
-    // inspired (lifted) from https://github.com/jenkinsci/pipeline-model-definition-plugin/blob/master/pipeline-model-definition/src/test/java/org/jenkinsci/plugins/pipeline/modeldefinition/actions/RestartDeclarativePipelineActionTest.java#L783-L793
-    private HtmlPage restartFromStageInUI(WorkflowRun original, String stageName) throws Exception {
-        RestartDeclarativePipelineAction action = original.getAction(RestartDeclarativePipelineAction)
-        assert action != null
-        assert action.isRestartEnabled()
-
-        HtmlPage page = jenkins.createWebClient().getPage(original, action.getUrlName())
-        HtmlForm form = page.getFormByName("restart")
-        HtmlSelect select = form.getSelectByName("stageName")
-        select.getOptionByValue(stageName).setSelected(true)
-        return jenkins.submit(form)
-    }
-
 }
