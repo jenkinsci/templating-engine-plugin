@@ -22,6 +22,7 @@ import org.boozallen.plugins.jte.init.primitives.injectors.Keyword
 import org.boozallen.plugins.jte.init.primitives.injectors.Stage
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
@@ -140,6 +141,7 @@ class TemplateBindingSpec extends Specification {
 
     def "Invoking overloaded step via namespace works when permissive_initialization is true"(){
         given:
+//        CpsVmExecutorService.FAIL_ON_MISMATCH = false
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('maven', 'build', 'void call(){ println "build from maven" }')
         libProvider.addStep('gradle', 'build', 'void call(){ println "build from gradle" }')

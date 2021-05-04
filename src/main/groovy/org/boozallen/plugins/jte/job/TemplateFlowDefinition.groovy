@@ -51,15 +51,13 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
 
     @Override
     FlowExecution create(FlowExecutionOwner owner, TaskListener listener, List<? extends Action> actions) throws Exception {
-        FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
-        String template = initializeJTE(owner)
-
-        // For restart from stage.  Needs initializeJTE to be run.
         for (Action a : actions) {
             if (a instanceof CpsFlowFactoryAction2) {
                 return ((CpsFlowFactoryAction2) a).create(this, owner, actions)
             }
         }
+        FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
+        String template = initializeJTE(owner)
 
         return new CpsFlowExecution(template, true, owner, hint)
     }

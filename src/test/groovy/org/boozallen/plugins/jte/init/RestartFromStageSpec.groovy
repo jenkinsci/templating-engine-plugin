@@ -15,11 +15,15 @@
 */
 package org.boozallen.plugins.jte.init
 
+import com.gargoylesoftware.htmlunit.html.HtmlForm
+import com.gargoylesoftware.htmlunit.html.HtmlPage
+import com.gargoylesoftware.htmlunit.html.HtmlSelect
 import hudson.model.Action
 import hudson.model.Cause
 import hudson.model.CauseAction
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartDeclarativePipelineAction
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartFlowFactoryAction
 import org.jenkinsci.plugins.pipeline.modeldefinition.causes.RestartDeclarativePipelineCause
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
@@ -35,41 +39,25 @@ class RestartFromStageSpec extends Specification {
 
     def setup() {
         TestLibraryProvider libProvider = new TestLibraryProvider()
-        libProvider.addStep('resumeTester', 'resumePipeline', '''
+        libProvider.addStep('resumeTester', 'createStash', '''
         void call() {
-            pipeline {
-                agent none
-                    options {
-                    preserveStashes(buildCount: 5)
+            node {
+                def tempdir="${pwd(tmp: true)}/${BUILD_ID}/stashtest"
+                dir(tempdir) {
+                    writeFile file: 'stashtest.txt', text: "Hi I was stashed"
+                    stash name: "jte-stash-test", includes: "stashtest.txt"
                 }
-                stages {
-                    stage('One') {
-                        steps {
-                            script {
-                                node {
-                                    def tempdir="${pwd(tmp: true)}/${BUILD_ID}/stashtest"
-                                    dir(tempdir) {
-                                        writeFile file: 'stashtest.txt', text: "Hi I was stashed"
-                                        stash name: "jte-stash-test", includes: "stashtest.txt"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    stage('Two') {
-                        steps {
-                            script {
-                                node {
-                                    def tempdir="${pwd(tmp: true)}/${BUILD_ID}/stashtest"
-                                    dir(tempdir) {
-                                        unstash name: "jte-stash-test"
-                                        def contents=readFile file: 'stashtest.txt'
-                                        echo "contents:${contents}"
-                                    }
-                                }
-                            }
-                        }
-                    }
+            }
+        }
+        ''')
+        libProvider.addStep('resumeTester', 'useStash', '''
+        void call(){
+            node {
+                def tempdir="${pwd(tmp: true)}/${BUILD_ID}/stashtest"
+                dir(tempdir) {
+                    unstash name: "jte-stash-test"
+                    def contents=readFile file: 'stashtest.txt\'
+                    echo "contents:${contents}"
                 }
             }
         }
@@ -77,12 +65,51 @@ class RestartFromStageSpec extends Specification {
         libProvider.addGlobally()
     }
 
-    def "Restart from stage has stashes"() {
+    def "Restart from stage has stashes when not using steps"() {
         given:
+        String pipeline = '''
+        pipeline {
+          agent none
+          options {
+            preserveStashes(buildCount: 5)
+          }
+          stages {
+            stage('One') {
+              steps {
+                script{
+                  node {
+                    def tempdir="${pwd(tmp: true)}/${BUILD_ID}/stashtest"
+                    dir(tempdir) {
+                      writeFile file: 'stashtest.txt', text: "Hi I was stashed"
+                      stash name: "jte-stash-test", includes: "stashtest.txt"
+                    }
+                  }
+                }
+              }
+            }
+            stage('Two') {
+              steps {
+                script{
+                  node {
+                    def tempdir="${pwd(tmp: true)}/${BUILD_ID}/stashtest"
+                    dir(tempdir) {
+                      unstash name: "jte-stash-test"
+                      def contents=readFile file: 'stashtest.txt'
+                      echo "contents:${contents}"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        '''
+
         WorkflowJob p = TestUtil.createAdHoc(
             config: 'libraries {resumeTester}',
-            template: 'resumePipeline()',
-            jenkins, 'p')
+            template: pipeline,
+            jenkins
+        )
 
         WorkflowRun b = p.scheduleBuild2(0).waitForStart()
         jenkins.waitForCompletion(b)
@@ -93,12 +120,73 @@ class RestartFromStageSpec extends Specification {
         actions.add(new RestartFlowFactoryAction(b.getExternalizableId()))
         actions.add(new CauseAction(new Cause.UserIdCause(), new RestartDeclarativePipelineCause(b, 'Two')))
         WorkflowRun b2 = p.scheduleBuild2(0, actions.toArray(new Action[actions.size()])).waitForStart()
+        jenkins.waitUntilNoActivity()
 
         then:
-        jenkins.waitForCompletion(b2)
         jenkins.assertBuildStatusSuccess(b2)
+        jenkins.assertLogContains("[JTE] Copying loaded primitives from previous run", b2)
         jenkins.assertLogContains('Stage "One" skipped due to this build restarting at stage "Two"', b2)
         jenkins.assertLogContains('contents:Hi I was stashed', b2)
+    }
+
+    def "Restart from stage has stashes when using steps"() {
+        given:
+        String pipeline = '''
+        pipeline {
+          agent none
+          options {
+            preserveStashes(buildCount: 5)
+          }
+          stages {
+            stage('One') {
+              steps {
+                createStash()
+              }
+            }
+            stage('Two') {
+              steps {
+                useStash()
+              }
+            }
+          }
+        }
+        '''
+
+        WorkflowJob p = TestUtil.createAdHoc(
+            config: 'libraries {resumeTester}',
+            template: pipeline,
+            jenkins
+        )
+
+        WorkflowRun b = p.scheduleBuild2(0).waitForStart()
+        jenkins.waitForCompletion(b)
+        jenkins.assertBuildStatusSuccess(b)
+
+        when:
+        List<Action> actions = []
+        actions.add(new RestartFlowFactoryAction(b.getExternalizableId()))
+        actions.add(new CauseAction(new Cause.UserIdCause(), new RestartDeclarativePipelineCause(b, 'Two')))
+        WorkflowRun b2 = p.scheduleBuild2(0, actions.toArray(new Action[actions.size()])).waitForStart()
+        jenkins.waitUntilNoActivity()
+
+        then:
+        jenkins.assertBuildStatusSuccess(b2)
+        jenkins.assertLogContains("[JTE] Copying loaded primitives from previous run", b2)
+        jenkins.assertLogContains('Stage "One" skipped due to this build restarting at stage "Two"', b2)
+        jenkins.assertLogContains('contents:Hi I was stashed', b2)
+    }
+
+    // inspired (lifted) from https://github.com/jenkinsci/pipeline-model-definition-plugin/blob/master/pipeline-model-definition/src/test/java/org/jenkinsci/plugins/pipeline/modeldefinition/actions/RestartDeclarativePipelineActionTest.java#L783-L793
+    private HtmlPage restartFromStageInUI(WorkflowRun original, String stageName) throws Exception {
+        RestartDeclarativePipelineAction action = original.getAction(RestartDeclarativePipelineAction)
+        assert action != null
+        assert action.isRestartEnabled()
+
+        HtmlPage page = jenkins.createWebClient().getPage(original, action.getUrlName())
+        HtmlForm form = page.getFormByName("restart")
+        HtmlSelect select = form.getSelectByName("stageName")
+        select.getOptionByValue(stageName).setSelected(true)
+        return jenkins.submit(form)
     }
 
 }
