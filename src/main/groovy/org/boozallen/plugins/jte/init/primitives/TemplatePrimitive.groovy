@@ -41,10 +41,12 @@ abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
     String name
     TemplatePrimitiveNamespace parent
 
-    @Override
+    @SuppressWarnings("UnusedMethodParameter")
     @NonCPS
-    Object getValue(@Nonnull CpsScript script) throws Exception {
-        isOverloaded()
+    Object getValue(@Nonnull CpsScript script, Boolean skipOverloaded = false) throws Exception {
+        if(! skipOverloaded){
+            isOverloaded()
+        }
         return this
     }
 

@@ -86,9 +86,12 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     @Override String getName(){ return name }
     String getLibrary(){ return library }
 
-    @Override
-    Object getValue(CpsScript script){
-        isOverloaded()
+    @SuppressWarnings("UnusedMethodParameter")
+    Object getValue(CpsScript script, Boolean skipOverloaded = false){
+        // if permissive_initialization is true, overloaded is okay
+        if(! skipOverloaded){
+            isOverloaded()
+        }
         Class stepwrapperCPS = getPrimitiveClass()
         def s = stepwrapperCPS.newInstance(
             name: this.name,

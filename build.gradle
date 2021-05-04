@@ -47,7 +47,6 @@ dependencies {
     implementation 'org.jenkins-ci.plugins:branch-api:2.0.20'
     implementation 'org.jenkins-ci.plugins:scm-api:2.2.7'
     implementation 'org.jenkins-ci.plugins:junit:1.24'
-    implementation 'org.jenkins-ci.plugins:github-branch-source:2.5.1'
     implementation 'org.jenkins-ci.plugins:script-security:1.76'
     implementation 'org.jgrapht:jgrapht-core:1.4.0'
 
