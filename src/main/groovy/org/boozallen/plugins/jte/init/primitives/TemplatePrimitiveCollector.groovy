@@ -19,14 +19,17 @@ import hudson.Extension
 import hudson.model.InvisibleAction
 import hudson.model.Job
 import hudson.model.Run
+import hudson.model.TaskListener
 import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.util.JTEException
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.cps.GlobalVariableSet
+import org.jenkinsci.plugins.workflow.flow.FlowCopier
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
@@ -200,6 +203,42 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         @SuppressWarnings('BooleanMethodReturnsNull')
         @Override Boolean permits(Class<?> c){
             return (c in TemplatePrimitive) ?: null
+        }
+    }
+
+    /**
+     * For replayed or restarted jobs, need to copy over the original Run's
+     * TemplatePrimitiveCollector to skip initialization but preserve primitives
+     */
+    @Extension
+    static class CopyTemplatePrimitiveCollector extends FlowCopier.ByRun {
+        @Override void copy(Run<?,?> original, Run<?,?> copy, TaskListener listener){
+            TemplatePrimitiveCollector collector = original.getAction(TemplatePrimitiveCollector)
+            if(collector != null){
+                TemplateLogger logger = new TemplateLogger(listener)
+                logger.print("Copying loaded primitives from previous run")
+
+                /*
+                 * TBH i don't understand why this is necessary myself.
+                 *
+                 * When restarting a declarative pipeline, without this code, the following exception is thrown:
+                 *   hudson.remoting.ProxyException: java.io.IOException: cannot find current thread
+                 *
+                 * if i had to guess, it's because StepWrapperFactory creates a fake CpsFlowExecution to parse the
+                 * step based on the now PREVIOUS run.  So when re-running the step, that run is completed and the
+                 * thread is gone.
+                 *
+                 * By setting the StepWrapper's script to null, we force a recompilation of the user-provided script
+                 * which sets the thread to this new run's execution, _i think_.
+                 */
+                collector.findAll{ primitive ->
+                    primitive instanceof StepWrapper
+                }.each{ step ->
+                    step.script = null
+                }
+
+                copy.replaceAction(collector)
+            }
         }
     }
 

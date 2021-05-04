@@ -44,8 +44,11 @@ class Stage extends TemplatePrimitive{
         return "Stage '${name}'"
     }
 
-    @Override Object getValue(CpsScript script){
-        isOverloaded()
+    @SuppressWarnings("UnusedMethodParameter")
+    Object getValue(CpsScript script, Boolean skipOverloaded = false){
+        if(! skipOverloaded){
+            isOverloaded()
+        }
         return getCPSClass().newInstance(name: name, steps: steps)
     }
 

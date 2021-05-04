@@ -22,6 +22,7 @@ import org.boozallen.plugins.jte.init.primitives.injectors.Keyword
 import org.boozallen.plugins.jte.init.primitives.injectors.Stage
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
@@ -127,6 +128,7 @@ class TemplateBindingSpec extends Specification {
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains("Failed to set variable 'someStep'", run)
     }
+
     def "Access an overloaded step results in exception"() {
         given:
         StepWrapper step = Spy()
@@ -135,6 +137,40 @@ class TemplateBindingSpec extends Specification {
         then:
         thrown(IllegalStateException) // CpsThread not present. doesn't matter for this test.
         1 * step.isOverloaded()
+    }
+
+    def "Invoking overloaded step via namespace works when permissive_initialization is true"(){
+        given:
+        CpsVmExecutorService.FAIL_ON_MISMATCH = false // needed for unit test.
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('maven', 'build', 'void call(){ println "build from maven" }')
+        libProvider.addStep('gradle', 'build', 'void call(){ println "build from gradle" }')
+        libProvider.addGlobally()
+
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+              maven
+              gradle
+            }
+            jte{
+              permissive_initialization = true
+            }
+            ''',
+            template: '''
+            jte.libraries.maven.build()
+            jte.libraries.gradle.build()
+            '''
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.SUCCESS, run)
+        jenkins.assertLogContains("build from maven", run)
+        jenkins.assertLogContains("build from gradle", run)
     }
 
     /****************************
