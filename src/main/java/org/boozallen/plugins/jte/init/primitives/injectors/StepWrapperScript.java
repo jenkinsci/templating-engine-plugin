@@ -33,6 +33,16 @@ import java.util.LinkedHashMap;
 public abstract class StepWrapperScript extends CpsScript {
 
     /**
+     * The name of the step being executed.
+     */
+    String STEP_NAME;
+
+    /**
+     * Whether or not the step has an aliased name
+     */
+    boolean isAlias;
+
+    /**
      * The library configuration
      */
     LinkedHashMap config = new LinkedHashMap();
@@ -53,6 +63,7 @@ public abstract class StepWrapperScript extends CpsScript {
      */
     private String resourcesPath;
     private String buildRootDir;
+
 
     public StepWrapperScript() throws IOException { super(); }
 
@@ -145,4 +156,14 @@ public abstract class StepWrapperScript extends CpsScript {
             return String.format("Variable name %s is reserved for steps to access library resources", getName());
         }
     }
+
+    public void setSTEP_NAME(String name){
+        this.STEP_NAME = name;
+    }
+    public String getSTEP_NAME(){ return STEP_NAME; }
+
+    public void setIsAlias(boolean isAlias){
+        this.isAlias = isAlias;
+    }
+    public boolean getIsAlias(){ return isAlias; }
 }

@@ -19,6 +19,7 @@ import hudson.FilePath
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
+import org.boozallen.plugins.jte.init.primitives.hooks.StepAlias
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.TemplateLogger
 import hudson.Extension
@@ -63,7 +64,7 @@ class StepWrapperFactory{
      * @param optional {@link HookContext}
      * @return an executable and wired executable script
      */
-    @SuppressWarnings("ParameterCount")
+    @SuppressWarnings(["ParameterCount", "UnnecessaryObjectReferences"])
     StepWrapperScript prepareScript(
             String library,
             String name,
@@ -108,6 +109,7 @@ class StepWrapperFactory{
         script.setConfig(config)
         script.setBuildRootDir(flowOwner.getRootDir())
         script.setResourcesPath("jte/${library}/resources")
+        script.setSTEP_NAME(name)
         stageContext && script.setStageContext(stageContext)
         hookContext  && script.setHookContext(hookContext)
         return script
@@ -129,20 +131,26 @@ class StepWrapperFactory{
         private static final String FLAG = "JTE_STEP"
 
         /**
-         * Customizes th
+         * Sets the base script of library step files
          * @param execution the run's execution
          * @param cc the compiler configuration used to compile the step
          */
         @Override
         void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
             if(execution.hasProperty(FLAG)){
-                // auto import lifecycle hook annotations within steps
-                ImportCustomizer ic = new ImportCustomizer()
-                ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-                cc.addCompilationCustomizers(ic)
-                // set script base class to our own
                 cc.setScriptBaseClass(StepWrapperScript.name)
             }
+        }
+
+        /**
+         * Automagically adds imports to library step files
+         * @param execution
+         * @param ic
+         */
+        @Override
+        void customizeImports(CpsFlowExecution execution, ImportCustomizer ic){
+            ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
+            ic.addImport(StepAlias.getName())
         }
 
         @Override

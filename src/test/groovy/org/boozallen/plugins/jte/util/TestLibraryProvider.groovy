@@ -24,6 +24,12 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 class TestLibraryProvider extends LibraryProvider {
 
+    static void removeLibrarySources() {
+        TemplateGlobalConfig global = TemplateGlobalConfig.get()
+        GovernanceTier tier = global.getTier()
+        tier.setLibrarySources([])
+    }
+
     ArrayList<TestLibrary> libraries = []
 
     static void wipeAllLibrarySources() {

@@ -40,6 +40,11 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     String name
 
     /**
+     * Whether or not the step is the result of @StepAlias
+     */
+    boolean isAlias
+
+    /**
      * The name of the library that's contributed the step
      */
     protected String library
@@ -95,6 +100,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         Class stepwrapperCPS = getPrimitiveClass()
         def s = stepwrapperCPS.newInstance(
             name: this.name,
+            isAlias: this.isAlias,
             library: this.library,
             sourceText: this.sourceText,
             sourceFile: this.sourceFile,
@@ -106,6 +112,8 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         )
         s.getScript().setStageContext(this.stageContext)
         s.getScript().setHookContext(this.hookContext)
+        s.getScript().setSTEP_NAME(this.name)
+        s.getScript().setIsAlias(this.isAlias)
         return s
     }
 
@@ -124,25 +132,27 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
     @SuppressWarnings("UnnecessaryObjectReferences")
     Object clone(){
         Object that = super.clone()
+        that.script = getScript()
         that.name = this.name
+        that.script.setSTEP_NAME(this.name)
         that.library = this.library
         that.sourceText = this.sourceText
         that.sourceFile = this.sourceFile
         that.config = this.config
+        that.isAlias = this.isAlias
+        that.script.setIsAlias(this.isAlias)
         that.isLibraryStep = this.isLibraryStep
         that.isDefaultStep = this.isDefaultStep
         that.isTemplateStep = this.isTemplateStep
-        that.script = getScript()
         that.script.setStageContext(this.stageContext)
         that.script.setHookContext(this.hookContext)
+
         return that
     }
 
     /*
      * memoized getter.
-     * impl will be null:
-     *  1. prior to first invocation
-     *  2. after a pipeline is resumed following an ungraceful shut down
+     * impl will be null after a pipeline is resumed following an ungraceful shut down
      */
     StepWrapperScript getScript(){
         script = script ?: parseSource()
@@ -151,12 +161,10 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
 
     void setStageContext(StageContext stageContext){
         this.stageContext = stageContext
-        getScript().setStageContext(stageContext)
     }
 
     void setHookContext(HookContext hookContext){
         this.hookContext = hookContext
-        getScript().setHookContext(hookContext)
     }
 
     /**
