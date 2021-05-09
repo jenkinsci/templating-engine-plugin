@@ -9,3 +9,4 @@
 * xref:lifecycle_hooks.adoc[Lifecycle Hooks]
 * xref:parameterizing_libraries.adoc[Parameterizing Libraries]
 * xref:library_resources.adoc[Accessing Library Resources]
+* xref:step_aliasing.adoc[Step Aliasing]
