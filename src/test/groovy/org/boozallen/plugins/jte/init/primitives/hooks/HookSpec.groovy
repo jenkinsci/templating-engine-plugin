@@ -215,7 +215,6 @@ class HookSpec extends Specification {
             println "step: bar"
         }
         ''')
-        libProvider.addStep('someLibrary', 'aStep', "void call(){ println 'the actual step' }")
         libProvider.addGlobally()
 
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
@@ -233,7 +232,6 @@ class HookSpec extends Specification {
 
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogNotContains('step: bar', run)
     }
 
     @Unroll
