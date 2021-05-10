@@ -23,7 +23,7 @@ void call(){
 
 === Multiple Static Aliases
 
-`@StepAlias` can also accpet an array of Strings to alias the step to multiple names.
+`@StepAlias` can also accept an array of Strings to alias the step to multiple names.
 
 .generic.groovy
 [source, groovy]
