@@ -24,7 +24,6 @@ import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
-import org.boozallen.plugins.jte.init.primitives.hooks.StepAlias
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
@@ -113,16 +112,17 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             library.setParent(libCollector)
             jteDir.list(includes).each{ stepFile ->
                 StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig)
-                if(shouldKeepOriginal(step, flowOwner)) {
+                StepAlias alias = getStepAlias(step)
+                if(shouldKeepOriginal(alias)) {
                     step.setParent(library)
                     library.add(step)
                 }
-                Set<String> stepAliases = retrieveStepAliases(step, flowOwner)
+                Set<String> stepAliases = retrieveStepAliases(step, alias, flowOwner)
                 if(!stepAliases.isEmpty()) {
-                    stepAliases.each{ alias ->
+                    stepAliases.each{ aliasString ->
                         StepWrapper clone = step.clone()
                         clone.setParent(library)
-                        clone.setName(alias)
+                        clone.setName(aliasString)
                         clone.setIsAlias(true)
                         library.add(clone)
                     }
@@ -150,66 +150,74 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
      * @return whether or not to keep the original step name
      */
     @SuppressWarnings("UnusedPrivateMethodParameter")
-    private boolean shouldKeepOriginal(StepWrapper step, FlowExecutionOwner flowOwner){
-        // TODO: we should log inconsistent values if defined on multiple @StepAlias annotations
-        //       across different methods
-        boolean keepOriginal = true
-        step.getScript().class.methods.each { method ->
-            StepAlias aliasAnnotation = method.getAnnotation(StepAlias)
-            if (aliasAnnotation != null) {
-                keepOriginal = aliasAnnotation.keepOriginal()
-            }
-        }
-        return keepOriginal
+    private boolean shouldKeepOriginal(StepAlias alias){
+        return alias ? alias.keepOriginal() : true
     }
 
-    @SuppressWarnings("NestedBlockDepth")
-    private Set<String> retrieveStepAliases(StepWrapper step, FlowExecutionOwner flowOwner){
+    private Set<String> retrieveStepAliases(StepWrapper step, StepAlias alias, FlowExecutionOwner flowOwner){
+        if(alias == null) {
+            return []
+        }
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         List<String> aliasList = []
-        step.getScript().class.methods.each{ method ->
-            StepAlias aliasAnnotation = method.getAnnotation(StepAlias)
-            if(aliasAnnotation != null){
-                // handle static aliases
-                aliasList.addAll(aliasAnnotation.value())
-                // handle dynamic aliases
-                Binding b = new Binding([config: step.getScript().getConfig()])
-                Closure c = aliasAnnotation.dynamic().newInstance(b, b)
-                try{
-                    Object result = c.call()
-                    switch(result.getClass()){
-                        case String:
-                            aliasList.add(result)
-                            break
-                        case GStringImpl:
-                            aliasList.add(result.toString())
-                            break
-                        case Collection:
-                            result.each{ alias ->
-                                if(alias instanceof String){
-                                    aliasList.add(alias)
-                                } else if (alias instanceof GStringImpl){
-                                    aliasList.add(alias.toString())
-                                } else {
-                                    throw new JTEException("@StepAlias Dynamic closure returned a collection with non-string element: ${result}")
-                                }
-                            }
-                            break
-                        case NullObject:
-                            break
-                        default:
-                            throw new JTEException("@StepAlias Dynamic closure must return a string, received: ${result.getClass()}")
+        // handle static aliases
+        aliasList.addAll(alias.value())
+        // handle dynamic aliases
+        Binding b = new Binding([config: step.getScript().getConfig()])
+        Closure c = alias.dynamic().newInstance(b, b)
+        try{
+            Object result = c.call()
+            switch(result.getClass()){
+                case String:
+                    aliasList.add(result)
+                    break
+                case GStringImpl:
+                    aliasList.add(result.toString())
+                    break
+                case Collection:
+                    result.each{ r ->
+                        if(r instanceof String){
+                            aliasList.add(r)
+                        } else if (r instanceof GStringImpl){
+                            aliasList.add(r.toString())
+                        } else {
+                            throw new JTEException("@StepAlias Dynamic closure returned a collection with non-string element: ${result}")
+                        }
                     }
-                } catch(any){
-                    logger.printError("Error evaluating @StepAlias dynamic closure for [ library: ${step.library}, step: ${step.name}, method: ${method.name} ]")
-                    throw any
-                }
+                    break
+                case NullObject:
+                    break
+                default:
+                    throw new JTEException("@StepAlias Dynamic closure must return a string, received: ${result.getClass()}")
             }
+        } catch(any){
+            logger.printError("Error evaluating @StepAlias dynamic closure for the ${step.library}'s ${step.name} step")
+            throw any
         }
         if(aliasList.isEmpty()){
-            logger.printWarning("@StepAlias for [ library: ${step.library}, step: ${step.name} ] has no aliases.")
+            logger.printWarning("@StepAlias did not define any aliases for the ${step.library}'s ${step.name} step")
         }
         return aliasList
+    }
+
+    /**
+     * Gets a @StepAlias if present
+     * returns null if no @StepAlias
+     * throws exception if multiple alias annotations
+     */
+    StepAlias getStepAlias(StepWrapper step){
+        List<StepAlias> annotations = step.getScript().class.methods.collect{method ->
+            method.getAnnotation(StepAlias)
+        } - null
+        int n = annotations.size()
+        switch(n){
+            case 0:
+                return null
+            case 1:
+                return annotations.first()
+            default:
+                throw new JTEException("There can only be one @StepAlias annotation per step. Found ${n} in ${step.library} library's ${step.name}.groovy")
+        }
     }
 
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){

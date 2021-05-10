@@ -33,16 +33,6 @@ import java.util.LinkedHashMap;
 public abstract class StepWrapperScript extends CpsScript {
 
     /**
-     * The name of the step being executed.
-     */
-    String STEP_NAME;
-
-    /**
-     * Whether or not the step has an aliased name
-     */
-    boolean isAlias;
-
-    /**
      * The library configuration
      */
     LinkedHashMap config = new LinkedHashMap();
@@ -56,6 +46,11 @@ public abstract class StepWrapperScript extends CpsScript {
      * The stage context
      */
     StageContext stageContext = new StageContext();
+
+    /**
+     * The step context
+     */
+    StepContext stepContext = new StepContext();
 
     /**
      * The FilePath within the build directory from which
@@ -157,13 +152,4 @@ public abstract class StepWrapperScript extends CpsScript {
         }
     }
 
-    public void setSTEP_NAME(String name){
-        this.STEP_NAME = name;
-    }
-    public String getSTEP_NAME(){ return STEP_NAME; }
-
-    public void setIsAlias(boolean isAlias){
-        this.isAlias = isAlias;
-    }
-    public boolean getIsAlias(){ return isAlias; }
 }

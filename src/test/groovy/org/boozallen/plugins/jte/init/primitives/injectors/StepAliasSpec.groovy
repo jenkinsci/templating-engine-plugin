@@ -345,7 +345,7 @@ class StepAliasSpec extends Specification {
         jenkins.assertLogContains('build: running the step', run)
         jenkins.assertLogContains('unit_test: running the step', run)
     }
-    def "StepAliases aggregated across methods"(){
+    def "StepAlias on multiple methods throws exception"(){
         given:
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('alias', 'npm_invoke', """
@@ -377,9 +377,8 @@ class StepAliasSpec extends Specification {
         run = job.scheduleBuild2(0).get()
 
         then:
-        jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains('build: running the step', run)
-        jenkins.assertLogContains('unit_test: running the step', run)
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("There can only be one @StepAlias annotation per step.", run)
     }
     def "STEP_NAME is resolvable in an aliased step"(){
         given:
