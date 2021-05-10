@@ -49,7 +49,7 @@ class Stage extends TemplatePrimitive{
         if(! skipOverloaded){
             isOverloaded()
         }
-        return getCPSClass().newInstance(name: name, steps: steps)
+        return getCPSClass().newInstance(parent: this)
     }
 
     private Class getCPSClass(){

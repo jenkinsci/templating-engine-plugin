@@ -28,19 +28,22 @@ import org.boozallen.plugins.jte.util.TemplateLogger
 
 @SuppressWarnings("NoDef")
 @InheritConstructors
-class StageCPS extends Stage{
+class StageCPS implements Serializable{
+
+    private static final long serialVersionUID = 1L
+    Stage parent
 
     @SuppressWarnings("MethodParameterTypeRequired")
     void call(args) {
-        TemplateLogger.createDuringRun().print "[Stage - ${getName()}]"
+        TemplateLogger.createDuringRun().print "[Stage - ${parent.name}]"
         Map stageArgs
         if( args instanceof Object[] && 0 < ((Object[])args).length){
             stageArgs = ((Object[])args)[0]
         } else {
             stageArgs = args as Map
         }
-        StageContext stageContext = new StageContext(name: getName(), args: stageArgs)
-        getSteps().each{ stepName ->
+        StageContext stageContext = new StageContext(name: parent.name, args: stageArgs)
+        parent.steps.each{ stepName ->
             List<StepWrapper> s = this.getStepWrappers(stepName)
             if(s.size() > 1){
                 throw new JTEException("Found more than one step for '${stepName}'")
