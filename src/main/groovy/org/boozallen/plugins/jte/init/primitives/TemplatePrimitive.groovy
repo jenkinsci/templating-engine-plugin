@@ -69,7 +69,7 @@ abstract class TemplatePrimitive extends GlobalVariable implements Serializable{
         if(!overloaded.isEmpty()){
             TemplateLogger logger = TemplateLogger.createDuringRun()
             List<String> msg = [
-                    "Attempted to access an overloaded primitive:  ${getName()}",
+                    "Attempted to access an overloaded primitive: ${getName()}",
                     "Please use fully qualified names to access the primitives.",
                     "options: "
             ]

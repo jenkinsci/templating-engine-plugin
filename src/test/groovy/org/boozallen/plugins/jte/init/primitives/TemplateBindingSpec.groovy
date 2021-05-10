@@ -131,12 +131,23 @@ class TemplateBindingSpec extends Specification {
 
     def "Access an overloaded step results in exception"() {
         given:
-        StepWrapper step = Spy()
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('maven', 'build', 'void call(){}')
+        libProvider.addStep('gradle', 'build', 'void call(){}')
+        libProvider.addGlobally()
+
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: "libraries{ maven; gradle }; jte{ permissive_initialization = true }",
+            template: "build()"
+        )
+
         when:
-        step.getValue(null)
+        run = job.scheduleBuild2(0).get()
+
         then:
-        thrown(IllegalStateException) // CpsThread not present. doesn't matter for this test.
-        1 * step.isOverloaded()
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("Attempted to access an overloaded primitive: build", run)
     }
 
     def "Invoking overloaded step via namespace works when permissive_initialization is true"(){

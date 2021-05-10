@@ -25,6 +25,7 @@ import hudson.Extension
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
+import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
@@ -39,16 +40,95 @@ import java.util.logging.Logger
 @SuppressWarnings(['NoDef', 'MethodReturnTypeRequired'])
 class StepWrapperFactory{
 
-    /**
-     * the variable to autowire to expose the library
-     * configuration to the step
-     */
-    static final String CONFIG_VAR = "config"
-
     private final FlowExecutionOwner flowOwner
 
     StepWrapperFactory(FlowExecutionOwner flowOwner){
         this.flowOwner = flowOwner
+    }
+
+    /**
+     * takes a FilePath holding the source text for the step and
+     * creates a StepWrapper instance
+     *
+     * @param filePath the FilePath where the source file can be found
+     * @param library the library contributing the step
+     * @param config the library configuration for the step
+     * @return a StepWrapper instance
+     */
+    StepWrapper createFromFilePath(FilePath filePath, String library, Map config){
+        String name = filePath.getBaseName()
+        String sourceText = filePath.readToString()
+        StepWrapper step = new StepWrapper(
+            name: name,
+            library: library,
+            config: config,
+            sourceFile: filePath.absolutize().getRemote(),
+            isLibraryStep: true
+        )
+        StepWrapperScript script = prepareScript(step, sourceText)
+        step.setScript(script)
+        return step
+    }
+
+    /**
+     * Creates an instance of the default step implementation
+     *
+     * @param name
+     * @param stepConfig
+     * @return a StepWrapper instance
+     */
+    StepWrapper createDefaultStep(String name, Map stepConfig){
+        // get the source text for the default step implementation
+        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
+        String self = this.getMetaClass().getTheClass().getName()
+        String defaultStep = uberClassLoader.loadClass(self).getResource("defaultStepImplementation.groovy").text
+
+        /*
+         * this feature was never documented and would prefer to remove it.
+         * not sure if people read the source code and rely on this
+         * so logging a warning if it's in use that it will be removed
+         * in a future release
+         */
+        if(stepConfig.containsKey("name")){
+            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            logger.printWarning("Overriding the name of a default step implementation is deprecated and will be removed in a future release.")
+        }
+        stepConfig.name = stepConfig.name ?: name
+
+        StepWrapper step = new StepWrapper(
+            name: name,
+            library: null,
+            config: stepConfig,
+            sourceText: defaultStep,
+            isDefaultStep: true
+        )
+
+        StepWrapperScript script = prepareScript(step, defaultStep)
+        step.setScript(script)
+
+        return step
+    }
+
+    /**
+     * Produces a no-op StepWrapper
+     * @param stepName the name of the step to be created
+     * @return a no-op StepWrapper
+     */
+    StepWrapper createNullStep(String stepName){
+        String nullStep = "def call(Object[] args){ println \"Step ${stepName} is not implemented.\" }"
+        LinkedHashMap config = [:]
+        StepWrapper step = new StepWrapper(
+            name: stepName,
+            library: null,
+            config: config,
+            sourceText: nullStep,
+            isTemplateStep: true
+        )
+
+        StepWrapperScript script = prepareScript(step, nullStep)
+        step.setScript(script)
+
+        return step
     }
 
     /**
@@ -64,34 +144,23 @@ class StepWrapperFactory{
      * @return an executable and wired executable script
      */
     @SuppressWarnings("ParameterCount")
-    StepWrapperScript prepareScript(
-            String library,
-            String name,
-            String source,
-            LinkedHashMap config,
-            StageContext stageContext = null,
-            HookContext hookContext = null
-    ){
+    StepWrapperScript prepareScript(StepWrapper step, String sourceText){
         StepWrapperScript script
         /*
          * parse the step the same way Jenkins parses a Jenkinsfile
-         *        this is easiest way to appropriately attach the flowOwner
-         *        of the template to the Step. attaching the flowOwner is
-         *        necessary for certain Jenkins Pipeline steps to work appropriately.
+         * this is easiest way to appropriately attach the flowOwner
+         * of the template to the Step. attaching the flowOwner is
+         * necessary for certain Jenkins Pipeline steps to work appropriately.
          */
+        FlowDurabilityHint durabilityHint = TemplateFlowDefinition.determineFlowDurabilityHint(flowOwner)
+        CpsFlowExecution exec = new CpsFlowExecution(sourceText, false, flowOwner, durabilityHint)
+        // tell StepWrapperShellDecorator this is a step
+        exec.metaClass[StepWrapperShellDecorator.FLAG] = true
         try{
-            CpsFlowExecution exec = new CpsFlowExecution(
-                source,
-                false,
-                flowOwner,
-                TemplateFlowDefinition.determineFlowDurabilityHint(flowOwner)
-            )
-            // tell StepWrapperShellDecorator this is a step
-            exec.metaClass[StepWrapperShellDecorator.FLAG] = true
             script = exec.parseScript() as StepWrapperScript
         } catch(any){
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-            logger.printError("Failed to parse step text. Library: ${library}. Step: ${name}.")
+            logger.printError("Failed to parse step text. Library: ${step.library}. Step: ${step.name}.")
             throw any
         }
         /*
@@ -105,11 +174,11 @@ class StepWrapperFactory{
          */
         script.setBinding(new TemplateBinding())
         script.$initialize()
-        script.setConfig(config)
+        script.setConfig(step.config)
         script.setBuildRootDir(flowOwner.getRootDir())
-        script.setResourcesPath("jte/${library}/resources")
-        stageContext && script.setStageContext(stageContext)
-        hookContext  && script.setHookContext(hookContext)
+        script.setResourcesPath("jte/${step.library}/resources")
+        step.stageContext && script.setStageContext(step.stageContext)
+        step.hookContext  && script.setHookContext(step.hookContext)
         return script
     }
 
@@ -160,72 +229,6 @@ class StepWrapperFactory{
                 }
             }
         }
-    }
-
-    /**
-     * takes a FilePath holding the source text for the step and
-     * creates a StepWrapper instance
-     *
-     * @param filePath the FilePath where the source file can be found
-     * @param library the library contributing the step
-     * @param config the library configuration for the step
-     * @return a StepWrapper instance
-     */
-    StepWrapper createFromFilePath(FilePath filePath, String library, Map config){
-        String name = filePath.getBaseName()
-        String sourceText = filePath.readToString()
-        return new StepWrapper(
-            name: name,
-            library: library,
-            config: config,
-            sourceFile: filePath.absolutize().getRemote(),
-            // parse to fail fast for step compilation issues
-            script: prepareScript(library, name, sourceText, config),
-            isLibraryStep: true
-        )
-    }
-
-    /**
-     * Creates an instance of the default step implementation
-     *
-     * @param name
-     * @param stepConfig
-     * @return a StepWrapper instance
-     */
-    StepWrapper createDefaultStep(String name, Map stepConfig){
-        ClassLoader uberClassLoader = Jenkins.get().pluginManager.uberClassLoader
-        String self = this.getMetaClass().getTheClass().getName()
-        String defaultStep = uberClassLoader.loadClass(self).getResource("defaultStepImplementation.groovy").text
-        // will be nice to eventually use the ?= operator when groovy version gets upgraded
-        stepConfig.name = stepConfig.name ?: name
-        return new StepWrapper(
-            name: name,
-            library: null,
-            config: stepConfig,
-            sourceText: defaultStep,
-            // parse to fail fast for step compilation issues
-            script: prepareScript("Default Step Implementation", name, defaultStep, stepConfig),
-            isDefaultStep: true
-        )
-    }
-
-    /**
-     * Produces a no-op StepWrapper
-     * @param stepName the name of the step to be created
-     * @return a no-op StepWrapper
-     */
-    StepWrapper createNullStep(String stepName){
-        String nullStep = "def call(Object[] args){ println \"Step ${stepName} is not implemented.\" }"
-        LinkedHashMap config = [:]
-        return new StepWrapper(
-            name: stepName,
-            library: null,
-            config: config,
-            sourceText: nullStep,
-            // parse to fail fast for step compilation issues
-            script: prepareScript(null, stepName, nullStep, config),
-            isTemplateStep: true
-        )
     }
 
 }
