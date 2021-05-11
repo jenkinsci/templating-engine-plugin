@@ -52,6 +52,18 @@ class PipelineConfigurationDslSpec extends Specification {
         configObject.override.isEmpty()
     }
 
+    def "include Jenkins env var in nested configuration"() {
+        setup:
+        String config = "block{ a = env.BUILD_NUMBER }"
+        when:
+        PipelineConfigurationObject configObject = dsl.parse(config)
+
+        then:
+        configObject.config == [ 'block': [a: '1' ] ]
+        configObject.merge.isEmpty()
+        configObject.override.isEmpty()
+    }
+
     def 'Empty Config File'() {
         setup:
         String config = ''
