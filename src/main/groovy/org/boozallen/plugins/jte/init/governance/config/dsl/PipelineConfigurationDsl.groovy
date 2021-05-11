@@ -49,7 +49,7 @@ class PipelineConfigurationDsl {
         PipelineConfigurationObject pipelineConfig
         DslEnvVar env
 
-        DslBinding(){ super() }// needed for unit tests
+        DslBinding(){ super() } // needed for unit tests
 
         DslBinding(PipelineConfigurationObject c, DslEnvVar d){
             this()

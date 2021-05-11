@@ -176,9 +176,9 @@ class RestartFromStageSpec extends Specification {
         given:
         String pipeline = '''
         pipeline{
-          agent any 
+          agent any
           parameters {
-            string(name: "gitRevision", defaultValue: "", description: "Git branch or commit hash to checkout.")        
+            string(name: "gitRevision", defaultValue: "", description: "Git branch or commit hash to checkout.")
           }
           stages{
             stage("stage one"){
@@ -195,7 +195,7 @@ class RestartFromStageSpec extends Specification {
                 config: '''
         buildNumber = env.BUILD_NUMBER
         gitRevision = env.gitRevision
-        
+
         block{
           branch = env.BUILD_NUMBER
         }
@@ -207,7 +207,6 @@ class RestartFromStageSpec extends Specification {
         when:
         WorkflowRun run = p.scheduleBuild2(0).get()
         jenkins.waitForCompletion(run)
-
 
         then:
         jenkins.assertBuildStatusSuccess(run)
