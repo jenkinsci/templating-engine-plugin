@@ -301,7 +301,9 @@ ruleset {
     ImportFromSamePackage
     ImportFromSunPackages
     MisorderedStaticImports
-    NoWildcardImports
+    NoWildcardImports{
+        ignoreStaticImports = true
+    }
     UnnecessaryGroovyImport
     UnusedImport
 
