@@ -29,7 +29,7 @@ import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
 
-class RestartFromStageSpec extends Specification {
+class DeclarativeSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
 
@@ -177,14 +177,13 @@ class RestartFromStageSpec extends Specification {
         String pipeline = '''
         pipeline{
           agent any
-          parameters {
-            string(name: "gitRevision", defaultValue: "", description: "Git branch or commit hash to checkout.")
-          }
+
           stages{
             stage("stage one"){
               steps{
                 echo "build number: ${pipelineConfig.buildNumber}"
-                echo "revision: ${pipelineConfig.block.branch}"
+                echo "branch: ${pipelineConfig.block.branch}"
+                echo "revision: ${pipelineConfig.gitRevision}"
               }
             }
           }
@@ -210,8 +209,61 @@ class RestartFromStageSpec extends Specification {
 
         then:
         jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains("revision: 1", run)
+        jenkins.assertLogContains("revision: ", run)
+        jenkins.assertLogContains("branch: 1", run)
         jenkins.assertLogContains('build number: 1', run)
+    }
+
+    def "Pipeline with parameters, env in config and a second run"() {
+        given:
+        String pipeline = '''
+        pipeline{
+          agent any
+          parameters {
+            string(name: "gitRevision", defaultValue: "3", description: "Git branch or commit hash to checkout.")
+          }
+          stages{
+            stage("stage one"){
+              steps{
+                echo "build number: ${pipelineConfig.buildNumber}"
+                echo "branch: ${pipelineConfig.block.branch}"
+                echo "revision: ${pipelineConfig.gitRevision}"
+              }
+            }
+          }
+        }
+        '''
+
+        WorkflowJob p = TestUtil.createAdHoc(
+                config: '''
+        buildNumber = env.BUILD_NUMBER
+        gitRevision = env.gitRevision
+
+        block{
+          branch = env.BUILD_NUMBER
+        }
+        ''',
+                template: pipeline,
+                jenkins
+        )
+
+        when:
+        WorkflowRun run = p.scheduleBuild2(0).get()
+        jenkins.waitForCompletion(run)
+
+        WorkflowRun run2 = p.scheduleBuild2(0).get()
+        jenkins.waitForCompletion(run2)
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("revision: ", run)
+        jenkins.assertLogContains("branch: 1", run)
+        jenkins.assertLogContains('build number: 1', run)
+
+        jenkins.assertBuildStatusSuccess(run2)
+        jenkins.assertLogContains("revision: 3", run2)
+        jenkins.assertLogContains("branch: 2", run2)
+        jenkins.assertLogContains('build number: 2', run2)
     }
 
 }
