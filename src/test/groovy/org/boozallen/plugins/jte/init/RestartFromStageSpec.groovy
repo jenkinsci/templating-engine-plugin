@@ -172,4 +172,47 @@ class RestartFromStageSpec extends Specification {
         jenkins.assertLogContains('contents:Hi I was stashed', b2)
     }
 
+    def "Pipeline with env in config"() {
+        given:
+        String pipeline = '''
+        pipeline{
+          agent any 
+          parameters {
+            string(name: "gitRevision", defaultValue: "", description: "Git branch or commit hash to checkout.")        
+          }
+          stages{
+            stage("stage one"){
+              steps{
+                echo "build number: ${pipelineConfig.buildNumber}"
+                echo "revision: ${pipelineConfig.block.branch}"
+              }
+            }
+          }
+        }
+        '''
+
+        WorkflowJob p = TestUtil.createAdHoc(
+                config: '''
+        buildNumber = env.BUILD_NUMBER
+        gitRevision = env.gitRevision
+        
+        block{
+          branch = env.BUILD_NUMBER
+        }
+        ''',
+                template: pipeline,
+                jenkins
+        )
+
+        when:
+        WorkflowRun run = p.scheduleBuild2(0).get()
+        jenkins.waitForCompletion(run)
+
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("revision: 1", run)
+        jenkins.assertLogContains('build number: 1', run)
+    }
+
 }
