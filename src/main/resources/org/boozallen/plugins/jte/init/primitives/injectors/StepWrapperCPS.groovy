@@ -29,42 +29,30 @@ import org.codehaus.groovy.runtime.InvokerInvocationException
  * A library step
  */
 @SuppressWarnings("NoDef")
-class StepWrapperCPS extends StepWrapper{
+class StepWrapperCPS implements Serializable{
 
-    /*
-        need a call method defined on method missing so that
-        CpsScript recognizes the StepWrapper as something it
-        should execute in the binding.
-    */
-    @SuppressWarnings("MethodReturnTypeRequired")
-    def call(Object... args) {
-        return invoke("call", args)
-    }
+    private static final long serialVersionUID = 1L
 
-    /*
-        all other method calls go through CpsScript.getProperty to
-        first retrieve the StepWrapper and then attempt to invoke a
-        method on it.
-    */
+    StepWrapper parent
+
     @SuppressWarnings(["MethodReturnTypeRequired", "MethodParameterTypeRequired"])
     def methodMissing(String methodName, args){
-        return invoke(methodName, args)
-    }
+        if(parent == null){
+            throw new IllegalStateException("StepWrapperCPS does not have a StepWrapper parent")
+        }
 
-    /*
-        pass method invocations on the wrapper to the underlying
-        step implementation script.
-    */
-    @SuppressWarnings("MethodReturnTypeRequired")
-    def invoke(String methodName, Object... args){
+        StepWrapperScript script = parent.script
+        String library = parent.library
+        String name = parent.name
+
         String argsList = args.collect{ arg -> arg.getClass().simpleName }.join(", ")
-        if(InvokerHelper.getMetaClass(getScript()).respondsTo(getScript(), methodName, args)){
+        if(InvokerHelper.getMetaClass(script).respondsTo(script, methodName, args)){
             def result
-            HookContext context = new HookContext(step: getName(), library: getLibrary())
+            HookContext context = new HookContext(step: name, library: library)
             try{
                 Hooks.invoke(BeforeStep, context)
-                TemplateLogger.createDuringRun().print "[Step - ${getLibrary()}/${getName()}.${methodName}(${argsList})]"
-                result = InvokerHelper.getMetaClass(getScript()).invokeMethod(getScript(), methodName, args)
+                TemplateLogger.createDuringRun().print "[Step - ${library}/${name}.${methodName}(${argsList})]"
+                result = InvokerHelper.getMetaClass(script).invokeMethod(script, methodName, args)
             } catch (x) {
                 throw new InvokerInvocationException(x)
             } finally{
@@ -73,7 +61,7 @@ class StepWrapperCPS extends StepWrapper{
             }
             return result
         }
-        throw new TemplateException("Step ${getName()} from the library ${getLibrary()} does not have the method ${methodName}(${argsList})")
+        throw new TemplateException("Step ${name} from the library ${library} does not have the method ${methodName}(${argsList})")
     }
 
 }

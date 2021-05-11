@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import groovy.transform.AutoClone
 import hudson.FilePath
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
@@ -30,7 +31,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
  * A library step
  */
 @SuppressWarnings("NoDef")
-class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
+@AutoClone
+class StepWrapper extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
 
@@ -98,22 +100,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
             isOverloaded()
         }
         Class stepwrapperCPS = getPrimitiveClass()
-        def s = stepwrapperCPS.newInstance(
-            name: this.name,
-            isAlias: this.isAlias,
-            library: this.library,
-            sourceText: this.sourceText,
-            sourceFile: this.sourceFile,
-            config: this.config,
-            isLibraryStep: this.isLibraryStep,
-            isDefaultStep: this.isDefaultStep,
-            isTemplateStep: this.isTemplateStep,
-            script: getScript()
-        )
-        s.getScript().setStageContext(this.stageContext)
-        s.getScript().setHookContext(this.hookContext)
-        s.getScript().setSTEP_NAME(this.name)
-        s.getScript().setIsAlias(this.isAlias)
+        def s = stepwrapperCPS.newInstance(parent: this)
         return s
     }
 
@@ -122,32 +109,6 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
         String self = this.getMetaClass().getTheClass().getName()
         String classText = uberClassLoader.loadClass(self).getResource("StepWrapperCPS.groovy").text
         return TemplatePrimitiveInjector.parseClass(classText)
-    }
-
-    /**
-     * clones this StepWrapper
-     *
-     * @return An equivalent StepWrapper instance
-     */
-    @SuppressWarnings("UnnecessaryObjectReferences")
-    Object clone(){
-        Object that = super.clone()
-        that.script = getScript()
-        that.name = this.name
-        that.script.setSTEP_NAME(this.name)
-        that.library = this.library
-        that.sourceText = this.sourceText
-        that.sourceFile = this.sourceFile
-        that.config = this.config
-        that.isAlias = this.isAlias
-        that.script.setIsAlias(this.isAlias)
-        that.isLibraryStep = this.isLibraryStep
-        that.isDefaultStep = this.isDefaultStep
-        that.isTemplateStep = this.isTemplateStep
-        that.script.setStageContext(this.stageContext)
-        that.script.setHookContext(this.hookContext)
-
-        return that
     }
 
     /*
@@ -194,7 +155,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable, Cloneable{
 
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
         StepWrapperFactory factory = new StepWrapperFactory(flowOwner)
-        return factory.prepareScript(library, name, source, config, stageContext, hookContext)
+        return factory.prepareScript(this, source)
     }
 
     @Override String toString(){

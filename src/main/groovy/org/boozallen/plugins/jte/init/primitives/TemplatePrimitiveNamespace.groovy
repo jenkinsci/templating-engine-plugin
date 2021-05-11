@@ -45,7 +45,8 @@ class TemplatePrimitiveNamespace implements Serializable {
     Object methodMissing(String methodName, Object args){
         TemplatePrimitive primitive = primitives.find{ p -> p.getName() == methodName }
         if(primitive){
-            return primitive.getValue(null, true).call(args)
+            Object value = primitive.getValue(null, true)
+            return args.size() > 0 ? value.call(args) : value.call()
         }
         throw new JTEException("Primitive ${methodName} not found in ${name}")
     }
