@@ -169,7 +169,6 @@ class StepWrapperFactory{
          */
         script.with{
             setBinding(new TemplateBinding())
-            setBinding(new TemplateBinding())
             $initialize()
             setConfig(step.config)
             setBuildRootDir(flowOwner.getRootDir())
