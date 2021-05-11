@@ -29,6 +29,10 @@ import org.codehaus.groovy.runtime.GStringImpl
 @SuppressWarnings('AbstractClassWithPublicConstructor')
 abstract class PipelineConfigurationBuilder extends Script{
 
+    public static final String ENV_VAR = "env"
+    public static final Set<String> BINDING_VARS = [PipelineConfigurationBuilder.ENV_VAR]
+    public static final String PIPELINE_CONFIG_VAR = "pipelineConfig"
+
     List objectStack = []
     List nodeStack = []
     Boolean recordMergeKey = false
@@ -92,7 +96,7 @@ abstract class PipelineConfigurationBuilder extends Script{
         if (objectStack.size()){
             objectStack.last() << [ (nodeName): nodeConfig ]
         } else {
-            getBinding().getVariable("pipelineConfig").config << [ (name): nodeConfig]
+            getBinding().getVariable(PIPELINE_CONFIG_VAR).config << [(name): nodeConfig]
         }
         return BuilderMethod.METHOD_MISSING(name)
     }
@@ -121,7 +125,7 @@ abstract class PipelineConfigurationBuilder extends Script{
         if (objectStack.size()){
             objectStack.last()[name] = v
         } else {
-            getBinding().getVariable("pipelineConfig").config[name] = v
+            getBinding().getVariable(PIPELINE_CONFIG_VAR).config[name] = v
         }
     }
 
@@ -130,19 +134,22 @@ abstract class PipelineConfigurationBuilder extends Script{
         if (objectStack.size()){
             objectStack.last()[name] = [:]
         } else {
-            getBinding().getVariable("pipelineConfig").config[name] = [:]
+            getBinding().getVariable(PIPELINE_CONFIG_VAR).config[name] = [:]
         }
         return BuilderMethod.PROPERTY_MISSING(name)
     }
 
     Object getProperty(String name){
         recordMergeOrOverride(name)
+
+        if (name in BINDING_VARS){
+            return getBinding().getVariable(name)
+        }
+
         if (objectStack.size()){
             objectStack.last()[name] = [:]
-        } else if (name == "env"){
-            return getBinding().getVariable("env")
         } else {
-            getBinding().getVariable("pipelineConfig").config[name] = [:]
+            getBinding().getVariable(PIPELINE_CONFIG_VAR).config[name] = [:]
         }
         return BuilderMethod.PROPERTY_MISSING(name)
     }
@@ -157,11 +164,11 @@ abstract class PipelineConfigurationBuilder extends Script{
             key += (key.length() ? ".${name}" : name)
         }
         if(recordMergeKey){
-            getBinding().getVariable("pipelineConfig").merge << key
+            getBinding().getVariable(PIPELINE_CONFIG_VAR).merge << key
             recordMergeKey = false
         }
         if(recordOverrideKey){
-            getBinding().getVariable("pipelineConfig").override << key
+            getBinding().getVariable(PIPELINE_CONFIG_VAR).override << key
             recordOverrideKey = false
         }
     }
