@@ -552,6 +552,47 @@ class StepAliasSpec extends Specification {
         then:
         jenkins.assertBuildStatusSuccess(run)
     }
+    def "Example use case works as expected"(){
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('npm', 'npm_invoke', """
+        @StepAlias(dynamic = { return config.phases.keySet() })
+        void call(){
+            def phaseConfig = config.phases[stepContext.name]
+            println "running as \${stepContext.name}, script target: \${phaseConfig.script}"
+        }"""
+        )
+
+        libProvider.addGlobally()
+
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+              npm{
+                phases{
+                  build{
+                    script = "package"
+                  }
+                  unit_test{
+                    script = "test"
+                  }
+                }
+              }
+            }''',
+            template: '''
+            build()
+            unit_test()
+            '''
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("running as build, script target: package", run)
+        jenkins.assertLogContains("running as unit_test, script target: test", run)
+    }
 
     void cleanup(){
         TestLibraryProvider.removeLibrarySources()

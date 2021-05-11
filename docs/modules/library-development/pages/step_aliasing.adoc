@@ -58,7 +58,7 @@ libraries{
 ----
 <1> defines a string or list of strings to alias the `generic` step to
 
-This `aliases` paramter can then be consumed within the dynamic step alias closure:
+This `aliases` parameter can then be consumed within the dynamic step alias closure:
 
 .generic.groovy
 [source, groovy]
@@ -93,23 +93,34 @@ When passing multiple annotation parameters, the default static aliases paramete
 
 == Step Introspection At Runtime
 
+Steps have access to a `stepContext` variable.
+
+.Step Context Variable
+|===
+| Field | Description
+
+| `stepContext.name`    | The name of the step being executed. May be an alias.
+| `stepContext.library` | The library that contributed the step. Will be `null` for no-op template methods or default step implementations
+| `stepContext.isAlias` | boolean to determine if the current step is running under an alias.
+
+|===
+
 === Determining The Current Alias
-Steps can access their current alias during execution via the `STEP_NAME` variable.
 
 .generic.groovy
 [source, groovy]
 ----
 @StepAlias(["build", "unit_test"])
 void call(){
-    println "Running as ${STEP_NAME}" <1>
+    println "Running as ${stepContext.name}" <1>
 }
 ----
 <1> Will print "Running as build" and "Running as unit_test" depending on the alias used to invoke the step.
 
 === Determining If The Current Step Is Aliased
 
-When steps run via their aliased name, the `isAlias` variable will be true.
-If the original step name is kept via `keepOriginal`, the value of `isAlias` will be false for the original step.
+When steps run via their aliased name, the `stepAlias.isAlias` variable will be true.
+If the original step name is kept via `keepOriginal`, the value of `stepContext.isAlias` will be false for the original step.
 
 == An Example Use Case
 
@@ -139,9 +150,9 @@ libraries{
 ----
 @StepAlias(dynamic = { return config.phases.keySet() })
 void call(){
-  stage("NPM: ${STEP_NAME}"){
+  stage("NPM: ${stepContext.name}"){
     // determine phase configuration based on step alias
-    def phaseConfig = config.phases[STEP_NAME]
+    def phaseConfig = config.phases[stepContext.name]
 
     // ensure package.json has the phase script target
     def packageJSON = readJSON "package.json"
@@ -159,7 +170,7 @@ void call(){
 ====
 This example is intentionally not production ready.
 
-It's intent is to just show how Step Aliases could be used in a real library.
+Its intent is to just show how Step Aliases could be used in a real library.
 ====
 
 Previously, when writing libraries such as this, common logic around tool versioning, error checking, etc would have to be either duplicated across multiple libraries.
