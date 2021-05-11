@@ -15,11 +15,11 @@
 */
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
+import static PipelineConfigurationBuilder.*
+import java.util.regex.Pattern
 import org.apache.commons.lang.StringEscapeUtils
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-
-import java.util.regex.Pattern
 
 /**
  * Parses the pipeline configuration DSL into a {@link PipelineConfigurationObject}
@@ -45,14 +45,23 @@ class PipelineConfigurationDsl {
         results in MissingPropertyException thrown for "dev"
      */
     static class DslBinding extends Binding {
+
         PipelineConfigurationObject pipelineConfig
         DslEnvVar env
 
+        DslBinding(){ super() }// needed for unit tests
+
+        DslBinding(PipelineConfigurationObject c, DslEnvVar d){
+            this()
+            this.env = d
+            this.pipelineConfig = c
+        }
+
         @Override Object getVariable(String property){
             switch (property){
-                case "pipelineConfig": return pipelineConfig
-                case "env": return env
-                default: return PipelineConfigurationBuilder.BuilderMethod.PROPERTY_MISSING
+                case PIPELINE_CONFIG_VAR: return pipelineConfig
+                case ENV_VAR: return env
+                default: return BuilderMethod.PROPERTY_MISSING
             }
         }
     }
@@ -70,10 +79,7 @@ class PipelineConfigurationDsl {
 
         PipelineConfigurationObject pipelineConfig = new PipelineConfigurationObject(flowOwner)
         DslEnvVar env = new DslEnvVar(flowOwner)
-        DslBinding ourBinding = new DslBinding(
-            pipelineConfig: pipelineConfig,
-            env: env
-        )
+        DslBinding ourBinding = new DslBinding( pipelineConfig, env )
 
         String processedScriptText = scriptText.replaceAll("@merge", "setMergeToTrue();")
                 .replaceAll("@override", "setOverrideToTrue();")
