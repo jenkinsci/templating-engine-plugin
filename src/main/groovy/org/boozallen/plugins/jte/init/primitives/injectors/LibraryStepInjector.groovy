@@ -205,8 +205,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
      * returns null if no @StepAlias
      * throws exception if multiple alias annotations
      */
-    StepAlias getStepAlias(StepWrapper step){
-        List<StepAlias> annotations = step.getScript().class.methods.collect{method ->
+    private StepAlias getStepAlias(StepWrapper step){
+        List<StepAlias> annotations = step.getScript().class.methods.collect{ method ->
             method.getAnnotation(StepAlias)
         } - null
         int n = annotations.size()
