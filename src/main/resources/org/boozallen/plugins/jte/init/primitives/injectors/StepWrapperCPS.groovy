@@ -41,9 +41,13 @@ class StepWrapperCPS implements Serializable{
             throw new IllegalStateException("StepWrapperCPS does not have a StepWrapper parent")
         }
 
-        StepWrapperScript script = parent.script
         String library = parent.library
         String name = parent.name
+        // pass parent StepWrapper contexts to the script so they can be resolved during step execution
+        StepWrapperScript script = parent.script
+        script.setStepContext(parent.stepContext)
+        script.setHookContext(parent.hookContext)
+        script.setStageContext(parent.stageContext)
 
         String argsList = args.collect{ arg -> arg.getClass().simpleName }.join(", ")
         if(InvokerHelper.getMetaClass(script).respondsTo(script, methodName, args)){

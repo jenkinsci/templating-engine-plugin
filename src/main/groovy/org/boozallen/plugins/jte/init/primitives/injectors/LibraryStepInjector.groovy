@@ -122,8 +122,9 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
                     stepAliases.each{ aliasString ->
                         StepWrapper clone = step.clone()
                         clone.setParent(library)
-                        clone.setName(aliasString)
-                        clone.setIsAlias(true)
+                        clone.setScript(step.script) // not auto-cloned
+                        StepContext stepContext = new StepContext(library: libName, name: aliasString, isAlias: true)
+                        clone.setStepContext(stepContext)
                         library.add(clone)
                     }
                 }
@@ -149,7 +150,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
      * @param flowOwner run
      * @return whether or not to keep the original step name
      */
-    @SuppressWarnings("UnusedPrivateMethodParameter")
     private boolean shouldKeepOriginal(StepAlias alias){
         return alias ? alias.keepOriginal() : true
     }

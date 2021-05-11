@@ -19,6 +19,7 @@ import hudson.model.Result
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.util.TestUtil
+import org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
@@ -155,6 +156,7 @@ class StageSpec extends Specification {
 
     def "validate namespaced stage arguments are passed through to steps"() {
         given:
+        CpsVmExecutorService.FAIL_ON_MISMATCH = false // needed for unit test.
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins, config: """
             libraries{

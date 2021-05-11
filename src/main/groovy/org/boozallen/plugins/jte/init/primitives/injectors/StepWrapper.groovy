@@ -37,21 +37,6 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
     private static final long serialVersionUID = 1L
 
     /**
-     * The name of the step
-     */
-    String name
-
-    /**
-     * Whether or not the step is the result of @StepAlias
-     */
-    boolean isAlias
-
-    /**
-     * The name of the library that's contributed the step
-     */
-    protected String library
-
-    /**
      * The library configuration
      */
     protected LinkedHashMap config
@@ -85,13 +70,15 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
      */
     protected HookContext hookContext
 
+    /**
+     * current step's metadata
+     */
+    protected StepContext stepContext
+
     // flags to determine what type of step this is
     protected boolean isLibraryStep  = false
     protected boolean isDefaultStep  = false
     protected boolean isTemplateStep = false
-
-    @Override String getName(){ return name }
-    String getLibrary(){ return library }
 
     @SuppressWarnings("UnusedMethodParameter")
     Object getValue(CpsScript script, Boolean skipOverloaded = false){
@@ -126,6 +113,18 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
 
     void setHookContext(HookContext hookContext){
         this.hookContext = hookContext
+    }
+
+    void setStepContext(StepContext stepContext){
+        this.stepContext = stepContext
+    }
+
+    String getName(){
+        return stepContext.name
+    }
+
+    String getLibrary(){
+        return stepContext.library
     }
 
     /**

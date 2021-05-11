@@ -45,7 +45,7 @@ class StepAliasSpec extends Specification {
 
         then:
         jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains('@StepAlias for [ library: alias, step: npm_invoke ] has no aliases.', run)
+        jenkins.assertLogContains('@StepAlias did not define any aliases for the alias\'s npm_invoke step', run)
     }
     def "Just string parameter to @StepAlias"(){
         given:
@@ -380,13 +380,13 @@ class StepAliasSpec extends Specification {
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains("There can only be one @StepAlias annotation per step.", run)
     }
-    def "STEP_NAME is resolvable in an aliased step"(){
+    def "StepContext name is resolvable in an aliased step"(){
         given:
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('alias', 'npm_invoke', """
         @StepAlias(value = "build", dynamic = { return "unit_test" })
         void call(){
-            println "running as \${STEP_NAME}"
+            println "running as \${stepContext.name}"
         }"""
         )
 
@@ -412,11 +412,11 @@ class StepAliasSpec extends Specification {
         jenkins.assertLogContains('running as build', run)
         jenkins.assertLogContains('running as unit_test', run)
     }
-    def "STEP_NAME is resolvable in a non-aliased step"(){
+    def "StepContext name is resolvable in a non-aliased step"(){
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('alias', 'npm_invoke', """
         void call(){
-            println "running as \${STEP_NAME}"
+            println "running as \${stepContext.name}"
         }"""
         )
 
@@ -440,12 +440,12 @@ class StepAliasSpec extends Specification {
         jenkins.assertBuildStatusSuccess(run)
         jenkins.assertLogContains('running as npm_invoke', run)
     }
-    def "isAlias is true for aliased step"(){
+    def "StepContext isAlias is true for aliased step"(){
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('alias', 'npm_invoke', """
         @StepAlias("build")
         void call(){
-            assert isAlias
+            assert stepContext.isAlias
         }"""
         )
 
@@ -472,7 +472,7 @@ class StepAliasSpec extends Specification {
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('alias', 'npm_invoke', """
         void call(){
-            assert !isAlias
+            assert !stepContext.isAlias
         }"""
         )
 
