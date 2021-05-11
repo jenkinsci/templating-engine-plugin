@@ -214,8 +214,10 @@ class StepWrapperFactory{
          */
         @Override
         void customizeImports(CpsFlowExecution execution, ImportCustomizer ic){
-            ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-            ic.addImport(StepAlias.getName())
+            if(execution.hasProperty(FLAG)) {
+                ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
+                ic.addImport(StepAlias.getName())
+            }
         }
 
         @Override
