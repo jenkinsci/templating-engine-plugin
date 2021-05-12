@@ -593,6 +593,50 @@ class StepAliasSpec extends Specification {
         jenkins.assertLogContains("running as build, script target: package", run)
         jenkins.assertLogContains("running as unit_test, script target: test", run)
     }
+    def "Hook triggered after aliased step run during stage"(){
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+
+        libProvider.addStep('alias', 'npm_invoke', """
+        @StepAlias(value = "build")
+        void call(){
+            println "build step"
+        }"""
+        )
+
+        libProvider.addStep('alias', 'hookStep', """
+        @AfterStep
+        void call(){
+            println "running after \${hookContext.step}"
+        }"""
+        )
+
+        libProvider.addGlobally()
+
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+              alias
+            }
+            stages{
+              ci{
+                build
+              }
+            }
+            ''',
+            template: '''
+            ci()
+        '''
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("build step", run)
+        jenkins.assertLogContains("running after build", run)
+    }
 
     void cleanup(){
         TestLibraryProvider.removeLibrarySources()
