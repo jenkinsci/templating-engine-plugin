@@ -122,7 +122,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
                     stepAliases.each{ aliasString ->
                         StepWrapper clone = step.clone()
                         clone.setParent(library)
-                        clone.setScript(step.script) // not auto-cloned
                         StepContext stepContext = new StepContext(library: libName, name: aliasString, isAlias: true)
                         clone.setStepContext(stepContext)
                         library.add(clone)

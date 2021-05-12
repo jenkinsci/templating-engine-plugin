@@ -29,6 +29,8 @@ import java.util.LinkedHashMap;
 
 /**
  * The base script used during step execution
+ *
+ * context fields are set at runtime in StepWrapperCPS
  */
 public abstract class StepWrapperScript extends CpsScript {
 

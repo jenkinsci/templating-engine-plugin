@@ -173,9 +173,6 @@ class StepWrapperFactory{
             setConfig(step.config)
             setBuildRootDir(flowOwner.getRootDir())
             setResourcesPath("jte/${step.library}/resources")
-            setStepContext(step.stepContext)
-            step.stageContext && setStageContext(step.stageContext)
-            step.hookContext  && setHookContext(step.hookContext)
         }
         return script
     }
