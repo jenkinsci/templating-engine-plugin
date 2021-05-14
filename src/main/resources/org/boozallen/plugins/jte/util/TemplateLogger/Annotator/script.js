@@ -60,6 +60,11 @@ function jteHide(link){
     var id = link.parentNode.getAttribute("jte-id");
     document.querySelectorAll(`span[jte-id='${id}'][first-line='false']`).forEach( (element) => {
         element.style.display = 'none';
+
+        previous = element.previousSibling;
+        if(previous != null && previous.getAttribute("class").includes("timestamp")) {
+            previous.style.display = 'none';
+        }
     });
 }
 function jteShow(link){
@@ -69,5 +74,10 @@ function jteShow(link){
     var id = link.parentNode.getAttribute("jte-id");
     document.querySelectorAll(`span[jte-id='${id}'][first-line='false']`).forEach( (element) => {
         element.style.display = 'inline';
+
+        previous = element.previousSibling;
+        if(previous != null && previous.getAttribute("class").includes("timestamp")) {
+            previous.style.display = 'inline';
+        }
     });
 }
