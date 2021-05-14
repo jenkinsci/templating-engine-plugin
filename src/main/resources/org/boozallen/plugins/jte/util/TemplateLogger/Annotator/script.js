@@ -1,8 +1,8 @@
 (function() {
 
 function onLoad(){
-    process() 
-    
+    process()
+
     // Callback function to execute when mutations are observed
     var callback = function(mutationsList, observer) {
         for(var mutation of mutationsList) {
@@ -56,7 +56,7 @@ function jteCollapse(link){
 function jteHide(link){
     link.setAttribute("isHidden",'true');
     link.textContent = "(show)";
-    link.style.visibility = "visible"; 
+    link.style.visibility = "visible";
     var id = link.parentNode.getAttribute("jte-id");
     document.querySelectorAll(`span[jte-id='${id}'][first-line='false']`).forEach( (element) => {
         element.style.display = 'none';
@@ -70,7 +70,7 @@ function jteHide(link){
 function jteShow(link){
     link.setAttribute("isHidden",'false');
     link.textContent = "(hide)";
-    link.style.visibility = ""; 
+    link.style.visibility = "";
     var id = link.parentNode.getAttribute("jte-id");
     document.querySelectorAll(`span[jte-id='${id}'][first-line='false']`).forEach( (element) => {
         element.style.display = 'inline';
