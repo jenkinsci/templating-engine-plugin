@@ -117,14 +117,9 @@ class FileSystemWrapper {
             return [null, null]
         }
 
-        try{
-            scmKey = scm.getKey()
-            fs = SCMFileSystem.of(job, scm)
-            return [fs, scmKey]
-        } catch(any){
-            new TemplateLogger(owner.getListener()).printWarning(any.toString())
-            return [null, null]
-        }
+        scmKey = scm.getKey()
+        fs = SCMFileSystem.of(job, scm)
+        return [fs, scmKey]
     }
 
     /*
@@ -175,8 +170,6 @@ class FileSystemWrapper {
             return [fs, scmKey]
         } catch(JTEException jteex){ //throw our exception
             throw (jteex.cause ?: jteex)
-        } catch(any){ // ignore but print every other exception
-            new TemplateLogger(listener).printWarning(any.toString())
         }
 
         return [fs, scmKey]
