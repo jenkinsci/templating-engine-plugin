@@ -1,26 +1,65 @@
----
 name: "🐛 Bug report"
-labels: bug
+title: "[Bug]: "
+labels: [bug]
 about: Create a bug report to help us improve
----
-
-<!--
-Never report security issues on GitHub or other public channels (Gitter/Twitter/etc.), follow the instruction from [Jenkins Security](https://jenkins.io/security/) to report it on [Jenkins Jira](https://issues.jenkins-ci.org)
--->
-
-### Environment Information
-
-- [ ] Jenkins version
-- [ ] Plugin version
-- [ ] OS
-
-<!--
-Put an `x` into the [ ] to show you have filled the information below
-Describe your issue below
--->
-
-### Description
-
-Please describe your issue here.
-
-<!-- If possible, please provide a way to minimally reproduce this issue -->
+body:
+  - type: markdown
+    attributes: 
+      value: |
+        Thank you for taking the time to let us know!
+  - type: input
+    id: jenkins-version
+    attributes:
+      label: Jenkins Version
+      description: On what version of Jenkins did you experience this bug?
+    validations:
+      required: true
+  - type: dropdown
+    id: jte-version
+    attributes:
+      label: JTE Version
+      description: What version of JTE is installed?
+      options: 
+        - 2.3
+        - 2.2.2
+        - 2.2.1
+        - 2.1
+        - 2.0.4
+        - 2.0.3
+        - 2.0.2
+        - 2.0.1
+        - 2.0
+        - 1.7.1
+        - 1.7
+        - 1.6
+        - 1.5.2
+        - 1.5.1
+        - 1.5
+        - 1.4.2
+        - 1.4.1
+        - 1.4
+        - 1.3
+        - 1.2
+        - 1.1.1
+        - 1.1
+        - 1.0
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: Please describe what seems to be the problem
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: how-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please describe the minimal steps to reproduce
+    validations:
+      required: true
