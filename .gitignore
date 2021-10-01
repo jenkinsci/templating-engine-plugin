@@ -11,3 +11,4 @@ docs/html
 target/
 .DS_Store
 node_modules
+site/

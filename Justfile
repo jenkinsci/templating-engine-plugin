@@ -1,9 +1,7 @@
 # when false, disables code coverage
 coverage := "true"
 # the output directory for the documentation
-docsDir  := "docs/html"
-# the Antora playbook file to use when building docs
-playbook := "docs/antora-playbook-local.yml"
+docsDir  := "site"
 # variables for running containerized jenkins
 container := "jenkins" # the name of the container
 port      := "8080"    # the port to forward Jenkins to
@@ -35,16 +33,19 @@ jpi:
 # executes the CI checks (test lint jpi)
 ci: test lint jpi
 
-# Build the local Antora documentation
-docs: 
-  docker run \
-  -it --rm \
-  -v ~/.git-credentials:/home/antora/.git-credentials \
-  -v $(pwd):/app -w /app \
-  docker.pkg.github.com/boozallen/sdp-docs/builder \
-  generate --generator booz-allen-site-generator \
-  --to-dir {{docsDir}} \
-  {{playbook}}
+# builds the jte docs builder image
+docsImage := "jte-docs-builder"
+buildDocsImage:
+  docker build docs -t {{docsImage}}
+
+# Build the jte documentation
+docs: buildDocsImage
+  docker run --rm -v $(pwd):/docs {{docsImage}} build
+
+# serve the docs locally for development
+serve: buildDocsImage
+  docker run --rm -p 8000:8000 -v $(pwd):/docs {{docsImage}} serve -a 0.0.0.0:8000
+
 
 # publishes the jpi
 release version branch=`git branch --show-current`: 

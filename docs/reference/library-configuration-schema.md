@@ -1,0 +1,1 @@
+# Library Configuration Schema

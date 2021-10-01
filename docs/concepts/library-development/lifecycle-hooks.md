@@ -1,0 +1,54 @@
+# Lifecycle Hooks
+
+Sometimes it is necessary to trigger specific pipeline actions at certain times during pipeline execution.
+For example, if you wanted to send multiple notification types after a particular pipeline step or at the conclusion of a pipeline if the build was failure.
+
+JTE supports this type of Aspect Oriented Programming style event handling through annotation markers that can be placed on methods defined within library steps.
+
+## Hook Types
+
+The following lifecycle hook annotations are available:
+
+| Annotation    | Trigger                                                                                               |
+|---------------|-------------------------------------------------------------------------------------------------------|
+| `@Validate`   | Beginning of a pipeline run, prior to the pipeline template                                           |
+| `@Init`       | After all `@Validate` hooks, prior to the pipeline template                                           |
+| `@BeforeStep` | During template execution, before every [library step](./library-steps.md)                            |
+| `@AfterStep`  | During template execution, after every [library step](./library-steps.md)                             |
+| `@CleanUp`    | After template execution                                                                              |
+| `@Notify`     | During template execution after every [library step](./library-steps.md) and after template execution |
+
+
+![Placeholder](./lifecycle_hook.png)
+
+## Hook Context
+
+Lifecycle Hook annotations can be placed on any method inside a step.
+
+Every step has an autowired `hookContext` variable which provides steps with relevant information about what triggered the hook.
+
+| Property              | Description                                                                                                                    |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `hookContext.library` | The name of the library that contributed the step associated with the step. Value is `null` for hooks not triggered by a step. |
+| `hookContext.step`    | The name of the library step that triggered the hook. Value is `null` for hooks not triggered by a step.                       |
+
+## Conditional Hook Execution
+
+Sometimes you'll only want to invoke the Hook when certain conditions are met, such as a build failure or in relation to another step (like before static code analysis).
+
+Each annotation accepts a `Closure` parameter.  If the return object of this closure is http://www.groovy-lang.org/semantics.html#Groovy-Truth[truthy] then the hook will be executed.
+
+While executing, the code within the `Closure` parameter will be able to resolve the `hookContext` variable, the library configuration of the library that loads the step via the `config` variable, and the `currentBuild` variable made available in Jenkins Pipelines.
+
+Example Syntax:
+
+```groovy
+@BeforeStep({ hookContext.step.equals("build") })
+void call(){
+    // execute something right before the library step called build is executed.
+}
+```
+
+!!! note
+    The closure parameter is optional. If omitted, the hook will always be executed.
+

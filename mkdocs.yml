@@ -1,0 +1,93 @@
+site_name: Jenkins Templating Engine
+theme:
+  name: material
+  palette:
+    primary: deep orange
+  features: 
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+
+repo_url: https://github.com/jenkinsci/templating-engine-plugin
+
+plugins:
+  - search: {}
+
+extra:
+  generator: false
+  social: 
+    - icon: fontawesome/brands/github
+      link: https://github.com/jenkinsci/templating-engine-plugin
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/jenkinsci/templating-engine-plugin
+  version:
+    provider: mike
+    default: latest
+
+markdown_extensions:
+  - admonition
+  - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: "docs"
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+# Page Tree
+nav:
+  - Home: 'index.md'
+  - Concepts:
+    - Framework Overview:
+      - 'concepts/framework-overview/introduction.md'
+      - 'concepts/framework-overview/bottom-up.md'
+      - 'concepts/framework-overview/top-down.md'
+    - Pipeline Templates:
+      - 'concepts/pipeline-templates/pipeline-templates.md'
+      - 'concepts/pipeline-templates/pipeline-catalog.md'
+      - 'concepts/pipeline-templates/pipeline-template-selection.md'
+      - 'concepts/pipeline-templates/declarative-syntax.md'
+    - Pipeline Configuration:
+      - 'concepts/pipeline-configuration/pipeline-configuration.md'
+    - Pipeline Primitives:
+      - 'concepts/pipeline-primitives/overview.md'
+      - 'concepts/pipeline-primitives/primitive-namespace.md'
+      - 'concepts/pipeline-primitives/steps.md'
+      - 'concepts/pipeline-primitives/stages.md'
+      - 'concepts/pipeline-primitives/application-environments.md'
+      - 'concepts/pipeline-primitives/keywords.md'
+    - Library Development:
+      - 'concepts/library-development/overview.md'
+      - 'concepts/library-development/library-structure.md'
+      - 'concepts/library-development/library-steps.md'
+      - 'concepts/library-development/library-resources.md'
+      - 'concepts/library-development/library-classes.md'
+      - 'concepts/library-development/parameterizing-libraries.md'
+      - 'concepts/library-development/library-configuration-file.md'
+      - 'concepts/library-development/library-source.md'
+      - 'concepts/library-development/lifecycle-hooks.md'
+      - 'concepts/library-development/multi-method-steps.md'
+      - 'concepts/library-development/library-resolution.md'
+      - 'concepts/library-development/step-context-variable.md'
+      - 'concepts/library-development/step-aliasing.md'
+    - Advanced:
+      - 'concepts/advanced/placeholder-steps.md'
+      - 'concepts/advanced/overloading-steps.md'
+      - 'concepts/advanced/method-resolution.md'
+  - Reference:
+    - "reference/pipeline-configuration-schema.md"
+    - "reference/autowired-variables.md"
+    - "reference/primitive-namespace-object.md"
+    - "reference/library-configuration-schema.md"
+  - Tutorials:
+    - "tutorials/index.md"
+    - "tutorials/local-development/index.md"
+    - "tutorials/step-alias/index.md"
+  - How-To Guides: 
+    - 'how-to/scm-library-source.md'
+    - 'how-to/library-providing-plugin.md'
+    - 'how-to/upgrade-2.0/index.md'
+  - Contributing: 'contributing.md'
