@@ -1,7 +1,0 @@
-.Governance
-* xref:governance_model.adoc[Governance Model]
-* xref:governance_tier.adoc[Governance Tier]
-* xref:hierarchical_governance.adoc[Hierarchical Governance]
-* xref:config_file_aggregation.adoc[Configuration File Aggregation]
-* xref:pipeline_template_selection.adoc[Pipeline Template Selection]
-* xref:library_selection.adoc[Library Selection]

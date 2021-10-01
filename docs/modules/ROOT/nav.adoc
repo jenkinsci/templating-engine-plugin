@@ -1,4 +1,0 @@
-* xref:index.adoc[Welcome!]
-* xref:templating-value.adoc[The Value of Pipeline Templating]
-* xref:ADOPTERS.adoc[Adopters]
-* xref:upgrade-2.0.adoc[2.0 Upgrade Guide]

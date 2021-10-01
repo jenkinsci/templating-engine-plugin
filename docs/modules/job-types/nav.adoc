@@ -1,4 +1,0 @@
-.Job Types
-* xref:pipeline.adoc[Individual Pipeline Jobs]
-* xref:repository.adoc[MultiBranch Projects]
-* xref:github_org.adoc[GitHub Organization Job]
