@@ -1,6 +1,6 @@
 # Library Resources
 
-Libraries can store static assets, such as shell scripts or YAML files, in a `resources` directory. 
+Libraries can store static assets, such as shell scripts or YAML files, in a `resources` directory.
 
 ## Accessing A Library Resource
 
@@ -28,6 +28,6 @@ Within a library step, the `resource(String relativePath)` can be used to return
     ```
 
 !!! note
-    * The path parameter passed to the `resource` method must be a *relative path* within the `resources` directory
+    *The path parameter passed to the `resource` method must be a*relative path*within the `resources` directory
     * Only steps within a library can access the library's resources (no cross-library resource fetching)
-    * The `resource()` method is only available within library steps and cannot be invoked from the pipeline template
+    * The `resource()` method is only available within library steps and can't be invoked from the pipeline template

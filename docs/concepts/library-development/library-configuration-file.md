@@ -1,12 +1,12 @@
 # Library Configuration File
 
-The root of a library can contain an **optional** `library_config.groovy` file. 
+The root of a library can contain an **optional** `library_config.groovy` file.
 
 Currently, this library configuration file is only used for parameter validation.
 
 ## Parameter Validation
 
-The [Pipeline Configuration](../pipeline-configuration/pipeline-configuration.md) is dynamically built and does not perform any type of validation. 
+The [Pipeline Configuration](../pipeline-configuration/pipeline-configuration.md) is dynamically built and doesn't perform any type of validation.
 
 The library configuration file, therefore, allows library developers to validate the parameters provided to a library.
 
@@ -23,15 +23,17 @@ fields{ [1]
 2. library configurations that are *required* are listed in the `required` block
 3. library configurations that are *optional* (meaning they likely have a default value) are listed in the `optional` block
 
-Within the `required` and `optional` blocks, list the parameters the library supports in a `parameterName = <Validation Type>` format. 
+Within the `required` and `optional` blocks, list the parameters the library supports in a `parameterName = <Validation Type>` format.
 
+<!-- markdownlint-disable -->
 !!! note
-    If a libary does not include a library configuration file, then users can supply arbitrary parameters to the library from the pipeline configuration. 
+    If a libary doesn't include a library configuration file, then users can supply arbitrary parameters to the library from the pipeline configuration.
 
     If a library does include a library configuration file, then users will only be able to supply parameters thare are listed within the `required` and `optional` blocks.
     The presence of extraneous parameters will fail the build. 
+<!-- markdownlint-restore -->
 
-The library configuration supports several different validation types for library parameters. 
+The library configuration supports several different validation types for library parameters.
 
 ### Type Validation
 
@@ -68,8 +70,8 @@ fields{
 1. ensures that `parameterA` was configured and is an instance of a String
 2. ensures that `parameterB` was configured and is an instance of a Number
 3. ensures that `parameterC` was configured and is an instance of a Boolean
-4. _if_ `parameterD` was configured, ensures it is a String
-5. _if_ `parameterE` was configured, ensures it is a Boolean
+4. _if_ `parameterD` was configured, ensures it's a String
+5. _if_ `parameterE` was configured, ensures it's a Boolean
 
 ### Enum Validation
 
@@ -85,7 +87,7 @@ fields{
 }
 ```
 
-1. ensures that `parameterA` was configured and is set to either "a", "b", or 11
+1. ensures that `parameterA` was configured and is set to either 'a', 'b', or 11
 
 ### Regular Expression Validation
 
@@ -109,7 +111,7 @@ Library parameters can be arbitrarily nested within the pipeline configuration.
 
 For example, the following pipeline configuration would be valid to pass the `example.nestedParameter` parameter to a library named `testing`.
 
-=== "Pipeline Configuration" 
+=== "Pipeline Configuration"
     ```groovy
     libraries{
       testing{
@@ -137,7 +139,7 @@ For example, the following pipeline configuration would be valid to pass the `ex
 
 For library parameter validations that more complex than what can be accomplished through the library configuration functionality, library developers can alternatively create a step annotated with the [`@Validate` Lifecycle Hook](lifecycle-hooks.md).
 
-Methods within steps annotated with `@Validate` will execute prior to the pipeline template.
+Methods within steps annotated with `@Validate` will execute before the pipeline template.
 
 For example, if a library wanted to validate a more complex use case such as ensuring a library parameter named `threshold` was greater than or equal to zero but less than or equal to 100 the following could be implemetned:
 
@@ -150,10 +152,10 @@ void call(context){ [2]
 }
 ```
 
-1. The `@Validate` annotation marks a method defined within a step to be invoked prior to template execution.
+1. The `@Validate` annotation marks a method defined within a step to be invoked before template execution.
 2. This example defines a `call()` method, but the method name can be any valid Groovy method name.
 3. Here, a Groovy if statement is used to validate that the `threshold` parameter fall within a certain range.
-4. If the `threshold` variable does not meet the criteria, the Jenkins pipeline `error` step is used to fail the build.  The `warning` step could also be used if the pipeline user should be notified but the build should continue.
+4. If the `threshold` variable doesn't meet the criteria, the Jenkins pipeline `error` step is used to fail the build. The `warning` step could also be used if the pipeline user should be notified but the build should continue.
 
 This approach allows library developers to use Groovy to validate arbitrarily complex library parameter constraints.
 The method annotated with `@Validate` can be in its own step file or added as an additional method within an existing step file.

@@ -23,15 +23,16 @@ test class="*":
   ./gradlew test --tests '{{class}}' $coverage
 
 # Run spotless & codenarc
-lint: 
+lint-code: 
   ./gradlew spotlessApply codenarc
 
 # Build the JPI
 jpi: 
   ./gradlew clean jpi 
 
-# executes the CI checks (test lint jpi)
-ci: test lint jpi
+############################
+# Documentation Recipes
+############################
 
 # builds the jte docs builder image
 docsImage := "jte-docs-builder"
@@ -46,6 +47,23 @@ docs: buildDocsImage
 serve: buildDocsImage
   docker run --rm -p 8000:8000 -v $(pwd):/docs {{docsImage}} serve -a 0.0.0.0:8000
 
+# use Vale to lint the prose of the documentation
+lint-prose:
+  docker run -v $(pwd):/app -w /app jdkato/vale docs/**/*.md
+
+# use markdownlit to lint the docs
+lint-markdown: 
+  docker run -v $(pwd):/app -w /app davidanson/markdownlint-cli2:0.3.1 "docs/**/*.md"
+
+###################
+# Aggregate Tasks
+###################
+
+# Lint code and docs
+lint: lint-code lint-prose lint-markdown
+
+# executes the CI checks (test lint jpi)
+ci: test lint jpi
 
 # publishes the jpi
 release version branch=`git branch --show-current`: 

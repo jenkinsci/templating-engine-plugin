@@ -2,9 +2,9 @@
 
 Step Aliasing allows library developers to cast the same step to one or more step names at runtime by using the `@StepAlias` annotation.
 
-By default, steps will assume the basename of the files that define them. i.e, a `build.groovy` step file will create a `build` step. 
+By default, steps will assume the basename of the files that define them. i.e, a `build.groovy` step file will create a `build` step.
 
-Step Aliasing, allows you to change the name (or names) of the step that's going to be created. 
+Step Aliasing, allows you to change the name (or names) of the step that's going to be created.
 
 This annotation is automatically imported, just like xref:lifecycle_hooks.adoc[lifecycle hooks].
 
@@ -68,7 +68,7 @@ void call(){
 
 ## Keeping the Original Step
 
-🚨 By default, when `@StepAlias` is present in a step file, a step with the original name will **not** be created.
+🚨 By default, when `@StepAlias` is present in a step file, a step with the original name **won't** be created.
 
 This behavior can be overridden via the `keepOriginal` annotation paramter.
 

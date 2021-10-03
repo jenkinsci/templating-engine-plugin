@@ -19,11 +19,11 @@ application_environments{
 
 ## Default Fields
 
-Application environments can define the optional fields `short_name` and `long_name`. 
+Application environments can define the optional fields `short_name` and `long_name`.
 
-If not decalred, these fields will default to the application environment key. 
+If not decalred, these fields will default to the application environment key.
 
-For example: 
+For example:
 
 ```groovy
 application_environments{
@@ -41,7 +41,7 @@ application_environments{
 }
 ```
 
-This block defines `dev`, `test`, and `prod` application environments. The following table outlines the values of `short_name` and `long_name` for each application environment. 
+This block defines `dev`, `test`, and `prod` application environments. The following table outlines the values of `short_name` and `long_name` for each application environment.
 
 | Application Environment | Short Name | Long Name    |
 |-------------------------|------------|--------------|
@@ -49,8 +49,6 @@ This block defines `dev`, `test`, and `prod` application environments. The follo
 | `test`                  | "t"        | "test"       |
 | `staging`               | "staging"  | "Staging"    |
 | `prod`                  | "p"        | "Production" |
-
-
 
 ## Determining Application Environment Order
 
@@ -66,7 +64,7 @@ application_environments{
 }
 ```
 
-would result in the following values for `previous` and `next` on each application environment: 
+would result in the following values for `previous` and `next` on each application environment:
 
 | Application Environment | previous | next   |
 |-------------------------|----------|--------|
@@ -74,15 +72,14 @@ would result in the following values for `previous` and `next` on each applicati
 | `test`                  | `dev`    | `prod` |
 | `prod`                  | `test`   | `null` |
 
-
 !!! note
     These properties are automatically configured based upon the declaration order within the pipeline configuration. If you try to set the `previous` and `next` properties in the environment's definition an exception will be thrown.
 
 ## Custom Fields
 
-Application environments accept custom fields. 
+Application environments accept custom fields.
 
-These custom fields can be used to capture characteristics about the application environment that should be used from the pipeline. Examples include AWS tags to use when querying infrastructure, kubernetes cluster API endpoints, IP addresses, etc. 
+These custom fields can be used to capture characteristics about the application environment that should be used from the pipeline. Examples include AWS tags to use when querying infrastructure, kubernetes cluster API endpoints, IP addresses, etc.
 
 For example, if there were IP addresses that the pipeline needed to access during execution:
 
@@ -98,7 +95,7 @@ application_environments{
 }
 ```
 
-Ths would add a `ip_addresses` property to the `dev` and `prod` objects while `test.ip_addresses` would be `null`. 
+Ths would add a `ip_addresses` property to the `dev` and `prod` objects while `test.ip_addresses` would be `null`.
 
 ## Using Application Environments in Deployment Steps
 
@@ -110,8 +107,7 @@ deploy_to dev
 deploy_to prod
 ```
 
-A contrived example of a library step that follows this pattern is below. 
-
+A contrived example of a library step that follows this pattern is below.
 
 ```groovy
 // within deploy_to.groovy
@@ -126,7 +122,9 @@ void call(app_env){
 }
 ```
 
-!!! note 
-    You may have noticed that the template did not use parenthesis when invoking the `deploy_to` method: `deploy_to dev`. 
+<!-- markdownlint-disable -->
+!!! note
+    You may have noticed that the template didn't use parenthesis when invoking the `deploy_to` method: `deploy_to dev`.
 
     This has nothing to do with JTE. Groovy allows you to [omit parentheses](https://groovy-lang.org/style-guide.html#_omitting_parentheses) when passing parameters to a method.
+<!-- markdownlint-restore -->

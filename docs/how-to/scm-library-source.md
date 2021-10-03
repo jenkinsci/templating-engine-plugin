@@ -1,1 +1,1 @@
-# Configure An SCM Library Source
+# Configure A Source Code Management Library Source

@@ -8,7 +8,7 @@ Stages are defined through the `stages{}` block. Each subkey references a [step]
 
 ## Stage Context
 
-The `stageContext` variable allows a step to determine if it is being executed as part of a stage.
+The `stageContext` variable allows a step to determine if it's being executed as part of a stage.
 
 | Property            | Description                                                                                                                                  |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -17,7 +17,7 @@ The `stageContext` variable allows a step to determine if it is being executed a
 
 ### stageContext Example
 
-Let's assume a library called `demo` is available within a configured [library source](../library-development/library-source.md). 
+Assume a library called `demo` is available within a configured [library source](../library-development/library-source.md).
 
 === "Pipeline Configuration"
     ```groovy
@@ -46,6 +46,7 @@ Let's assume a library called `demo` is available within a configured [library s
     ```
 
 The console log from this pipeline would look similar to:
+
 ```text
 ...
 stage name = continuous_integration

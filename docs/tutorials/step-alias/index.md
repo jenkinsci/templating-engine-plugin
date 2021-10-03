@@ -6,9 +6,9 @@
 
 ## Tutorial Prerequisites
 
-This tutorial assumes a Jenkins instance is available that is already configured with a [library source](../../concepts/library-development/library-source.md). 
+This tutorial assumes a Jenkins instance is available that's already configured with a [library source](../../concepts/library-development/library-source.md).
 
-If this is not the case, complete the [local development tutorial](../local-development/index.md) before proceeding.
+If this isn't the case, complete the [local development tutorial](../local-development/index.md) before proceeding.
 
 ## Create the Library
 
@@ -26,11 +26,9 @@ make sure the step uses stepContext.name
 
 Libraries that interact with build tools such as `npm`, `maven`, or `gradle` would often benefit from Step Aliasing.
 
-As a simple example, let's take an `npm` example.
+Here's an example of an `npm` library using Step Aliasing to reduce duplicated code.
 
-.pipeline configuration
-[source, groovy]
-----
+```groovy
 libraries{
   npm{
     phases{
@@ -43,11 +41,9 @@ libraries{
     }
   }
 }
-----
+```
 
-.npm_invoke.groovy
-[source, groovy]
-----
+```groovy
 @StepAlias(dynamic = { return config.phases.keySet() })
 void call(){
   stage("NPM: ${stepContext.name}"){
@@ -64,16 +60,4 @@ void call(){
     sh "npm run ${phaseConfig.script}"
   }
 }
-----
-
-[NOTE]
-====
-This example is intentionally not production ready.
-
-Its intent is to just show how Step Aliases could be used in a real library.
-====
-
-Previously, when writing libraries such as this, common logic around tool versioning, error checking, etc would have to be either duplicated across multiple libraries.
-Sometimes, a generic invoking step would be created and accept the "phase" as a method argument from other library steps.
-
-Step Aliasing simplifies these types of setups.
+```

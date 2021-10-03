@@ -2,7 +2,7 @@
 
 Pipeline Libraries are the foundation of the Jenkins Templating Engine to allow [Pipeline Templates](../pipeline-templates/pipeline-templates.md) to be shared across teams.
 
-Libraries provide [steps](../pipeline-primitives/steps.md) that can be invoked from templates. 
+Libraries provide [steps](../pipeline-primitives/steps.md) that can be invoked from templates.
 
 ## Loading Libraries
 

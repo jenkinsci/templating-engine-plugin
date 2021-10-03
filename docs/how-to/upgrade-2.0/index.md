@@ -1,12 +1,10 @@
 # 2.0 Upgrade Guide
 
-Hey everyone! JTE 2.0 is finally here.
-We really appreciate everyone's patience while we worked on this major release.
 This page is going to help walk you through the breaking changes associated with 2.0.
 
 ## Library File Structure
 
-In order to support [Library Resources](../../concepts/library-development/library-resources.md), the file structure of libraries has been reorganized.
+To support [Library Resources](../../concepts/library-development/library-resources.md), the file structure of libraries has been reorganized.
 
 === "Pre-2.0"
     ```
@@ -14,7 +12,7 @@ In order to support [Library Resources](../../concepts/library-development/libra
     ├── libraryA // libraries are directories
     │  ├── library_config.groovy // library config at root
     │  └── someOtherStep.groovy // step files at root of library directory
-    └── libraryB 
+    └── libraryB
       ├── library_config.groovy
       └── someOtherStep.groovy
     ```
@@ -45,7 +43,7 @@ These annotations can be placed on individual fields within a block, enabling fi
     ```groovy
     someBlock{
       merge = true // future configs can add fields to this block
-      my_governed_field = "some value"// cannot be modified 
+      my_governed_field = "some value"// cannot be modified
     }
     anotherBlock{
       override = true // entire block can be overridden. no way to only override a field in a block.
@@ -55,11 +53,11 @@ These annotations can be placed on individual fields within a block, enabling fi
     ```
 === "Post-2.0"
     ```groovy
-    @merge someBlock{ // future configs can add fields to this block 
+    @merge someBlock{ // future configs can add fields to this block
       my_governed_field = "some value"
     }
     anotherBlock{ // futre configs can't add fields to this block
-      may_not_be_changed = true // not modifiable 
+      may_not_be_changed = true // not modifiable
       @override default_value = true  // may be overridden
     }
     ```
@@ -75,6 +73,7 @@ These values are now in the `jte` block in the pipeline_config
     pipeline_template = "my_template"
     libraries{} // just here to show the relation to the root
     ```
+
 === "Post-2.0"
     ```groovy
     jte{
@@ -95,20 +94,20 @@ This parameter was typically called `context` but could be called anything.
     ```groovy
     @AfterStep({ context.step == "build" }) // variable called context
     void call(context){ // hooks required to accept a method parameter
-      println "running after the ${context.step} step" 
+      println "running after the ${context.step} step"
     }
     ```
 === "Post-2.0"
     ```groovy
     @AfterStep({ hookContext.step == "build"}) // variable called hookContext
-    void call(){ // no method parameter required 
+    void call(){ // no method parameter required
       println "running after the ${hookContext.step} step" // hookContext variable autowired
     }
     ```
 
 ## Configuration Changes
 
-We took the opportunity during a major release to do some major refactoring!
+JTE 2.0 resulted in significant refactoring of the codebase and underlying package structure.
 
 ### Global Configurations
 
@@ -116,7 +115,7 @@ There have been updates to the underlying class structure of the Global Governan
 This will impact the Jenkins Configuration as Code (JCasC) YAML schema used to configure JTE.
 
 !!! tip
-    We would recommend configuring the Global Governance Tier manually the way you require and exporting the JCasC YAML to see the schema required to automate configuring JTE.
+    It's recommended to configure the Global Governance Tier manually the way you require and exporting the JCasC YAML to see the schema required to automate configuring JTE.
 
 ### Job Configurations
 
@@ -127,4 +126,4 @@ JTE also now supports fetching the pipeline configuration and pipeline template 
 
 !!! tip
     Job DSL supports [Dynamic DSL](https://github.com/jenkinsci/job-dsl-plugin/wiki/Dynamic-DSL) which means that Job DSL supports the Jenkins Templating Engine settings.
-    We would recommend utilizing the Job DSL API Viewer on your Jenkins Instance once JTE 2.0 has been installed to see how to configure JTE settings.
+    It's recommended to utilize the Job DSL API Viewer on your Jenkins Instance once JTE 2.0 has been installed to see how to configure JTE settings.

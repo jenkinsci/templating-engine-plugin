@@ -1,0 +1,9 @@
+config:
+  # prefer semantic line breaks over max setnence length
+  line-length: false
+  # tabbed code examples violate this rule
+  no-space-in-code: false
+  # sometimes you gotta be hacky
+  no-inline-html: false
+
+fix: true

@@ -6,7 +6,7 @@ Keywords let users declare variables from the [pipeline configuration](../pipeli
 
 Keywords are defined via the `keywords{}` block in the pipeline configuration.
 
-For example, 
+For example,
 
 ```groovy
 keywords{
@@ -14,7 +14,7 @@ keywords{
 }
 ```
 
-would then result in a `foo` variable with the value `"bar"`. 
+would then result in a `foo` variable with the value `"bar"`.
 
 ## Use Cases
 
@@ -38,7 +38,7 @@ Keywords can be used to define regular expressions corresponding to common branc
 === "Pipeline Configuration"
     ```groovy
     keywords{
-      main = ~/^[mM]a(in|ster)$/ 
+      main = ~/^[mM]a(in|ster)$/
       develop = ~/^[Dd]evelop(ment|er|)$/
     }
     ```
@@ -46,19 +46,17 @@ Keywords can be used to define regular expressions corresponding to common branc
     ```groovy
     on_pull_request to: develop, {
       /*
-        execute on a PR to branches matching the regular expression 
+        execute on a PR to branches matching the regular expression
         defined by the "develop" keyword
       */
     }
-
     on_pull_request to: main, from: develop, {
       /*
         execute on a PR from a branch matching the regular expression
         defined by the "develop" keyword to a branch matching the regular
-        expression defined by the "main" keyword 
+        expression defined by the "main" keyword
       */
     }
-
     on_merge to: main, {
       /*
         execute when a PR is merged into a branch that matches the regular
@@ -68,4 +66,4 @@ Keywords can be used to define regular expressions corresponding to common branc
     ```
 
 !!! note
-    The steps in this example (`on_pull_request` and `on_merge`) are not a part of the Jenkins Templating Engine.
+    The steps in this example (`on_pull_request` and `on_merge`) aren't a part of the Jenkins Templating Engine.

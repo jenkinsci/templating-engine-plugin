@@ -2,7 +2,7 @@
 
 One of the major benefits of organizing your pipeline code into libraries is the ability to reuse these libraries across different teams.
 
-In order to achieve this level of reusability, it's best to externalize hard coded values as parameters that can be set from the pipeline configuration repository.
+To achieve this level of reusability, it's best to externalize hard coded values as parameters that can be set from the pipeline configuration repository.
 
 ## Pass Parameters Through the Pipeline Configuration
 
@@ -28,7 +28,7 @@ libraries{
 
 Library parameters can take an arbitrary structure.
 All parameters can be at the root level or a nested structure can be created to group related configurations together.
-Library parameter values can be any serializable Groovy primitive. 
+Library parameter values can be any serializable Groovy primitive.
 Typically, parameters are boolean, numeric, String, or array.
 
 ## Accessing Library Configurations Within Steps
@@ -40,9 +40,8 @@ The `config` variable is only resolvable within a library step and only contains
 !!! note
     If you need to access the entire aggregated pipeline configuration, JTE injects a `pipelineConfig` variable that can be accessed anywhere.
 
-
 ## Validating Library Configurations
 
-The pipeline configuration does not inherently perform type checking or validation. 
+The pipeline configuration doesn't inherently perform type checking or validation.
 
 Library developers can choose to provide a [Library Configuration File](./library-configuration-file.md) at the root of the library's directory which will assist with library parameter validation.
