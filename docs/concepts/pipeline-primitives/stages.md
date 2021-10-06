@@ -1,6 +1,6 @@
 # Stages
 
-Stages help keep [pipeline templates](../pipeline-templates/pipeline-templates.md) DRY by grouping steps together for execution.
+Stages help keep [pipeline templates](../pipeline-templates/overview.md) DRY by grouping steps together for execution.
 
 ## Defining Stages
 

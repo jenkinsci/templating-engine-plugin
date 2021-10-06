@@ -1,141 +1,15 @@
 # Library Configuration File
 
-The root of a library can contain an **optional** `library_config.groovy` file.
+The root of a library can contain an **optional** `library_config.groovy` file that captures metadata about the library.
 
-Currently, this library configuration file is only used for parameter validation.
+## Library Parameter Validation
 
-## Parameter Validation
-
-The [Pipeline Configuration](../pipeline-configuration/pipeline-configuration.md) is dynamically built and doesn't perform any type of validation.
-
-The library configuration file, therefore, allows library developers to validate the parameters provided to a library.
-
-The schema for parameter validation follows the following format:
-
-```groovy
-fields{ [1]
-  required{} [2]
-  optional{} [3]
-}
-```
-
-1. the `fields` block is used to specify expected library configurations
-2. library configurations that are *required* are listed in the `required` block
-3. library configurations that are *optional* (meaning they likely have a default value) are listed in the `optional` block
-
-Within the `required` and `optional` blocks, list the parameters the library supports in a `parameterName = <Validation Type>` format.
-
-<!-- markdownlint-disable -->
-!!! note
-    If a libary doesn't include a library configuration file, then users can supply arbitrary parameters to the library from the pipeline configuration.
-
-    If a library does include a library configuration file, then users will only be able to supply parameters thare are listed within the `required` and `optional` blocks.
-    The presence of extraneous parameters will fail the build. 
-<!-- markdownlint-restore -->
-
-The library configuration supports several different validation types for library parameters.
-
-### Type Validation
-
-Type validation confirms that a library parameter is an instance of a particular type.
-
-The supported types for comparison are:
-
-The current options for data types to test for are:
-
-* boolean / Boolean
-* String
-* Integer / int
-* Double
-* BigDecimal
-* Float
-* Number
-
-For example,
-
-```groovy
-fields{
-  required{
-    parameterA = String [1]
-    parameterB = Number [2]
-    parameterC = Boolean [3]
-  }
-  optional{
-    parameterD = String [4]
-    parameterE = Boolean [5]
-  }
-}
-```
-
-1. ensures that `parameterA` was configured and is an instance of a String
-2. ensures that `parameterB` was configured and is an instance of a Number
-3. ensures that `parameterC` was configured and is an instance of a Boolean
-4. _if_ `parameterD` was configured, ensures it's a String
-5. _if_ `parameterE` was configured, ensures it's a Boolean
-
-### Enum Validation
-
-The enum validation ensures that a library parameter value is one of the options defined by a list in the library configuration.
-
-For example,
-
-```groovy
-fields{
-  required{
-    parameterA = [ "a", "b", 11 ] [1]
-  }
-}
-```
-
-1. ensures that `parameterA` was configured and is set to either 'a', 'b', or 11
-
-### Regular Expression Validation
-
-Regular expression validation uses Groovy's [match operator](https://docs.groovy-lang.org/latest/html/documentation/core-operators.html#_match_operator) to determine if the parameter value is matched by the regular expression.
-
-For example
-
-```groovy
-fields{
-  required{
-    parameterA = ~/^s.*/ [1]
-  }
-}
-```
-
-1. ensures that `parameterA` starts with `s`
-
-### Nested Parameters
-
-Library parameters can be arbitrarily nested within the pipeline configuration.
-
-For example, the following pipeline configuration would be valid to pass the `example.nestedParameter` parameter to a library named `testing`.
-
-=== "Pipeline Configuration"
-    ```groovy
-    libraries{
-      testing{
-        example{
-          nestedParameter = 11
-        }
-      }
-    }
-    ```
-=== "Library Configuration"
-    ```groovy
-    fields{
-      required{
-        example{
-          nestedParameter = Number
-        }
-      }
-    }
-    ```
+Currently, the library configuration file is only used to validate library configurations.
 
 !!! tip
-    To validate nested library parameters in the library configuration, nest their validation in the same structure within the `required` or `optional` blocks.
+    A comprensive overview of the [library configuration schema](../../reference/library-configuration-schema.md) can be found in the Reference section.
 
-### Advanced Library Validations
+## Advanced Library Validations
 
 For library parameter validations that more complex than what can be accomplished through the library configuration functionality, library developers can alternatively create a step annotated with the [`@Validate` Lifecycle Hook](lifecycle-hooks.md).
 

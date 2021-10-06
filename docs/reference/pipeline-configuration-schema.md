@@ -1,1 +1,106 @@
 # Pipeline Configuration Schema
+
+## Overview
+
+Check out the [Pipeline Configuration](../concepts/pipeline-configuration/overview.md) page for an explanation of the Pipeline Configuration's purpose and syntax.
+
+## Root-Level Blocks
+
+### `jte`
+
+The `jte{}` block of the Pipeline Configuration is reserved for fields that change framework behavior.
+
+| key                          | description                                                                                                                                                                                                                                                                                                                        | type    | default |
+|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|---------|
+| `allow_scm_jenkinsfile`      | Determines whether a Jenkinsfile in a source code repository will be used when determing the pipeline template. Refer to [Pipeline Template Selection](../concepts/pipeline-governancemplates/pipeline-template-selection.md) for more information.                                                                                        | Boolean | `True`  |
+| `permissive_initialization`  | Determine whether to fail the build during [pipeline initialization](../concepts/advanced/pipeline-initialization.md) if multiple [Pipeline Primitives](../concepts/pipeline-primitives/overview.md) with conflicting names are loaded. Setting to `True` will allow multiple Pipeline Primitives with the same name to be loaded. | Boolean | `False` |
+| `pipeline_template`          | Specify a named template from the [Pipeline Catalog](../concepts/pipeline-templates/pipeline-catalog.md) to use                                                                                                                                                                                                                    | String  | `null`  |
+| `reverse_library_resolution` | Determine whether to reverse the order that [Library Sources](../concepts/library-development/library-source.md) are queried for a library. Refer to [Library Resolution](../concepts/library-development/library-resolution.md) for more information.                                                                               | Boolean | False   |
+
+!!! tip "Example JTE Block"
+    ```groovy
+    jte{
+      allow_scm_jenkinsfile = False
+      permissive_initialization = True
+      pipeline_template = "my-named-template.groovy"
+      reverse_library_resolution = True
+    }
+    ```
+
+### `template_methods`
+
+The `template_methods{}` block is used to define the names of steps to create a no-op placeholder for if a library doesn't provide the step's implementation.
+
+Refer to [Placeholder Steps](../concepts/advanced/placeholder-steps.md) for more information.
+
+!!! tip "Example template_methods block"
+    ```groovy
+    template_methods{
+      unit_test
+      build
+      deploy_to
+    }
+    ```
+
+### `libraries`
+
+The `libraries{}` block determines which libraries to load. The block names within `libraries` must reference a library within a configured [Library Source](../concepts/library-development/library-source.md) available to the job.
+
+Refer to the [Library Development Overview](../concepts/library-development/overview.md) for more information.
+
+!!! tip "Example libraries block"
+    ```groovy
+    libraries{
+      library_A{
+        param1 = "foo"
+        param2 = "bar"
+        ...
+      }
+      ...
+    }
+    ```
+
+### `stages`
+
+The `stages{}` block is used to define [Stages](../concepts/pipeline-primitives/stages.md).
+
+!!! tip "Example stages block"
+    ```groovy
+    stages{
+      stage_name{
+        step1
+        step2
+        ...
+      }
+      ...
+    }
+    ```
+
+### `application_environments`
+
+The `application_environments{}` block is used to define [Application Environments](../concepts/pipeline-primitives/application-environments.md).
+
+!!! tip "Example application_environments block"
+    ```groovy
+    application_environments{
+      dev{
+        long_name = "Development"
+      }
+      test
+      prod
+    }
+    ```
+
+### `keywords`
+
+The `keywords{}` block is used to define [Keywords](.../concepts/../../../concepts/pipeline-primitives/keywords.md).
+
+!!! tip "Example keywords block"
+    ```groovy
+    keywords{
+      main = ~/^[Mm](ain|aster)$/
+      globals{
+        foo = "bar"
+      }
+    }
+    ```
