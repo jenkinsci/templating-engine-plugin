@@ -53,6 +53,7 @@ nav:
       - 'concepts/framework-overview/overview.md'
       - 'concepts/framework-overview/bottom-up.md'
       - 'concepts/framework-overview/top-down.md'
+      - 'concepts/framework-overview/key-benefits.md'
     - Pipeline Templates:
       - 'concepts/pipeline-templates/overview.md'
       - 'concepts/pipeline-templates/pipeline-catalog.md'
@@ -83,6 +84,7 @@ nav:
     - Pipeline Governance:
       - 'concepts/pipeline-governance/overview.md'
       - 'concepts/pipeline-governance/configuration-hierarchy.md'
+      - 'concepts/pipeline-governance/governance-tier.md'
       - 'concepts/pipeline-governance/pipeline-template-selection.md'
       - 'concepts/pipeline-governance/library-resolution.md'
     - Advanced Topics:
