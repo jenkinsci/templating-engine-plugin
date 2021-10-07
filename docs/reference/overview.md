@@ -5,7 +5,7 @@ hide:
 
 # Overview
 
-Welcome to the **Reference** section of the JTE documentation. 
+Welcome to the **Reference** section of the JTE documentation.
 
 Here you'll find no-fluff information about the mechanics of JTE.
 

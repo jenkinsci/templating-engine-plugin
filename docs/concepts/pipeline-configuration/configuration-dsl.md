@@ -33,8 +33,8 @@ Properties of the Pipeline Configuration are set using Groovy's [Variable Assign
     assert pipelineConfig == [ foo: "bar" ]
     ```
 
-!!! warning "Don't Declare Variables"
-    The DSL relies on `setProperty(String propertyName, Object value)` being executed to persist the Pipeline Configuration property values. 
+!!! danger "Don't Declare Variables"
+    The DSL relies on `setProperty(String propertyName, Object value)` being executed to persist the Pipeline Configuration property values.
 
     Take the following example: 
 
@@ -98,13 +98,13 @@ A special case is empty blocks and unset properties. Both situations result in a
 
 To support [Pipeline Governance](../pipeline-governance/overview.md), the Pipeline Configuration DSL uses special annotations to control which aspects of the configuration the **next configuration in the [Configuration Hierarchy](../pipeline-governance/configuration-hierarchy.md)** is able to modify.
 
-These annotations are called `@Override` and `@Merge` and both can be placed on a block and property.
+These annotations are called `@override` and `@merge` and both can be placed on a block and property.
 
 === "Pipeline Configuration"
     ```groovy
-    @Merge a{
+    @merge a{
       x = 1
-      @Override y = 2
+      @override y = 2
     }
     ```
 

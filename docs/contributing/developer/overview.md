@@ -2,7 +2,6 @@
 
 ## Local Environment
 
-
 | Tool                                         | Purpose                                                                       |
 |----------------------------------------------|-------------------------------------------------------------------------------|
 | [Gradle]( https://gradle.org)                | Used to run unit tests, package the JPI, and publish the plugin               |
@@ -44,7 +43,7 @@ just --set coverage false test
 This project uses [Spotless](https://github.com/diffplug/spotless) and [CodeNarc](https://github.com/CodeNarc/CodeNarc) to perform linting.
 The CodeNarc rule sets for `src/main` and `src/test` can be found in `config/codenarc/rules.groovy` and `config/codenarc/rulesTest.groovy`, respectively.
 
-To execute linting, run: 
+To execute linting, run:
 
 ```bash
 just lint-code
@@ -86,7 +85,7 @@ just --set port 9000 run
 
 ### Pass arbitrary flags to the container
 
-Parameters passed to `just run` are sent as flags to the `docker run` command. 
+Parameters passed to `just run` are sent as flags to the `docker run` command.
 
 ```bash
 just run -e SOMEVAR="some var"
@@ -94,7 +93,7 @@ just run -e SOMEVAR="some var"
 
 ### Mounting local libraries for testing
 
-Local directories can be configured as Git SCM library sources even if they do not have a remote repository. 
+Local directories can be configured as Git SCM library sources even if they don't have a remote repository.
 
 For example, if `~/local-libraries` is a directory containing a local git repository then to mount it to the container you would run:
 

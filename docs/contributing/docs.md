@@ -1,6 +1,6 @@
 # Contribute to these Docs
 
-If you're here, it probably means you're interested in contributing to these docs. 
+If you're here, it probably means you're interested in contributing to these docs.
 So first off, thank you!
 
 This page will walk you through everything you need to get started.

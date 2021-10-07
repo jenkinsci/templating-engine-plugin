@@ -4,7 +4,7 @@ Libraries can store static assets, such as shell scripts or YAML files, in a `re
 
 ## Accessing A Library Resource
 
-Within a library step, the `resource(String relativePath)` can be used to return the file contents of a resource as a `String`.
+Within a [Library Step](./library-steps.md), the `resource(String relativePath)` can be used to return the file contents of a resource as a `String`.
 
 ## Example
 

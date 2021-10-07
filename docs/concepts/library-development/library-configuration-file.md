@@ -6,7 +6,7 @@ The root of a library can contain an **optional** `library_config.groovy` file t
 
 Currently, the library configuration file is only used to validate library configurations.
 
-!!! tip
+!!! info "Reference"
     A comprensive overview of the [library configuration schema](../../reference/library-configuration-schema.md) can be found in the Reference section.
 
 ## Advanced Library Validations
