@@ -4,7 +4,7 @@ JTE has supported writing Pipeline Templates in [Declarative Syntax](https://www
 
 ## Some Background
 
-JTE hasn't always supported Declarative Syntax. 
+JTE hasn't always supported Declarative Syntax.
 
 With JTE, pipeline authors can create Pipeline Templates that look like a custom DSL[^1].
 
@@ -78,7 +78,7 @@ The way to bypass this in Declarative Syntax to invoke the Library Step is to in
 
 !!! tip "Declarative Step Resolution Example"
     === "Declarative Pipeline Syntax"
-        Assume a `sh` library step has been loaded. 
+        Assume a `sh` library step has been loaded.
         ```groovy
         pipeline{
           agent any

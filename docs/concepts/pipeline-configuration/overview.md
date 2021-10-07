@@ -6,13 +6,13 @@ The Pipeline Configuration is what determines for a given Pipeline Run which Pip
 
 ## Structure
 
-JTE's Pipeline Configuration uses a [custom Domain-Specific Language (DSL)](./configuration-dsl.md) which after being parsed by JTE builds a [Map](https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html). 
+JTE's Pipeline Configuration uses a [custom Domain-Specific Language (DSL)](./configuration-dsl.md) which after being parsed by JTE builds a [Map](https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html).
 
 This DSL is a dynamic builder language.
 
 It doesn't validate that block names and fields align to the [Pipeline Configuration Schema](../../reference/pipeline-configuration-schema.md) in any way.
 
-If a block or field is declared that's not in the schema, it will simply be ignored during [Pipeline Initialization](../advanced/pipeline-initialization.md) such that no Pipeline Primitives are created. 
+If a block or field is declared that's not in the schema, it will simply be ignored during [Pipeline Initialization](../advanced/pipeline-initialization.md) such that no Pipeline Primitives are created.
 The incorrect fields will still be accessible on the [`pipelineConfig` autowired variable](../../reference/autowired-variables.md##pipelineconfig)
 
 ## Script Security

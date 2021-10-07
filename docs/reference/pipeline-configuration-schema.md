@@ -17,7 +17,7 @@ The `jte{}` block of the Pipeline Configuration is reserved for fields that chan
 | `pipeline_template`          | Specify a named template from the [Pipeline Catalog](../concepts/pipeline-templates/pipeline-catalog.md) to use                                                                                                                                                                                                                    | String  | `null`  |
 | `reverse_library_resolution` | Determine whether to reverse the order that [Library Sources](../concepts/library-development/library-source.md) are queried for a library. Refer to [Library Resolution](../concepts/library-development/library-resolution.md) for more information.                                                                               | Boolean | False   |
 
-!!! tip "Example JTE Block"
+!!! example "Example JTE Block"
     ```groovy
     jte{
       allow_scm_jenkinsfile = False
@@ -33,7 +33,7 @@ The `template_methods{}` block is used to define the names of steps to create a 
 
 Refer to [Placeholder Steps](../concepts/advanced/placeholder-steps.md) for more information.
 
-!!! tip "Example template_methods block"
+!!! example "Example template_methods block"
     ```groovy
     template_methods{
       unit_test
@@ -48,7 +48,7 @@ The `libraries{}` block determines which libraries to load. The block names with
 
 Refer to the [Library Development Overview](../concepts/library-development/overview.md) for more information.
 
-!!! tip "Example libraries block"
+!!! example "Example libraries block"
     ```groovy
     libraries{
       library_A{
@@ -64,7 +64,7 @@ Refer to the [Library Development Overview](../concepts/library-development/over
 
 The `stages{}` block is used to define [Stages](../concepts/pipeline-primitives/stages.md).
 
-!!! tip "Example stages block"
+!!! example "Example stages block"
     ```groovy
     stages{
       stage_name{
@@ -80,7 +80,7 @@ The `stages{}` block is used to define [Stages](../concepts/pipeline-primitives/
 
 The `application_environments{}` block is used to define [Application Environments](../concepts/pipeline-primitives/application-environments.md).
 
-!!! tip "Example application_environments block"
+!!! example "Example application_environments block"
     ```groovy
     application_environments{
       dev{
@@ -95,7 +95,7 @@ The `application_environments{}` block is used to define [Application Environmen
 
 The `keywords{}` block is used to define [Keywords](.../concepts/../../../concepts/pipeline-primitives/keywords.md).
 
-!!! tip "Example keywords block"
+!!! example "Example keywords block"
     ```groovy
     keywords{
       main = ~/^[Mm](ain|aster)$/

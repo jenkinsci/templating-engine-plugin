@@ -53,6 +53,7 @@ nav:
       - 'concepts/framework-overview/overview.md'
       - 'concepts/framework-overview/bottom-up.md'
       - 'concepts/framework-overview/top-down.md'
+      - 'concepts/framework-overview/key-benefits.md'
     - Pipeline Templates:
       - 'concepts/pipeline-templates/overview.md'
       - 'concepts/pipeline-templates/pipeline-catalog.md'
@@ -63,11 +64,11 @@ nav:
       - 'concepts/pipeline-configuration/merging-configs.md'
     - Pipeline Primitives:
       - 'concepts/pipeline-primitives/overview.md'
-      - 'concepts/pipeline-primitives/primitive-namespace.md'
       - 'concepts/pipeline-primitives/steps.md'
       - 'concepts/pipeline-primitives/stages.md'
       - 'concepts/pipeline-primitives/application-environments.md'
       - 'concepts/pipeline-primitives/keywords.md'
+      - 'concepts/pipeline-primitives/primitive-namespace.md'
     - Library Development:
       - 'concepts/library-development/overview.md'
       - 'concepts/library-development/library-structure.md'
@@ -79,11 +80,11 @@ nav:
       - 'concepts/library-development/library-source.md'
       - 'concepts/library-development/lifecycle-hooks.md'
       - 'concepts/library-development/multi-method-steps.md'
-      - 'concepts/library-development/step-context-variable.md'
       - 'concepts/library-development/step-aliasing.md'
     - Pipeline Governance:
       - 'concepts/pipeline-governance/overview.md'
       - 'concepts/pipeline-governance/configuration-hierarchy.md'
+      - 'concepts/pipeline-governance/governance-tier.md'
       - 'concepts/pipeline-governance/pipeline-template-selection.md'
       - 'concepts/pipeline-governance/library-resolution.md'
     - Advanced Topics:

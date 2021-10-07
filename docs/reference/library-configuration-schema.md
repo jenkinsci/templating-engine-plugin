@@ -45,7 +45,7 @@ The current options for data types to test for are:
 * Float
 * Number
 
-!!! tip "Type Validation Example"
+!!! example "Type Validation Example"
     === "Library Configuration File"
         ```groovy
         fields{
@@ -70,7 +70,7 @@ The current options for data types to test for are:
 
 The enum validation ensures that a library parameter value is one of the options defined by a list in the library configuration.
 
-!!! tip "Enum Validation Example"
+!!! example "Enum Validation Example"
     === "Library Configuration File"
         ```groovy
         fields{
@@ -85,7 +85,7 @@ The enum validation ensures that a library parameter value is one of the options
 
 Regular expression validation uses Groovy's [match operator](https://docs.groovy-lang.org/latest/html/documentation/core-operators.html#_match_operator) to determine if the parameter value is matched by the regular expression.
 
-!!! tip "Regular Expression Example"
+!!! example "Regular Expression Example"
     === "Library Configuration File"
         ```groovy
         fields{

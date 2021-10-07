@@ -20,7 +20,7 @@ This page outlines the various autowired variables, their scope, and what data t
 
 The `pipelineConfig` is accessible from everywhere and allows access to the aggregated pipeline configuration as a [Map](https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html).
 
-!!! tip "Example Usage of `pipelineConfig`"
+!!! example "Example Usage of `pipelineConfig`"
     An example of accessing the pipeline configuration via `pipelineConfig`:
     === "Pipeline Configuration"
         ```groovy
@@ -43,7 +43,7 @@ All loaded Pipeline Primitives for a Run can be accessed via the `jte` variable
 
 This is different from the `pipelineConfig` variable. The `pipelineConfig` variable gives a Map representation of the aggregated pipeline configuration whereas the `jte` variable allows access to the *actual Pipeline Primitive objects*.
 
-!!! tip "Example Usage of `jte`"
+!!! example "Example Usage of `jte`"
     Assume there's a `gradle` and an `npm` library that both contribute a `build()` step.
 
     By default, loading would result in the pipeline failing. However, you can perform [Step Overloading](../concepts/advanced/overloading-steps.md) by setting `jte.permissive_initialization` to `True`. 
@@ -69,7 +69,7 @@ This is different from the `pipelineConfig` variable. The `pipelineConfig` varia
         ```
 
 !!! note "`jte` block vs `jte` variable"
-    You may have noticed in the example above that a `jte{}` block is used in the Pipeline Configuration and a `jte` variable is used in the Pipeline Template. 
+    You may have noticed in the example above that a `jte{}` block is used in the Pipeline Configuration and a `jte` variable is used in the Pipeline Template.
 
     These are different things. 
 
@@ -85,7 +85,7 @@ The following variables are only accessible within [library steps](../concepts/l
 
 The `config` variable represents the library configuration for the library that contributed the step as a [Map](https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html).
 
-!!! tip "Example Usage of `config`"
+!!! example "Example Usage of `config`"
     Assume there's a `gradle` library that contributes a `build()` step.
 
     === "Pipeline Configuration"
@@ -112,7 +112,7 @@ The `hookContext` variable provides information about the current step to [Lifec
 | `library` | `String` | The library that contributed the step that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step.                                          |
 | `step`    | `String` | The name of the [library step](../concepts/library-development/library-steps.md) that trigged the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step. |
 
-!!! tip "Example `hookContext` usage"
+!!! example "Example `hookContext` usage"
     The following example shows how to use the `hookContext` variable so that a Lifecycle Hook only triggers after the `build()` step from the `gradle` library.
 
     === "Lifecycle Hook Step"
@@ -132,7 +132,7 @@ The `stageContext` variable provides information about the current [Stage](../co
 | `name` | `String` | The name of the current Stage being executed. `null` if step isn't being executed as part of a Stage.                                                                           |
 | `args` | `Map`    | The [named parameters](http://docs.groovy-lang.org/docs/groovy-2.5.0-beta-1/html/documentation/#_named_arguments) provided to the Stage. An empy Map if no parameters provided. |
 
-!!! tip "Example usage of `stageContext`"
+!!! example "Example usage of `stageContext`"
     The following example shows how to modify step behavior based upon Stage context.
     === "Pipeline Configuration"
         ```groovy
@@ -166,7 +166,7 @@ The `stepContext` allows step introspection, such as querying the name of the li
 | `name`    | `String`  | The **current name** of the step. May differ from the basename of the step's groovy file if using [Step Aliasing](../concepts/library-development/step-aliasing.md) |
 | `isAlias` | `Boolean` | Is true when `stepContext.name` refers to an alias                                                                                                                  |
 
-!!! tip "Example usage of `stepContext`"
+!!! example "Example usage of `stepContext`"
     === "Aliased Step"
         ```groovy
         @StepAlias(["build", "unit_test"])
