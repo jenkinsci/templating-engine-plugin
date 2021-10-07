@@ -175,6 +175,7 @@ class PipelineDecorator extends InvisibleAction implements Serializable{
         Boolean allow_scm_jenkinsfile = true
         Boolean permissive_initialization = false
         Boolean reverse_library_resolution = false
+        Boolean archive_generated_pipeline = false
 
         static LinkedHashMap getSchema(){
             return [
@@ -183,7 +184,8 @@ class PipelineDecorator extends InvisibleAction implements Serializable{
                         allow_scm_jenkinsfile: Boolean,
                         pipeline_template: String,
                         permissive_initialization: Boolean,
-                        reverse_library_resolution: Boolean
+                        reverse_library_resolution: Boolean,
+                        archive_generated_pipeline: Boolean
                     ]
                 ]
             ]

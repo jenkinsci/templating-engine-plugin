@@ -17,11 +17,14 @@ package org.boozallen.plugins.jte.job
 
 import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.JOB
 
+import hudson.FilePath
 import hudson.model.Action
 import hudson.model.Item
 import hudson.model.Queue
 import hudson.model.TaskListener
+import hudson.tasks.ArtifactArchiver
 import org.boozallen.plugins.jte.init.PipelineDecorator
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.persistence.PersistIn
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
@@ -39,6 +42,10 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowFactoryAction2
  */
 @PersistIn(JOB)
 abstract class TemplateFlowDefinition extends FlowDefinition {
+
+    private static final String GENERATED_PIPELINE_NAME = 'JTE-Jenkinsfile'
+
+    PipelineDecorator decorator
 
     static FlowDurabilityHint determineFlowDurabilityHint(FlowExecutionOwner owner){
         Queue.Executable exec = owner.getExecutable()
@@ -59,14 +66,38 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
         String template = initializeJTE(owner)
 
+        if (decorator.config.getJteBlockWrapper().archive_generated_pipeline) {
+            archiveGeneratedPipeline(owner, template)
+        }
+
         return new CpsFlowExecution(template, true, owner, hint)
     }
 
     private String initializeJTE(FlowExecutionOwner owner){
         PipelineDecorator decorator = new PipelineDecorator(owner)
         decorator.initialize() // runs the initialization process for JTE
+        this.decorator = decorator
         String template = decorator.getTemplate()
         return template
+    }
+
+    private void archiveGeneratedPipeline(FlowExecutionOwner owner, String template) {
+        TemplateLogger logger = new TemplateLogger(owner.getListener())
+        try {
+            FilePath templateFilePath = new FilePath(new File("${owner.getRootDir()}/${GENERATED_PIPELINE_NAME}"))
+            templateFilePath.write(template, null)
+            ArtifactArchiver archiver = new ArtifactArchiver(GENERATED_PIPELINE_NAME)
+            archiver.perform(owner.getExecutable(), new FilePath(owner.getRootDir()), null, null, owner.getListener())
+            logger.print('Archived Generated Pipeline')
+        } catch (any) {
+            List<String> output = ['Archival of generated pipeline failed']
+            output << any.message
+            output << any.stackTrace
+            logger.printWarning(output.join('\n'))
+            output = ['Logged Generated Pipeline']
+            output << template
+            logger.print(output.join('\n'))
+        }
     }
 
 }
