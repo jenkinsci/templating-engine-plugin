@@ -20,7 +20,7 @@ The `libraries{}` block within the [Pipeline Configuration](../pipeline-configur
 | [Library Configuration File](./library-configuration-file.md) | Learn how to validate library parameters using the library configuration file |
 | [Library Sources](./library-source.md)                        | Learn how to make a library discoverable for loading.                         |
 | [Lifecycle Hooks](./lifecycle-hooks.md)                       | Learn how to register steps for implicit invocation.                          |
-| [Multi-Method Steps](./multi-method-steps.md)                 | Learn how to define multiple methods per step.                                |
+| [Multi-Method Library Steps](./multi-method-steps.md)         | Learn how to define multiple methods per step.                                |
 | [Library Resolution](./library-resolution.md)                 | Learn the order library sources will be checked when loading a library.       |
 | [Step Context Variable](./step-context-variable.md)           | Learn how to access information about a step at runtime.                      |
 | [Step Aliasing](./step-aliasing.md)                           | Learn how to invoke the same step by multiple names.                          |

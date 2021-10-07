@@ -68,7 +68,7 @@ void call(){
 
 ## Keeping the Original Step
 
-🚨 By default, when `@StepAlias` is present in a step file, a step with the original name **won't** be created.
+By default, when `@StepAlias` is present in a step file, a step with the original name **won't** be created.
 
 This behavior can be overridden via the `keepOriginal` annotation paramter.
 

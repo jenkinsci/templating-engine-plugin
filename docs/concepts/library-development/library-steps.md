@@ -75,11 +75,52 @@ Library steps can accept method parameters just like any other method.
     Check out the [Parameterizing Libraries](./parameterizing-libraries.md) page to learn more.
 <!-- markdownlint-restore -->
 
+The exception to the rule of thumb regarding method parameters is when the method parameters are Pipeline Primitives.
+This works because the parameters can then be interchanged safely along with the implementation of the step that's accepting them as an argument.
+
+The most common example is creating a deployment step.
+Frequently, teams will create a `deploy_to` step that accepts an [Application Environment](../pipeline-primitives/application-environments.md) as an argument.
+
+!!! example "Deployment Steps"
+    The following Pipeline Template, Pipeline Configuration, and Deployment step demonstrate a safe use of a library step accepting a method parameter.
+    === "Pipeline Template"
+        ```groovy
+        unit_test()
+        build()
+        deploy_to dev
+        smoke_test()
+        deploy_to prod
+        ```
+    === "Pipeline Configuration"
+        ```groovy
+        libraries{
+          npm     // contributes unit_test, build
+          cypress // contributes integration_test
+          ansible // contributes deploy_to
+        }
+        application_environments{
+          dev{
+            ip = "1.1.1.1"
+          }
+          prod{
+            ip = "2.2.2.2"
+          }
+        }
+        ```
+    === "Deployment Step"
+        ```groovy
+        // ansible/steps/deploy_to.groovy
+        void call(app_env){
+          println "deploying to the ip: ${app_env.ip}"
+        }
+        ```
+
 ## Advanced Topics
 
 This page has covered the basics, if you're ready for more check out the following pages:
 
-| Topic                                         | Description                                         |
-|-----------------------------------------------|-----------------------------------------------------|
-| [Lifecycle Hooks](./lifecycle-hooks.md)       | Learn how to trigger library steps implicitly.      |
-| [Multi-Method Steps](./multi-method-steps.md) | Learn how to define more than one method in a step. |
+| Topic                                                 | Description                                         |
+|-------------------------------------------------------|-----------------------------------------------------|
+| [Lifecycle Hooks](./lifecycle-hooks.md)               | Learn how to trigger library steps implicitly.      |
+| [Multi-Method Library Steps](./multi-method-steps.md) | Learn how to define more than one method in a step. |
+| [Step Aliasing](./step-aliasing.md)                   | Learn how to call the same step by multiple names.  |
