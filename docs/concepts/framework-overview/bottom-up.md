@@ -122,9 +122,9 @@ unit_test()
 build()
 ```
 
-Good news, it is! This is exactly what JTE makes possible.
+Good news, this is exactly what JTE makes possible.
 
-Next, we'll need to define our implementations of the `unit_test()` and `build()` steps.
+Next, you'll need to define your implementations of the `unit_test()` and `build()` steps.
 
 ### Writing Pipeline Steps
 
@@ -238,7 +238,7 @@ Finally, JTE needs a way to determine which libraries to load for a given team's
 
 ### Pipeline Configuration
 
-So far, we've defined a pipeline template that invokes steps, and libraries that implement those steps.
+So far, you've defined a pipeline template that invokes steps, and libraries that implement those steps.
 The missing piece is a way to link the two.
 
 This is where the **pipeline configuration** comes in.
