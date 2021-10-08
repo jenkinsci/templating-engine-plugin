@@ -97,6 +97,7 @@ nav:
     - 'reference/pipeline-configuration-schema.md'
     - 'reference/autowired-variables.md'
     - 'reference/library-configuration-schema.md'
+    - 'reference/governance-tier.md'
   - Tutorials:
     - 'tutorials/overview.md'
   - How-To Guides: 
