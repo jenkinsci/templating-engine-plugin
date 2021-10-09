@@ -6,13 +6,13 @@ This page outlines the various autowired variables, their scope, and what data t
 
 ## Overview
 
-| Variable <img width=75>    | Description                                                                                                                 | Scope <img width=200>                                                    |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| `pipelineConfig`           | Represents the aggregated pipeline configuration                                                                            | Accessible everywhere                                                    |
-| `jte`                      | The [Primitive Namespace](../concepts/pipeline-primitives/primitive-namespace.md) object                                    | Accessible everywhere                                                    |
-| `config`                   | Represents a library's configuration provided by the aggregated pipeline configuration                                      | Within [library steps](../concepts/library-development/library-steps.md) |
-| `stepContext`              | Enables step introspection. Especially helpful when using [Step Aliasing](../concepts/library-development/step-aliasing.md) | Within [library steps](../concepts/library-development/library-steps.md) |
-| `hookContext`              | Represents contextual information for [Lifecycle Hooks](../concepts/library-development/lifecycle-hooks.md)                 | Within [library steps](../concepts/library-development/library-steps.md) |
+| Variable <img width=75/> | Description                                                                                                                 | Scope <img width=200/>                                                   |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| `pipelineConfig`         | Represents the aggregated pipeline configuration                                                                            | Accessible everywhere                                                    |
+| `jte`                    | The [Primitive Namespace](../concepts/pipeline-primitives/primitive-namespace.md) object                                    | Accessible everywhere                                                    |
+| `config`                 | Represents a library's configuration provided by the aggregated pipeline configuration                                      | Within [library steps](../concepts/library-development/library-steps.md) |
+| `stepContext`            | Enables step introspection. Especially helpful when using [Step Aliasing](../concepts/library-development/step-aliasing.md) | Within [library steps](../concepts/library-development/library-steps.md) |
+| `hookContext`            | Represents contextual information for [Lifecycle Hooks](../concepts/library-development/lifecycle-hooks.md)                 | Within [library steps](../concepts/library-development/library-steps.md) |
 
 ## Autowired Global Variables
 

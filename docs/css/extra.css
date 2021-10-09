@@ -50,3 +50,9 @@
   line-height: 1.5;
   margin-bottom: 1.25rem;
 }
+
+/* to center an image */
+.center{
+  display: block;
+  margin: 0 auto;
+}

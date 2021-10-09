@@ -1,6 +1,6 @@
 # Library Source
 
-Library Sources are a reference to a location where one or more libraries can be loaded.
+A Library Source is a reference to a location where one or more libraries can be fetched.
 
 ## Library Source Structure
 

@@ -32,6 +32,7 @@ extra:
 markdown_extensions:
   - admonition
   - footnotes
+  - attr_list
   - pymdownx.tabbed
   - pymdownx.highlight
   - pymdownx.superfences
@@ -89,9 +90,7 @@ nav:
       - 'concepts/pipeline-governance/library-resolution.md'
     - Advanced Topics:
       - 'concepts/advanced/pipeline-initialization.md'
-      - 'concepts/advanced/placeholder-steps.md'
       - 'concepts/advanced/overloading-steps.md'
-      - 'concepts/advanced/method-resolution.md'
   - Reference:
     - 'reference/overview.md'
     - 'reference/pipeline-configuration-schema.md'
