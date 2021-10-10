@@ -2,7 +2,7 @@ site_name: Jenkins Templating Engine
 theme:
   name: material
   palette:
-    primary: "#000080"
+    primary: teal
   features: 
     - navigation.instant
     - navigation.tabs
