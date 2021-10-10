@@ -106,7 +106,19 @@ nav:
     - 'how-to/upgrade-2.0/index.md'
   - Contributing:
     - 'contributing/overview.md'
-    - 'contributing/docs.md'
+    - 'contributing/fork-based.md'
+    - Documentation:
+      - 'contributing/docs/getting-started.md'
+      - 'contributing/docs/documentation-structure.md'
+      - 'contributing/docs/local-development.md'
+      - 'contributing/docs/markdown-lint.md'
+      - 'contributing/docs/vale.md'
+      - 'contributing/docs/add-or-remove-pages.md'
+      - 'contributing/docs/markdown-cheatsheet.md'
     - Developer Docs:
       - 'contributing/developer/overview.md'
+      - 'contributing/developer/running-tests.md'
+      - 'contributing/developer/building.md'
+      - 'contributing/developer/linting.md'
+      - 'contributing/developer/local-jenkins.md'
       - 'contributing/developer/releasing.md'
