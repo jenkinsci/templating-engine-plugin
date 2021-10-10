@@ -12,6 +12,8 @@ theme:
 
 repo_url: https://github.com/jenkinsci/templating-engine-plugin
 
+edit_uri: edit/main/docs/
+
 plugins:
   - search: {}
 
@@ -101,8 +103,6 @@ nav:
     - 'tutorials/overview.md'
   - How-To Guides: 
     - 'how-to/overview.md'
-    - 'how-to/scm-library-source.md'
-    - 'how-to/library-providing-plugin.md'
     - 'how-to/upgrade-2.0/index.md'
   - Contributing:
     - 'contributing/overview.md'

@@ -77,6 +77,15 @@ This is different from the `pipelineConfig` variable. The `pipelineConfig` varia
 
     The `jte` variable refers to the [Pipeline Primitive Namespace](../concepts/pipeline-primitives/primitive-namespace.md) variable. 
 
+### `steps`
+
+The `steps` variable doesn't technically come from JTE.
+It's a feature of all Jenkins Pipelines.
+
+The `steps` variable allows direct access to invoke Jenkins Pipeline DSL Steps.
+
+This variable is most commonly used when invoking Jenkins Pipeline DSL Steps from a [Library Class](../concepts/library-development/library-classes.md) or when [Overloading Steps](../concepts/advanced/overloading-steps.md).
+
 ## Autowired Library Step Variables
 
 The following variables are only accessible within [library steps](../concepts/library-development/library-steps.md).
