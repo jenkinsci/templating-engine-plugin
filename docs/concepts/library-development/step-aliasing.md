@@ -6,7 +6,7 @@ By default, steps will assume the basename of the files that define them. i.e, a
 
 Step Aliasing, allows you to change the name (or names) of the step that's going to be created.
 
-This annotation is automatically imported, just like xref:lifecycle_hooks.adoc[lifecycle hooks].
+This annotation is automatically imported, just like [lifecycle hooks](lifecycle-hooks.md).
 
 ## Static Step Aliases
 
@@ -23,7 +23,7 @@ void call(){
 }
 ```
 
-1. `generic.groovy` will be invokable at runtime via `build()`
+1. `generic.groovy` will be invocable at runtime via `build()`
 
 ### Multiple Static Aliases
 
@@ -43,7 +43,7 @@ void call(){
 Sometimes, aliases should themselves be determined at runtime.
 This can be accomplished by providing a `dynamic` parameter that should be a `Closure` that returns a string or list of strings.
 
-For example, if a library called `alias` had a step called `generic.groovy` then an `aliases` library paramter could be created:
+For example, if a library called `alias` had a step called `generic.groovy` then an `aliases` library parameter could be created:
 
 ```groovy
 libraries{
@@ -70,7 +70,7 @@ void call(){
 
 By default, when `@StepAlias` is present in a step file, a step with the original name **won't** be created.
 
-This behavior can be overridden via the `keepOriginal` annotation paramter.
+This behavior can be overridden via the `keepOriginal` annotation parameter.
 
 ```groovy
 @StepAlias(value = "build", keepOriginal = true) [1]

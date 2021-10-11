@@ -17,7 +17,7 @@ The incorrect fields will still be accessible on the [`pipelineConfig` autowired
 
 ## Script Security
 
-The Pipeline Configuration file is parsed by executing it within the same [Groovy Sandbox](https://github.com/jenkinsci/script-security-plugin) that Jenkins pipelines themself use.
+The Pipeline Configuration file is parsed by executing it within the same [Groovy Sandbox](https://github.com/jenkinsci/script-security-plugin) that Jenkins pipelines use as well.
 
 ## Pipeline Configuration Location
 

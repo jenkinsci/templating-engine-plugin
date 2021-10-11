@@ -7,7 +7,7 @@ The root of a library can contain an **optional** `library_config.groovy` file t
 Currently, the library configuration file is only used to validate library configurations.
 
 !!! info "Reference"
-    A comprensive overview of the [library configuration schema](../../reference/library-configuration-schema.md) can be found in the Reference section.
+    A comprehensive overview of the [library configuration schema](../../reference/library-configuration-schema.md) can be found in the Reference section.
 
 ## Advanced Library Validations
 
@@ -15,7 +15,7 @@ For library parameter validations that more complex than what can be accomplishe
 
 Methods within steps annotated with `@Validate` will execute before the pipeline template.
 
-For example, if a library wanted to validate a more complex use case such as ensuring a library parameter named `threshold` was greater than or equal to zero but less than or equal to 100 the following could be implemetned:
+For example, if a library wanted to validate a more complex use case such as ensuring a library parameter named `threshold` was greater than or equal to zero but less than or equal to 100 the following could be implemented:
 
 ```groovy
 @Validate [1]

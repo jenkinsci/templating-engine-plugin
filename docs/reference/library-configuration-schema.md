@@ -21,9 +21,9 @@ Within the `required` and `optional` blocks, list the parameters the library sup
 
 <!-- markdownlint-disable -->
 !!! note
-    If a libary doesn't include a library configuration file, then users can supply arbitrary parameters to the library from the pipeline configuration.
+    If a library doesn't include a library configuration file, then users can supply arbitrary parameters to the library from the pipeline configuration.
 
-    If a library does include a library configuration file, then users will only be able to supply parameters thare are listed within the `required` and `optional` blocks.
+    If a library does include a library configuration file, then users will only be able to supply parameters that are listed within the `required` and `optional` blocks.
     The presence of extraneous parameters will fail the build. 
 <!-- markdownlint-restore -->
 

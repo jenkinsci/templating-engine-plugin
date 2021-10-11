@@ -56,7 +56,7 @@ These annotations can be placed on individual fields within a block, enabling fi
     @merge someBlock{ // future configs can add fields to this block
       my_governed_field = "some value"
     }
-    anotherBlock{ // futre configs can't add fields to this block
+    anotherBlock{ // future configs can't add fields to this block
       may_not_be_changed = true // not modifiable
       @override default_value = true  // may be overridden
     }

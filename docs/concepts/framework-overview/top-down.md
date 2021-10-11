@@ -42,7 +42,7 @@ The only thing that makes a template a template is the use of Pipeline Primitive
 
 ## Pipeline Primitives
 
-[Pipeline Primitives](../pipeline-primitives/overview.md) are contribted by the JTE framework and help make templates reusable.
+[Pipeline Primitives](../pipeline-primitives/overview.md) are contributed by the JTE framework and help make templates reusable.
 
 Pipeline Templates will typically make use of identically named Pipeline Primitives, such as **step** called `build()`, to become reusable.
 

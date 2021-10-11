@@ -1,6 +1,6 @@
 # Pipeline Initialization
 
-Pipeline Initialization is the term JTE uses to describe everything that happens from when a Pipeline Run is started to when the Pipeline starts. 
+Pipeline Initialization is the term JTE uses to describe everything that happens from when a Pipeline Run is started to when the Pipeline starts.
 
 ## Overview
 

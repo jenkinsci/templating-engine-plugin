@@ -1,6 +1,6 @@
 # Application Environments
 
-The Application Environment primitive allows users to encaspulate environmental context. Users can define custom fields from the [Pipeline Configuration](../pipeline-configuration/overview.md).
+The Application Environment primitive allows users to encapsulate environmental context. Users can define custom fields from the [Pipeline Configuration](../pipeline-configuration/overview.md).
 
 ## Defining Application Environments
 
@@ -21,7 +21,7 @@ application_environments{
 
 Application environments can define the optional fields `short_name` and `long_name`.
 
-If not decalred, these fields will default to the application environment key.
+If not declared, these fields will default to the application environment key.
 
 For example:
 
@@ -52,7 +52,7 @@ This block defines `dev`, `test`, and `prod` application environments. The follo
 
 ## Determining Application Environment Order
 
-The order application environments are defined within the pipline configuration are used to define `previous` and `next` properties.
+The order application environments are defined within the pipeline configuration are used to define `previous` and `next` properties.
 
 For example, defining the following application environments
 
