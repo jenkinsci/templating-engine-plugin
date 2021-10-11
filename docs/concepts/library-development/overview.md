@@ -4,6 +4,9 @@ Pipeline Libraries are the foundation of the Jenkins Templating Engine to allow 
 
 Libraries provide [steps](../pipeline-primitives/steps.md) that can be invoked from templates.
 
+!!! tip "Library Repository Scaffold"
+    Check out this [starter repository](https://github.com/steven-terrana/jte-library-scaffold) to help you get off on the right foot.
+
 ## Loading Libraries
 
 The `libraries{}` block within the [Pipeline Configuration](../pipeline-configuration/overview.md) defines which libraries will be loaded for a particular pipeline run.

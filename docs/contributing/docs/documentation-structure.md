@@ -1,6 +1,6 @@
 # Documentation Structure
 
-The JTE documentation is organized into the following sections: [Concepts](../../concepts/framework-overview/overview.md), [Reference](../../reference/overview.md), [Tutorials](../../tutorials/index.md), & [How-To Guides](../../how-to/index.md).
+The JTE documentation is organized into the following sections: [Concepts](../../concepts/framework-overview/overview.md), [Reference](../../reference/overview.md), [Tutorials](../../tutorials/overview.md), & [How-To Guides](../../how-to/overview.md).
 
 ## Section Overview
 
