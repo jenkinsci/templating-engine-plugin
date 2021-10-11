@@ -26,7 +26,7 @@ If not, JTE will follow the flow described throughout the rest of this document.
 For MultiBranch Project Pipeline Jobs, if the source code repository has a `Jenkinsfile` at the root **and** `jte.allow_scm_jenkinsfile` is set to `True`, then the repository `Jenkinsfile` will be used as the Pipeline Template.
 
 !!! important "Disabling Repository Jenkinsfiles"
-    It's important that when trying to enforce a certain set of Pipeline Templates are used that `jte.allow_scm_jenkinsfile` is set to `False`. 
+    It's important that when trying to enforce a certain set of Pipeline Templates are used that `jte.allow_scm_jenkinsfile` is set to `False`.
     Otherwise, developers will be able to write whatever Pipeline Template they want to.
 
 ## Named Pipeline Templates

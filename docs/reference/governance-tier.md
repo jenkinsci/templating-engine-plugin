@@ -13,7 +13,7 @@ The configuration for the Pipeline Catalog and Pipeline Configuration are groupe
 
 ## Library Sources
 
-Governance Tiers can configure a list of [Library Sources](../concepts/library-development/library-source.md). 
+Governance Tiers can configure a list of [Library Sources](../concepts/library-development/library-source.md).
 
 When adding a Library Source, there will be a dropdown to determine the type of Library Provider.
 A Library Provider is a retrieval mechanism for libraries.
@@ -27,14 +27,14 @@ The ordering of Library Sources in the list impacts [Library Resolution](../conc
 
 ### From Remote Repository
 
-When configuring a Library Source that fetches from a remote repository, users can configure the type of source code repository as well as the configuration base directory. 
+When configuring a Library Source that fetches from a remote repository, users can configure the type of source code repository as well as the configuration base directory.
 
 The configuration base directory is the path within the remote repository where the libraries can be found.
 
 Each subdirectory within the configuration base directory will be treated as a library.
 
 !!! info
-    Refer to the [Library Structure](../library-development/../concepts/library-development/library-structure.md) for how to organize files within a library directory.
+    Refer to the [Library Structure](../concepts/library-development/library-structure.md) for how to organize files within a library directory.
 
 <!-- ### From A Plugin -->
 <!-- TODO -->

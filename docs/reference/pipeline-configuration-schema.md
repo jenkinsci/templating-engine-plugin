@@ -12,10 +12,10 @@ The `jte{}` block of the Pipeline Configuration is reserved for fields that chan
 
 | key                          | description                                                                                                                                                                                                                                                                                                                        | type    | default |
 |------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|---------|
-| `allow_scm_jenkinsfile`      | Determines whether a Jenkinsfile in a source code repository will be used when determing the pipeline template. Refer to [Pipeline Template Selection](../concepts/pipeline-governance/pipeline-template-selection.md) for more information.                                                                                       | Boolean | `True`  |
+| `allow_scm_jenkinsfile`      | Determines whether a Jenkinsfile in a source code repository will be used when determining the pipeline template. Refer to [Pipeline Template Selection](../concepts/pipeline-governance/pipeline-template-selection.md) for more information.                                                                                     | Boolean | `True`  |
 | `permissive_initialization`  | Determine whether to fail the build during [pipeline initialization](../concepts/advanced/pipeline-initialization.md) if multiple [Pipeline Primitives](../concepts/pipeline-primitives/overview.md) with conflicting names are loaded. Setting to `True` will allow multiple Pipeline Primitives with the same name to be loaded. | Boolean | `False` |
-| `pipeline_template`          | Specify a named template from the [Pipeline Catalog](../concepts/pipeline-templates/pipeline-catalog.md) to use                                                                                                                                                                                                                    | String  | `null`  |
-| `reverse_library_resolution` | Determine whether to reverse the order that [Library Sources](../concepts/library-development/library-source.md) are queried for a library. Refer to [Library Resolution](../concepts/pipeline-governance/library-resolution.md) for more information.                                                                             | Boolean | False   |
+| `pipeline_template`          | Specify a named template from the [Pipeline Catalog](../concepts/pipeline-templates/pipeline-catalog.md) to use.                                                                                                                                                                                                                   | String  | `null`  |
+| `reverse_library_resolution` | Determine whether to reverse the order that [Library Sources](../concepts/library-development/library-source.md) are queried for a library. Refer to [Library Resolution](../concepts/pipeline-governance/library-resolution.md) for more information.                                                                             | Boolean | `False` |
 
 !!! example "Example JTE Block"
     ```groovy
@@ -93,7 +93,7 @@ The `application_environments{}` block is used to define [Application Environmen
 
 ### `keywords`
 
-The `keywords{}` block is used to define [Keywords](.../concepts/../../../concepts/pipeline-primitives/keywords.md).
+The `keywords{}` block is used to define [Keywords](../concepts/pipeline-primitives/keywords.md).
 
 !!! example "Example keywords block"
     ```groovy

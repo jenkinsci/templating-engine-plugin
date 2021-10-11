@@ -1,6 +1,6 @@
 # Steps
 
-[Pipeline Templates](../pipeline-templates/overview.md) represent generic software delivery worklfows.
+[Pipeline Templates](../pipeline-templates/overview.md) represent generic software delivery workflows.
 
 Pipeline Templates use Steps to represent tasks in that workflow.
 
@@ -56,6 +56,6 @@ To define Placeholder Steps, use the `template_methods{}` block.
 Users define in the [Pipeline Configuration](../pipeline-configuration/overview.md) which libraries to load, if any.
 
 !!! info "Learn More"
-    Learn more about how to create libraries over in the [Libary Development](../library-development/overview.md) section.
+    Learn more about how to create libraries over in the [Library Development](../library-development/overview.md) section.
 
 [^1]: [No Operation](https://en.wikipedia.org/wiki/NOP_(code)): a command that does nothing.

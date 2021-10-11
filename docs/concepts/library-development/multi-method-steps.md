@@ -9,9 +9,9 @@ Steps, therefore, can define alternative methods beyond just the `call()` method
 ## Use Case: Utility Steps
 
 Multi-Method Library Steps are most useful when creating Library Steps that wrap a particular utility.
-The methods on the step can then represent diffent actions the utility can take.
+The methods on the step can then represent different actions the utility can take.
 
-!!! example "Utilty Step Example: Git"
+!!! example "Utility Step Example: Git"
     === "Git Utility Step"
         ```groovy
         void add(String files){

@@ -18,7 +18,7 @@ After the first Pipeline Configuration has been set, each subsequent Pipeline Co
 
 Pipeline Configurations must explicitly define which blocks and properties can be modified by the next configuration in the configuration chain.
 
-This is done through the `@override` and `@merge` annoations.
+This is done through the `@override` and `@merge` annotations.
 
 ### `@override`
 

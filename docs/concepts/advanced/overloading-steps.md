@@ -56,7 +56,7 @@ To invoke the original Jenkins Pipeline DSL Step, use the [`steps` Global Variab
         // support the original node interface
         void call(String label = null, Closure body){
             if(label){
-              steps.node(label, body) // steps var used to access origianl "node" implementation
+              steps.node(label, body) // steps var used to access original "node" implementation
             } else {
               steps.node(body)
             }

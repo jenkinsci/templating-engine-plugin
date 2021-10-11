@@ -1,6 +1,6 @@
 # Getting Started
 
-Presumably you're here becuase you want to help by updating the JTE documentation, so thank you!
+Presumably you're here because you want to help by updating the JTE documentation, so thank you!
 
 ## Tools
 

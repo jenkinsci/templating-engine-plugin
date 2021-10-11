@@ -14,7 +14,7 @@ The [styles](https://docs.errata.ai/vale/styles) for Vale can be found in `docs/
 
 ## Configuration
 
-The `.vale.ini` file at the root of the repository is used to configure Vale for both IDE integration and for the checks that run during a Pull Request. 
+The `.vale.ini` file at the root of the repository is used to configure Vale for both IDE integration and for the checks that run during a Pull Request.
 
 !!! note "IDE Integration"
     Check out the [Local Development](./local-development.md#integrated-development-environment-integration) page to learn more about IDE integration for Vale.

@@ -15,7 +15,7 @@
 
 | Style                  | Markdown                 |
 |------------------------|--------------------------|
-| *Itatlics*             | `*Italics*`              |
+| *Italics*              | `*Italics*`              |
 | **Bold**               | `**Bold**`               |
 | **_Bold and Italics_** | `**_Bold and Italics_**` |
 
