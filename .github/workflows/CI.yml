@@ -3,7 +3,6 @@ on:
   pull_request:
     branches: 
       - main
-      - 2.0
 jobs:
   Spotless:
     runs-on: ubuntu-latest
