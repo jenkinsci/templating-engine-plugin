@@ -4,15 +4,15 @@ A Library Source is a reference to a location where one or more libraries can be
 
 ## Library Source Structure
 
-Within a configured library source, a library is a *directory*.
+Within a configured Library Source, a library is a *directory*.
 
-The name of the directory is the identifier that would be declared in the `libraries{}` block of the pipeline configuration.
+The name of the directory is the identifier that would be declared in the `libraries{}` block of the Pipeline Configuration.
 
 ## Library Providers
 
-The Jenkins Templating Engine plugin provides an interface to create library sources.
+The Jenkins Templating Engine plugin provides an interface to create Library Sources.
 
-The plugin comes with two types of library sources built-in: SCM Library Sources and Plugin Library Sources
+The plugin comes with two types of Library Sources built-in: SCM Library Sources and Plugin Library Sources.
 
 ### SCM Library Source
 

@@ -30,7 +30,7 @@ just run -e SOMEVAR="some var"
 
 ## Mounting local libraries for testing
 
-Local directories can be configured as Git SCM library sources even if they don't have a remote repository.
+Local directories can be configured as Git SCM Library Sources even if they don't have a remote repository.
 
 For example, if `~/local-libraries` is a directory containing a local git repository then to mount it to the container you would run:
 
@@ -38,7 +38,7 @@ For example, if `~/local-libraries` is a directory containing a local git reposi
 just run -v ~/local-libraries:/local-libraries 
 ```
 
-You could then configure a library source using the file protocol to specify the repository location at `file:///local-libraries`
+You could then configure a Library Source using the file protocol to specify the repository location at `file:///local-libraries`
 
 <!-- markdownlint-disable -->
 !!! tip 

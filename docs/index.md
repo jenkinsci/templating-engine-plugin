@@ -8,7 +8,7 @@
 
 Welcome! :wave:
 
-The Jenkins Templating Engine is a pipeline development framework for [Jenkins](https://jenkins.io) that allows teams to create tool-agnostic pipeline templates that can be reused across applications.
+The Jenkins Templating Engine is a pipeline development framework for [Jenkins](https://jenkins.io) that allows teams to create tool-agnostic Pipeline Templates that can be reused across applications.
 
 <div class="cards">
   <a href="./concepts/framework-overview/overview/">

@@ -21,17 +21,17 @@ package example
 class Utility implements Serializable {}
 ```
 
-This is because Jenkins pipeline's implement a design pattern called [Continuation Passing Style (CPS)](https://github.com/jenkinsci/workflow-cps-plugin#technical-design) so that individual pipeline runs can resume progress.
+This is because Jenkins pipeline's implement a design pattern called [Continuation Passing Style (CPS)](https://github.com/jenkinsci/workflow-cps-plugin#technical-design) so that individual Pipeline Runs can resume progress.
 
 !!! note
     To learn more, check out [Best Practices for Avoiding Serializability Exceptions](https://www.jenkins.io/doc/book/pipeline/pipeline-best-practices/#avoiding-notserializableexception)
 
 ## Classpath
 
-Classes contributed by loaded libraries can be imported from the library's steps, steps from other libraries, and the pipeline template.
+Classes contributed by loaded libraries can be imported from the library's steps, steps from other libraries, and the Pipeline Template.
 
 !!! warning
-    Importing a library class from a pipeline template or from a step outside the library will lead to tight coupling.
+    Importing a library class from a Pipeline Template or from a step outside the library will lead to tight coupling.
 
     In general, library classes should be utilized *within* steps from the **same library**
 

@@ -4,7 +4,7 @@ During [Pipeline Initialization](../advanced/pipeline-initialization.md), JTE co
 
 This Pipeline Configuration chain is then sequentially merged, starting with the top-most configuration and ending with the most granular.
 
-The following guidelines explain how two pipeline configurations are merged together.
+The following guidelines explain how two Pipeline Configurations are merged together.
 
 ## The First Pipeline Configuration
 

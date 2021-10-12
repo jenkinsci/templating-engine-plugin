@@ -12,7 +12,7 @@ Teams can create arbitrarily complex governance hierarchies simply by organizing
 
 | Page                                                            | Description                                                                                                                                                    |
 |-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [Configuration Hierarchy](./configuration-hierarchy.md)         | Learn how to set up hierarchical pipeline configurations                                                                                                       |
+| [Configuration Hierarchy](./configuration-hierarchy.md)         | Learn how to set up hierarchical Pipeline Configurations                                                                                                       |
 | [Governance Tier](./governance-tier.md)                         | Learn how to configure a node of the Configuration Hierarchy                                                                                                   |
 | [Pipeline Template Selection](./pipeline-template-selection.md) | Learn how JTE determines which Pipeline Template to use for a given Pipeline Run                                                                               |
 | [Library Resolution](./library-resolution.md)                   | Learn how JTE choose which library to load when there are multiple choices within the available [Library Sources](../library-development/library-resources.md) |

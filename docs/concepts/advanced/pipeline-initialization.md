@@ -10,8 +10,8 @@ This stages of Pipeline Initialization are described in the table and picture be
 
 | Stage   <img width=375/>           | Description                                                                                                                                                                           |
 |------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Pipeline Configuration Aggregation | [Pipeline Configurations][config] fetched from [Governance Tiers][gov-tier] in the [Configuration Hierarchy][hierarchy] and merged, creating an **aggregated pipeline configuration** |
-| Pipeline Primitives Injected       | JTE parses the aggregated pipeline configuration and creates the corresponding [Pipeline Primitives][primitives]                                                                      |
+| Pipeline Configuration Aggregation | [Pipeline Configurations][config] fetched from [Governance Tiers][gov-tier] in the [Configuration Hierarchy][hierarchy] and merged, creating an **Aggregated Pipeline Configuration** |
+| Pipeline Primitives Injected       | JTE parses the aggregated Pipeline Configuration and creates the corresponding [Pipeline Primitives][primitives]                                                                      |
 | Pipeline Template Determined       | JTE determines the [Pipeline Template][template] to use according to the process outlined in [Pipeline Template Selection][template-selection]                                        |
 | Pipeline Template Compiled         | The groovy Pipeline Template is compiled into the final form that will be executed the same way as any other Jenkinsfile                                                              |
 

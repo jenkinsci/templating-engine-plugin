@@ -34,7 +34,7 @@ For example, a step named `build.groovy` that has implemented a `call` method ca
 
 ## Autowired Variables
 
-All library steps are autowired with several variables:
+All Library Steps are autowired with several variables:
 
 | Variable       | Description                                                                                           |
 |----------------|-------------------------------------------------------------------------------------------------------|
@@ -48,7 +48,7 @@ All library steps are autowired with several variables:
 
 ## Method Parameters
 
-Library steps can accept method parameters just like any other method.
+Library Steps can accept method parameters just like any other method.
 
 !!! example "Library Step Method Parameters"
     === "printMessage.groovy"
@@ -121,6 +121,6 @@ This page has covered the basics, if you're ready for more check out the followi
 
 | Topic                                                 | Description                                         |
 |-------------------------------------------------------|-----------------------------------------------------|
-| [Lifecycle Hooks](./lifecycle-hooks.md)               | Learn how to trigger library steps implicitly.      |
+| [Lifecycle Hooks](./lifecycle-hooks.md)               | Learn how to trigger Library Steps implicitly.      |
 | [Multi-Method Library Steps](./multi-method-steps.md) | Learn how to define more than one method in a step. |
 | [Step Aliasing](./step-aliasing.md)                   | Learn how to call the same step by multiple names.  |

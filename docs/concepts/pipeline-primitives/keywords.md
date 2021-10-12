@@ -1,10 +1,10 @@
 # Keywords
 
-Keywords let users declare variables from the [pipeline configuration](../pipeline-configuration/overview.md) that can be resolved from the [pipeline template](../pipeline-templates/overview.md) or [library steps](./steps.md).
+Keywords let users declare variables from the [Pipeline Configuration](../pipeline-configuration/overview.md) that can be resolved from the [Pipeline Template](../pipeline-templates/overview.md) or [Library Steps](./steps.md).
 
 ## Defining Keywords
 
-Keywords are defined via the `keywords{}` block in the pipeline configuration.
+Keywords are defined via the `keywords{}` block in the Pipeline Configuration.
 
 For example,
 
@@ -20,7 +20,7 @@ would then result in a `foo` variable with the value `"bar"`.
 
 ### Global Variables
 
-Keywords can be used to define a `globals` variable accessible from the pipeline template and library steps.
+Keywords can be used to define a `globals` variable accessible from the Pipeline Template and Library Steps.
 
 ```groovy
 keywords{
@@ -33,7 +33,7 @@ keywords{
 
 ### Regular Expressions for Conditionals
 
-Keywords can be used to define regular expressions corresponding to common branch names for use from the pipeline template to keep the template easy to read.  
+Keywords can be used to define regular expressions corresponding to common branch names for use from the Pipeline Template to keep the template easy to read.  
 
 === "Pipeline Configuration"
     ```groovy

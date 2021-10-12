@@ -15,7 +15,7 @@ During [Pipeline Initialization](../advanced/pipeline-initialization.md), Pipeli
 
 ## Defining Workflows, not Tech Stacks
 
-While creating JTE, it was envisioned that a pipeline template represents a *workflow* - not a pipeline for a specific tech stack.
+While creating JTE, it was envisioned that a Pipeline Template represents a *workflow* - not a pipeline for a specific tech stack.
 
 Be careful of the common pitfall of creating an `npm` template for all your NPM applications and a `java` template for all your Java applications.
 

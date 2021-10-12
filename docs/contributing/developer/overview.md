@@ -13,7 +13,7 @@
 | Topic                                         | Description                                                     |
 |-----------------------------------------------|-----------------------------------------------------------------|
 | [Running Tests](./running-tests.md)           | Learn how to run JTE's test suite                               |
-| [Building the Plugin](./building.md)          | Learn how to build the JTE jpi                                  |
+| [Building the Plugin](./building.md)          | Learn how to build the JTE JPI                                  |
 | [Linting](./linting.md)                       | Learn about JTE's code linting                                  |
 | [Running A Local Jenkins](./local-jenkins.md) | Learn how to run a local Jenkins for manual integration testing |
 | [Publishing A Release](releasing.md)          | Learn how to publish a JTE release                              |

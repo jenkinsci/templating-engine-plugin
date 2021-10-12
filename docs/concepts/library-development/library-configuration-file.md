@@ -13,7 +13,7 @@ Currently, the library configuration file is only used to validate library confi
 
 For library parameter validations that more complex than what can be accomplished through the library configuration functionality, library developers can alternatively create a step annotated with the [`@Validate` Lifecycle Hook](lifecycle-hooks.md).
 
-Methods within steps annotated with `@Validate` will execute before the pipeline template.
+Methods within steps annotated with `@Validate` will execute before the Pipeline Template.
 
 For example, if a library wanted to validate a more complex use case such as ensuring a library parameter named `threshold` was greater than or equal to zero but less than or equal to 100 the following could be implemented:
 
@@ -35,5 +35,5 @@ This approach allows library developers to use Groovy to validate arbitrarily co
 The method annotated with `@Validate` can be in its own step file or added as an additional method within an existing step file.
 
 !!! note
-    The example above assumes that the `threshold` library parameter has been configured as part of the pipeline configuration.
+    The example above assumes that the `threshold` library parameter has been configured as part of the Pipeline Configuration.
     This could be also be validated using Groovy or by combining the functionality of the library configuration file to set the `threshold` parameter as a required field that must be a Number.

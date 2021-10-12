@@ -2,7 +2,7 @@
 
 One of the major benefits of organizing your pipeline code into libraries is the ability to reuse these libraries across different teams.
 
-To achieve this level of reusability, it's best to externalize hard coded values as parameters that can be set from the pipeline configuration repository.
+To achieve this level of reusability, it's best to externalize hard coded values as parameters that can be set from the Pipeline Configuration repository.
 
 ## Pass Parameters Through the Pipeline Configuration
 
@@ -33,15 +33,15 @@ Typically, parameters are boolean, numeric, String, or array.
 
 ## Accessing Library Configurations Within Steps
 
-The Jenkins Templating Engine injects a `config` variable into each step. This `config` variable is a map whose keys are the library parameters that have been provided through the pipeline configuration.
+The Jenkins Templating Engine injects a `config` variable into each step. This `config` variable is a map whose keys are the library parameters that have been provided through the Pipeline Configuration.
 
-The `config` variable is only resolvable within a library step and only contains the configuration for the step's library.
+The `config` variable is only resolvable within a Library Step and only contains the configuration for the step's library.
 
 !!! note
-    If you need to access the entire aggregated pipeline configuration, JTE injects a `pipelineConfig` variable that can be accessed anywhere.
+    If you need to access the entire aggregated Pipeline Configuration, JTE injects a `pipelineConfig` variable that can be accessed anywhere.
 
 ## Validating Library Configurations
 
-The pipeline configuration doesn't inherently perform type checking or validation.
+The Pipeline Configuration doesn't inherently perform type checking or validation.
 
 Library developers can choose to provide a [Library Configuration File](./library-configuration-file.md) at the root of the library's directory which will assist with library parameter validation.

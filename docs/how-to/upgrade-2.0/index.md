@@ -119,10 +119,10 @@ This will impact the Jenkins Configuration as Code (JCasC) YAML schema used to c
 
 ### Job Configurations
 
-There have been updates to the underlying package and class structure for JTE as a whole as well as feature development for adhoc pipeline jobs.
+There have been updates to the underlying package and class structure for JTE as a whole as well as feature development for ad hoc pipeline jobs.
 This impacts Job DSL scripts used to configure jobs utilizing JTE.
 
-JTE also now supports fetching the pipeline configuration and pipeline template for a one-off pipeline job, which results in some changes to the structure of Job DSL for ad-hoc pipeline jobs.
+JTE also now supports fetching the Pipeline Configuration and Pipeline Template for a one-off pipeline job, which results in some changes to the structure of Job DSL for ad hoc pipeline jobs.
 
 !!! tip
     Job DSL supports [Dynamic DSL](https://github.com/jenkinsci/job-dsl-plugin/wiki/Dynamic-DSL) which means that Job DSL supports the Jenkins Templating Engine settings.

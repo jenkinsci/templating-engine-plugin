@@ -8,20 +8,20 @@ This page outlines the various autowired variables, their scope, and what data t
 
 | Variable <img width=75/> | Description                                                                                                                 | Scope <img width=200/>                                                   |
 |--------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| `pipelineConfig`         | Represents the aggregated pipeline configuration                                                                            | Accessible everywhere                                                    |
+| `pipelineConfig`         | Represents the aggregated Pipeline Configuration                                                                            | Accessible everywhere                                                    |
 | `jte`                    | The [Primitive Namespace](../concepts/pipeline-primitives/primitive-namespace.md) object                                    | Accessible everywhere                                                    |
-| `config`                 | Represents a library's configuration provided by the aggregated pipeline configuration                                      | Within [library steps](../concepts/library-development/library-steps.md) |
-| `stepContext`            | Enables step introspection. Especially helpful when using [Step Aliasing](../concepts/library-development/step-aliasing.md) | Within [library steps](../concepts/library-development/library-steps.md) |
-| `hookContext`            | Represents contextual information for [Lifecycle Hooks](../concepts/library-development/lifecycle-hooks.md)                 | Within [library steps](../concepts/library-development/library-steps.md) |
+| `config`                 | Represents a library's configuration provided by the aggregated Pipeline Configuration                                      | Within [Library Steps](../concepts/library-development/library-steps.md) |
+| `stepContext`            | Enables step introspection. Especially helpful when using [Step Aliasing](../concepts/library-development/step-aliasing.md) | Within [Library Steps](../concepts/library-development/library-steps.md) |
+| `hookContext`            | Represents contextual information for [Lifecycle Hooks](../concepts/library-development/lifecycle-hooks.md)                 | Within [Library Steps](../concepts/library-development/library-steps.md) |
 
 ## Autowired Global Variables
 
 ### `pipelineConfig`
 
-The `pipelineConfig` is accessible from everywhere and allows access to the aggregated pipeline configuration as a [Map](https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html).
+The `pipelineConfig` is accessible from everywhere and allows access to the aggregated Pipeline Configuration as a [Map](https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html).
 
 !!! example "Example Usage of `pipelineConfig`"
-    An example of accessing the pipeline configuration via `pipelineConfig`:
+    An example of accessing the Pipeline Configuration via `pipelineConfig`:
     === "Pipeline Configuration"
         ```groovy
         keywords{
@@ -41,7 +41,7 @@ The `jte` variable represents the [Primitive Namespace](../concepts/pipeline-pri
 
 All loaded Pipeline Primitives for a Run can be accessed via the `jte` variable
 
-This is different from the `pipelineConfig` variable. The `pipelineConfig` variable gives a Map representation of the aggregated pipeline configuration whereas the `jte` variable allows access to the *actual Pipeline Primitive objects*.
+This is different from the `pipelineConfig` variable. The `pipelineConfig` variable gives a Map representation of the aggregated Pipeline Configuration whereas the `jte` variable allows access to the *actual Pipeline Primitive objects*.
 
 !!! example "Example Usage of `jte`"
     Assume there's a `gradle` and an `npm` library that both contribute a `build()` step.
@@ -73,7 +73,7 @@ This is different from the `pipelineConfig` variable. The `pipelineConfig` varia
 
     These are different things. 
 
-    The `jte{}` block refers to framework-level feature flags as explained on the [pipeline configuration schema](./pipeline-configuration-schema.md) page.
+    The `jte{}` block refers to framework-level feature flags as explained on the [Pipeline Configuration schema](./pipeline-configuration-schema.md) page.
 
     The `jte` variable refers to the [Pipeline Primitive Namespace](../concepts/pipeline-primitives/primitive-namespace.md) variable. 
 
@@ -88,7 +88,7 @@ This variable is most commonly used when invoking Jenkins Pipeline DSL Steps fro
 
 ## Autowired Library Step Variables
 
-The following variables are only accessible within [library steps](../concepts/library-development/library-steps.md).
+The following variables are only accessible within [Library Steps](../concepts/library-development/library-steps.md).
 
 ### `config`
 
@@ -119,7 +119,7 @@ The `hookContext` variable provides information about the current step to [Lifec
 | Property  | Type     | Description                                                                                                                                                                       |
 |-----------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `library` | `String` | The library that contributed the step that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step.                                            |
-| `step`    | `String` | The name of the [library step](../concepts/library-development/library-steps.md) that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step. |
+| `step`    | `String` | The name of the [Library Step](../concepts/library-development/library-steps.md) that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step. |
 
 !!! example "Example `hookContext` usage"
     The following example shows how to use the `hookContext` variable so that a Lifecycle Hook only triggers after the `build()` step from the `gradle` library.

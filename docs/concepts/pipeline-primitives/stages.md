@@ -1,6 +1,6 @@
 # Stages
 
-Stages help keep [pipeline templates](../pipeline-templates/overview.md) DRY by grouping steps together for execution.
+Stages help keep [Pipeline Templates](../pipeline-templates/overview.md) DRY by grouping steps together for execution.
 
 ## Defining Stages
 
@@ -17,7 +17,7 @@ The `stageContext` variable allows a step to determine if it's being executed as
 
 ### stageContext Example
 
-Assume a library called `demo` is available within a configured [library source](../library-development/library-source.md).
+Assume a library called `demo` is available within a configured [Library Source](../library-development/library-source.md).
 
 === "Pipeline Configuration"
     ```groovy

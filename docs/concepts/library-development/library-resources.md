@@ -30,4 +30,4 @@ Within a [Library Step](./library-steps.md), the `resource(String relativePath)`
 !!! important
     1. The path parameter passed to the `resource` method must be a *relative path* within the `resources` directory
     2. Only steps within a library can access the library's resources (no cross-library resource fetching)
-    3. The `resource()` method is only available within library steps and can't be invoked from the pipeline template
+    3. The `resource()` method is only available within Library Steps and can't be invoked from the Pipeline Template

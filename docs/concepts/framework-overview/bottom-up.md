@@ -114,7 +114,7 @@ While the specific *tools* that get used to perform a **step** of the pipeline m
 
 The entire philosophy behind the Jenkins Template Engine stems from the concept of common workflows with interchangeable tools.
 
-What if it was possible to translate the three separate pipelines above into the following pipeline template:
+What if it was possible to translate the three separate pipelines above into the following Pipeline Template:
 
 ```groovy
 // file: Jenkinsfile
@@ -228,7 +228,7 @@ If you go back and look at the comments indicating the files those steps are pla
 
 A **library** in JTE is a collection of **steps** (stored together in a directory) that can be loaded at runtime.
 
-Earlier, a common pipeline template was defined that executes unit tests and then builds an artifact.
+Earlier, a common Pipeline Template was defined that executes unit tests and then builds an artifact.
 This template can be shared across teams.
 
 Then, three *libraries* were created: `npm`, `gradle`, and `maven`.
@@ -238,13 +238,13 @@ Finally, JTE needs a way to determine which libraries to load for a given team's
 
 ### Pipeline Configuration
 
-So far, you've defined a pipeline template that invokes steps, and libraries that implement those steps.
+So far, you've defined a Pipeline Template that invokes steps, and libraries that implement those steps.
 The missing piece is a way to link the two.
 
-This is where the **pipeline configuration** comes in.
-The pipeline configuration uses a groovy-based configuration language to ensure the pipeline template uses the correct tools and settings for the application.
+This is where the **Pipeline Configuration** comes in.
+The Pipeline Configuration uses a groovy-based configuration language to ensure the Pipeline Template uses the correct tools and settings for the application.
 
-For example, here's a pipeline configuration that specifies the `npm` library should be loaded.
+For example, here's a Pipeline Configuration that specifies the `npm` library should be loaded.
 
 ```groovy
 // file: pipeline_config.groovy
@@ -257,6 +257,6 @@ When a pipeline using JTE runs with this configuration and template, the steps f
 
 This means that the `unit_test` and `build` steps within the template will use the `unit_test` and `build` definitions provided by the `npm` library!
 
-By swapping out *pipeline configurations*, a **single pipeline template** can be used across multiple teams, supporting **multiple tech stacks**.
+By swapping out *Pipeline Configurations*, a **single Pipeline Template** can be used across multiple teams, supporting **multiple tech stacks**.
 
 --8<-- "concepts/framework-overview/snippets/design-patterns.md"

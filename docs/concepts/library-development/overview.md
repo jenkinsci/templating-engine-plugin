@@ -9,7 +9,7 @@ Libraries provide [steps](../pipeline-primitives/steps.md) that can be invoked f
 
 ## Loading Libraries
 
-The `libraries{}` block within the [Pipeline Configuration](../pipeline-configuration/overview.md) defines which libraries will be loaded for a particular pipeline run.
+The `libraries{}` block within the [Pipeline Configuration](../pipeline-configuration/overview.md) defines which libraries will be loaded for a particular Pipeline Run.
 
 ## Learn More
 
@@ -17,9 +17,9 @@ The `libraries{}` block within the [Pipeline Configuration](../pipeline-configur
 |---------------------------------------------------------------|-------------------------------------------------------------------------------|
 | [Library Structure](./library-structure.md)                   | Learn how files are organized within a library.                               |
 | [Library Steps](./library-steps.md)                           | Learn how to add steps to a library.                                          |
-| [Library Resources](./library-resources.md)                   | Learn how to use static assets from within library steps                      |
+| [Library Resources](./library-resources.md)                   | Learn how to use static assets from within Library Steps                      |
 | [Library Classes](./library-classes.md)                       | Learn how to define classes within a library.                                 |
-| [Parameterizing Libraries](./parameterizing-libraries.md)     | Learn how to make libraries configurable from the pipeline configuration      |
+| [Parameterizing Libraries](./parameterizing-libraries.md)     | Learn how to make libraries configurable from the Pipeline Configuration      |
 | [Library Configuration File](./library-configuration-file.md) | Learn how to validate library parameters using the library configuration file |
 | [Library Sources](./library-source.md)                        | Learn how to make a library discoverable for loading.                         |
 | [Lifecycle Hooks](./lifecycle-hooks.md)                       | Learn how to register steps for implicit invocation.                          |

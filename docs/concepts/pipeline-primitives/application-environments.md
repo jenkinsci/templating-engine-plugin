@@ -4,11 +4,11 @@ The Application Environment primitive allows users to encapsulate environmental 
 
 ## Defining Application Environments
 
-The `application_environments{}` block is used to define application environments.
+The `application_environments{}` block is used to define Application Environments.
 
-Within the application environments block, environments are defined through nested keys.
+Within the Application Environments block, environments are defined through nested keys.
 
-For example, the following code block would create `dev` and `test` variables, each referencing an application environment object. These variables can be resolved within the pipeline template or library steps.
+For example, the following code block would create `dev` and `test` variables, each referencing an Application Environment object. These variables can be resolved within the Pipeline Template or Library Steps.
 
 ```groovy
 application_environments{
@@ -19,9 +19,9 @@ application_environments{
 
 ## Default Fields
 
-Application environments can define the optional fields `short_name` and `long_name`.
+Application Environments can define the optional fields `short_name` and `long_name`.
 
-If not declared, these fields will default to the application environment key.
+If not declared, these fields will default to the Application Environment key.
 
 For example:
 
@@ -41,7 +41,7 @@ application_environments{
 }
 ```
 
-This block defines `dev`, `test`, and `prod` application environments. The following table outlines the values of `short_name` and `long_name` for each application environment.
+This block defines `dev`, `test`, and `prod` Application Environments. The following table outlines the values of `short_name` and `long_name` for each Application Environment.
 
 | Application Environment | Short Name | Long Name    |
 |-------------------------|------------|--------------|
@@ -52,9 +52,9 @@ This block defines `dev`, `test`, and `prod` application environments. The follo
 
 ## Determining Application Environment Order
 
-The order application environments are defined within the pipeline configuration are used to define `previous` and `next` properties.
+The order Application Environments are defined within the Pipeline Configuration are used to define `previous` and `next` properties.
 
-For example, defining the following application environments
+For example, defining the following Application Environments
 
 ```groovy
 application_environments{
@@ -64,7 +64,7 @@ application_environments{
 }
 ```
 
-would result in the following values for `previous` and `next` on each application environment:
+would result in the following values for `previous` and `next` on each Application Environment:
 
 | Application Environment | previous | next   |
 |-------------------------|----------|--------|
@@ -73,13 +73,13 @@ would result in the following values for `previous` and `next` on each applicati
 | `prod`                  | `test`   | `null` |
 
 !!! note
-    These properties are automatically configured based upon the declaration order within the pipeline configuration. If you try to set the `previous` and `next` properties in the environment's definition an exception will be thrown.
+    These properties are automatically configured based upon the declaration order within the Pipeline Configuration. If you try to set the `previous` and `next` properties in the environment's definition an exception will be thrown.
 
 ## Custom Fields
 
-Application environments accept custom fields.
+Application Environments accept custom fields.
 
-These custom fields can be used to capture characteristics about the application environment that should be used from the pipeline. Examples include AWS tags to use when querying infrastructure, kubernetes cluster API endpoints, IP addresses, etc.
+These custom fields can be used to capture characteristics about the Application Environment that should be used from the pipeline. Examples include AWS tags to use when querying infrastructure, kubernetes cluster API endpoints, IP addresses, etc.
 
 For example, if there were IP addresses that the pipeline needed to access during execution:
 
@@ -95,11 +95,11 @@ application_environments{
 }
 ```
 
-Ths would add a `ip_addresses` property to the `dev` and `prod` objects while `test.ip_addresses` would be `null`.
+This would add an `ip_addresses` property to the `dev` and `prod` objects while `test.ip_addresses` would be `null`.
 
 ## Using Application Environments in Deployment Steps
 
-A common pattern is to use application environments in conjunction with steps that perform automated deployments. If a library were to contribute a `deploy_to` step that accepted an application environment as an input parameter, then a pipeline template could be created that leverages these variables.
+A common pattern is to use Application Environments in conjunction with steps that perform automated deployments. If a library were to contribute a `deploy_to` step that accepted an Application Environment as an input parameter, then a Pipeline Template could be created that leverages these variables.
 
 ```groovy
 do_some_tests()
@@ -107,7 +107,7 @@ deploy_to dev
 deploy_to prod
 ```
 
-A contrived example of a library step that follows this pattern is below.
+A contrived example of a Library Step that follows this pattern is below.
 
 ```groovy
 // within deploy_to.groovy

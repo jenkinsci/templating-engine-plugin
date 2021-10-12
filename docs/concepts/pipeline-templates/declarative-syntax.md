@@ -72,13 +72,13 @@ Users familiar with Declarative Syntax can get started using JTE.
 
 There is one minor behavioral difference between Pipeline Templates written in Scripted Pipeline Syntax vs Declarative Pipeline Syntax in regard to Step Resolution.
 
-When a Library Step is loaded that overwrites a Jenkins DSL step, such as `sh`, then in Scripted Pipeline Templates the Library step will take precedence whereas in Declarative Pipeline Templates the original `sh` implementation will take precedence.
+When a Library Step is loaded that overwrites a Jenkins DSL step, such as `sh`, then in Scripted Pipeline Templates the Library Step will take precedence whereas in Declarative Pipeline Templates the original `sh` implementation will take precedence.
 
 The way to bypass this in Declarative Syntax to invoke the Library Step is to invoke it from a `script` block.
 
 !!! tip "Declarative Step Resolution Example"
     === "Declarative Pipeline Syntax"
-        Assume a `sh` library step has been loaded.
+        Assume a `sh` Library Step has been loaded.
         ```groovy
         pipeline{
           agent any

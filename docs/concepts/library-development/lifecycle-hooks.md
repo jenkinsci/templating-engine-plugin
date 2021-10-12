@@ -3,7 +3,7 @@
 Sometimes it's necessary to trigger specific pipeline actions at certain times during pipeline execution.
 For example, if you wanted to send multiple notification types after a particular pipeline step or at the conclusion of a pipeline if the build was failure.
 
-JTE supports this type of Aspect Oriented Programming style event handling through annotation markers that can be placed on methods defined within library steps.
+JTE supports this type of Aspect Oriented Programming style event handling through annotation markers that can be placed on methods defined within Library Steps.
 
 ## Hook Types
 
@@ -11,12 +11,12 @@ The following lifecycle hook annotations are available:
 
 | Annotation    | Trigger                                                                                               |
 |---------------|-------------------------------------------------------------------------------------------------------|
-| `@Validate`   | Beginning of a pipeline run, before the pipeline template                                             |
-| `@Init`       | After all `@Validate` hooks, before  the pipeline template                                            |
-| `@BeforeStep` | During template execution, before every [library step](./library-steps.md)                            |
-| `@AfterStep`  | During template execution, after every [library step](./library-steps.md)                             |
+| `@Validate`   | Beginning of a Pipeline Run, before the Pipeline Template                                             |
+| `@Init`       | After all `@Validate` hooks, before  the Pipeline Template                                            |
+| `@BeforeStep` | During template execution, before every [Library Step](./library-steps.md)                            |
+| `@AfterStep`  | During template execution, after every [Library Step](./library-steps.md)                             |
 | `@CleanUp`    | After template execution                                                                              |
-| `@Notify`     | During template execution after every [library step](./library-steps.md) and after template execution |
+| `@Notify`     | During template execution after every [Library Step](./library-steps.md) and after template execution |
 
 ![Placeholder](./lifecycle_hook.png)
 
@@ -29,7 +29,7 @@ Every step has an autowired `hookContext` variable which provides steps with rel
 | Property              | Description                                                                                                                    |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------|
 | `hookContext.library` | The name of the library that contributed the step associated with the step. Value is `null` for hooks not triggered by a step. |
-| `hookContext.step`    | The name of the library step that triggered the hook. Value is `null` for hooks not triggered by a step.                       |
+| `hookContext.step`    | The name of the Library Step that triggered the hook. Value is `null` for hooks not triggered by a step.                       |
 
 ## Conditional Hook Execution
 
@@ -45,7 +45,7 @@ Example Syntax:
 ```groovy
 @BeforeStep({ hookContext.step.equals("build") })
 void call(){
-    // execute something right before the library step called build is executed.
+    // execute something right before the Library Step called build is executed.
 }
 ```
 

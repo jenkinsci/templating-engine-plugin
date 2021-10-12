@@ -13,7 +13,7 @@ Pipeline Primitives exist to make Pipeline Templates easier to write, easier to 
 
 | Primitive Type                                            | Description                                                                               |
 |-----------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| [Steps](./steps.md)                                       | Define a step of the pipeline, typically to be invoked from the pipeline template.         |
+| [Steps](./steps.md)                                       | Define a step of the pipeline, typically to be invoked from the Pipeline Template.         |
 | [Stages](./stages.md)                                     | Group steps together to keep templates DRY.                                               |
 | [Application Environments](./application-environments.md) | Encapsulate environmental context                                                         |
-| [Keywords](./keywords.md)                                 | Declare variables from the pipeline configuration for use in pipeline templates and steps |
+| [Keywords](./keywords.md)                                 | Declare variables from the Pipeline Configuration for use in Pipeline Templates and steps |
