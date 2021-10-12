@@ -16,6 +16,9 @@ edit_uri: edit/main/docs/
 
 plugins:
   - search: {}
+  - gen-files:
+      scripts:
+        - 'docs/add_glossary.py'
 
 extra_css:
   - css/extra.css
@@ -30,9 +33,13 @@ extra:
   version:
     provider: mike
     default: latest
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_ID
 
 markdown_extensions:
   - admonition
+  - abbr
   - footnotes
   - attr_list
   - pymdownx.tabbed
@@ -114,6 +121,7 @@ nav:
       - 'contributing/docs/markdown-lint.md'
       - 'contributing/docs/vale.md'
       - 'contributing/docs/add-or-remove-pages.md'
+      - 'contributing/docs/acronyms.md'
       - 'contributing/docs/markdown-cheatsheet.md'
     - Developer Docs:
       - 'contributing/developer/overview.md'
