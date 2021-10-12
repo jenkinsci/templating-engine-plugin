@@ -1,6 +1,6 @@
 # Pipeline Configuration Syntax
 
-This page will cover the mechanics of JTE's Pipeline Configuration DSL[^1].
+This page will cover the mechanics of JTE's Pipeline Configuration DSL.
 
 ## Motivation
 
@@ -110,5 +110,3 @@ These annotations are called `@override` and `@merge` and both can be placed on 
 
 !!! tip "Learn More"
     To learn more about how these annotations work, check out [Merging Pipeline Configurations](./merging-configs.md)
-
-[^1]: [Domain Specific Language](https://en.wikipedia.org/wiki/Domain-specific_language)

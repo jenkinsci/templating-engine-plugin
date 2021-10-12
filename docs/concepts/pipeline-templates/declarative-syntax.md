@@ -6,7 +6,7 @@ JTE has supported writing Pipeline Templates in [Declarative Syntax](https://www
 
 JTE hasn't always supported Declarative Syntax.
 
-With JTE, pipeline authors can create Pipeline Templates that look like a custom DSL[^1].
+With JTE, pipeline authors can create Pipeline Templates that look like a custom DSL.
 
 Take the following Pipeline Template and Pipeline Configuration for example:
 
@@ -61,7 +61,7 @@ Many users, however, would still prefer to write Pipeline Templates in Declarati
 
 ## Motivation
 
-> As it's a fully featured programming environment, Scripted Pipeline offers a tremendous amount of flexibility and extensibility to Jenkins users. The Groovy learning-curve isn’t typically desirable for all members of a given team, so Declarative Pipeline was created to offer a simpler and more opinionated syntax for authoring Jenkins Pipeline. [^1]
+> As it's a fully featured programming environment, Scripted Pipeline offers a tremendous amount of flexibility and extensibility to Jenkins users. The Groovy learning-curve isn’t typically desirable for all members of a given team, so Declarative Pipeline was created to offer a simpler and more opinionated syntax for authoring Jenkins Pipeline[^1].
 
 Declarative Syntax offers a simpler and more opinionated way to write Jenkins pipelines.
 Users familiar with Declarative Syntax can get started using JTE.
@@ -98,5 +98,4 @@ The way to bypass this in Declarative Syntax to invoke the Library Step is to in
         1. This `sh` call would invoke the original Jenkins DSL Pipeline Step
         2. This `sh` call, in the `script{}` block, would invoke the loaded JTE Library Step
 
-[^1]: [Domain Specific Language](https://en.wikipedia.org/wiki/Domain-specific_language)
-[^2]: Taken from the [Declarative Syntax](https://www.jenkins.io/doc/book/pipeline/syntax/#compare) documentation.
+[^1]: Taken from the [Declarative Syntax](https://www.jenkins.io/doc/book/pipeline/syntax/#compare) documentation.

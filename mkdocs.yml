@@ -118,6 +118,7 @@ nav:
       - 'contributing/docs/markdown-lint.md'
       - 'contributing/docs/vale.md'
       - 'contributing/docs/add-or-remove-pages.md'
+      - 'contributing/docs/acronyms.md'
       - 'contributing/docs/markdown-cheatsheet.md'
     - Developer Docs:
       - 'contributing/developer/overview.md'

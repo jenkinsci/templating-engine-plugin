@@ -39,7 +39,7 @@ The methods on the step can then represent different actions the utility can tak
 
 ## Groovy Command Chain
 
-Expressive DSLs[^2] can be created when coupling multi-method steps with Groovy's [Command Chain](http://docs.groovy-lang.org/docs/latest/html/documentation/core-domain-specific-languages.html#_command_chains) feature.
+Expressive DSLs can be created when coupling multi-method steps with Groovy's [Command Chain](http://docs.groovy-lang.org/docs/latest/html/documentation/core-domain-specific-languages.html#_command_chains) feature.
 
 !!! example "Using Command Chains With The Git Utility"
     Command Chains could be used to improve upon the previous example.
@@ -66,4 +66,3 @@ Expressive DSLs[^2] can be created when coupling multi-method steps with Groovy'
         ```
 
 [^1]: [Groovy Call Operator](https://groovy-lang.org/operators.html#_call_operator)
-[^2]: [Domain-Specific Language](https://en.wikipedia.org/wiki/Domain-specific_language)
