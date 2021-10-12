@@ -2,6 +2,7 @@ import mkdocs_gen_files
 import os
 import glob
 
+# iterate over pages and append glossary
 for file in glob.glob("/docs/docs/**/*.md", recursive = True):
   if file.endswith('.md'):
     text = open(file).read()
