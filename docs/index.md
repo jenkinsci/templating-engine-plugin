@@ -1,3 +1,9 @@
+---
+  hide:
+  - navigation
+  - toc
+---
+ 
 # Jenkins Templating Engine
 
 Welcome! :wave:

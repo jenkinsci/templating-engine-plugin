@@ -17,6 +17,8 @@
   display: grid;
   grid-gap: 1rem;
   margin: 0 auto;
+  margin-left: 20%;
+  margin-right: 20%;
   max-width: 1000px;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
