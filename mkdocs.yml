@@ -16,6 +16,9 @@ edit_uri: edit/main/docs/
 
 plugins:
   - search: {}
+  - gen-files:
+      scripts:
+        - 'docs/add_glossary.py'
 
 extra_css:
   - css/extra.css
@@ -33,6 +36,7 @@ extra:
 
 markdown_extensions:
   - admonition
+  - abbr
   - footnotes
   - attr_list
   - pymdownx.tabbed
