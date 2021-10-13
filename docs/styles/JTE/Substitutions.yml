@@ -35,6 +35,7 @@ swap:
   'library source' : Library Source
   'Library source' : Library Source
   'library Source' : Library Source
+# No 'y' here because this covers both Library and Libraries
   'pipeline librar' : Pipeline Librar
   'Pipeline librar' : Pipeline Librar
   'pipeline Librar' : Pipeline Librar
