@@ -18,7 +18,7 @@ package org.boozallen.plugins.jte.init.primitives.hooks
 import java.lang.annotation.Annotation
 
 /**
- * This class is used from {@see GroovyShellDecoratorImpl} to
+ * This class is used from {@see PipelineTemplateCompiler} to
  * invoke Lifecycle hooks in template
  */
 class HooksWrapper implements Serializable{

@@ -53,9 +53,9 @@ import java.util.logging.Logger
  * @author Steven Terrana
  */
 @Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
-class GroovyShellDecoratorImpl extends GroovyShellDecorator {
+class PipelineTemplateCompiler extends GroovyShellDecorator {
 
-    private static final Logger LOGGER = Logger.getLogger(GroovyShellDecoratorImpl.name);
+    private static final Logger LOGGER = Logger.getLogger(PipelineTemplateCompiler.name);
 
     @Override
     void configureShell(@CheckForNull CpsFlowExecution context, GroovyShell shell) {
