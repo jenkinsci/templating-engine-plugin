@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init.governance.config.dsl
 
 import org.boozallen.plugins.jte.init.JteBlockWrapper
-
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
