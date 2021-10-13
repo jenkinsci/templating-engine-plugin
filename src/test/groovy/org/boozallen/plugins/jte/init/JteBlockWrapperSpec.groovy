@@ -15,50 +15,40 @@
 */
 package org.boozallen.plugins.jte.init.primitives
 
-import org.boozallen.plugins.jte.init.PipelineDecorator
-import org.junit.ClassRule
-import org.jvnet.hudson.test.JenkinsRule
-import org.jvnet.hudson.test.WithoutJenkins
-import spock.lang.Shared
+import org.boozallen.plugins.jte.init.JteBlockWrapper
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class PipelineDecoratorSpec extends Specification {
+class JteBlockWrapperSpec extends Specification {
 
-    @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
-
-    @WithoutJenkins
     def "retrieve jte.allow_scm_jenkinsfile"() {
         when:
-        def jte = new PipelineDecorator.JteBlockWrapper( [allow_scm_jenkinsfile:false])
+        def jte = new JteBlockWrapper( [allow_scm_jenkinsfile:false])
 
         then:
         jte.allow_scm_jenkinsfile == false
     }
 
-    @WithoutJenkins
     def "retrieve default true for jte.allow_scm_jenkinsfile when jte block is empty"() {
         when:
-        def jte = new PipelineDecorator.JteBlockWrapper([:])
+        def jte = new JteBlockWrapper([:])
 
         then:
         jte.allow_scm_jenkinsfile == true
     }
 
-    @WithoutJenkins
     def "throws exception on extra config"() {
         when:
-        new PipelineDecorator.JteBlockWrapper([extra:true])
+        new JteBlockWrapper([extra:true])
 
         then:
         thrown(MissingPropertyException)
     }
 
-    @WithoutJenkins
     @Unroll
     def "when config value is '#config' and expected allow_scm_jenkinsfile is #expected_allow and  jte.pipeline_template is #expected_template\n"() {
         when:
-        def jte = new PipelineDecorator.JteBlockWrapper(config)
+        def jte = new JteBlockWrapper(config)
 
         then:
         jte.allow_scm_jenkinsfile == expected_allow

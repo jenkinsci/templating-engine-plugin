@@ -16,7 +16,8 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.FilePath
-import org.boozallen.plugins.jte.init.PipelineDecorator
+import org.boozallen.plugins.jte.init.JteBlockWrapper
+
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
@@ -60,7 +61,7 @@ class LibraryStepInjectorSpec extends Specification {
     PipelineConfigurationObject pipelineConfigurationObject = pipelineConfigurationObject = Mock {
         getConfig() >> config
 
-        getJteBlockWrapper() >> { return config.jte as PipelineDecorator.JteBlockWrapper }
+        getJteBlockWrapper() >> { return config.jte as JteBlockWrapper }
     }
 
     class MockLibraryProvider extends LibraryProvider {

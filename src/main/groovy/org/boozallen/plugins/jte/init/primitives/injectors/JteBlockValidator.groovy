@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.Extension
+import org.boozallen.plugins.jte.init.JteBlockWrapper
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.AggregateException
@@ -23,7 +24,6 @@ import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.boozallen.plugins.jte.init.PipelineDecorator.JteBlockWrapper
 
 /**
  * Validates the jte configuration block
