@@ -69,3 +69,8 @@
   display: block;
   margin: 0 auto;
 }
+
+/* table cell align vertical middle */
+.md-typeset table:not([class]) td {
+  vertical-align: middle;
+}
