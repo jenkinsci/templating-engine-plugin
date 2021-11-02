@@ -19,8 +19,8 @@ Within a [Library Step](./library-steps.md), the `resource(String relativePath)`
         │       └── data.yaml
         └── library_config.groovy
         ```
-    === "step.groovy"
-        ```groovy
+    === "Library Step"
+        ``` groovy title="step.groovy"
         void call(){
           String script = resource("doSomething.sh")
           def data = readYaml text: resource("nested/data.yaml")

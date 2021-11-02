@@ -5,7 +5,7 @@ The CodeNarc rule sets for `src/main` and `src/test` can be found in `config/cod
 
 To execute linting, run:
 
-```bash
+``` bash
 just lint-code
 ```
 

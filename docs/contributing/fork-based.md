@@ -14,7 +14,7 @@ After forking the upstream repository, it's helpful to add the upstream reposito
 
 This can be done by running the command:
 
-```bash
+``` bash
 git remote add upstream https://github.com/jenkinsci/templating-engine-plugin.git
 ```
 

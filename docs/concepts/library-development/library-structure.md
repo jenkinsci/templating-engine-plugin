@@ -15,7 +15,7 @@ The name of the directory is the library identifier used within the Pipeline Con
 
 ## Example Library Structure
 
-```text
+``` text
 exampleLibraryName [1]
 ├── steps [2]
 │   └── step1.groovy [3]

@@ -60,11 +60,11 @@ This compiled Pipeline is then executed **just like any other Jenkinsfile**.
     What follows is an example to understand the transformation that takes place.
 
     === "Provided Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         build()
         ```
     === "Compiled Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         try{
           // code that invokes @Validation annotated methods in steps
           // code that invokes @Init annotated methods in steps 

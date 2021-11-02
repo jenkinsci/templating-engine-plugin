@@ -2,7 +2,7 @@
 
 It's often helpful to run Jenkins in a container locally to test various scenarios with JTE during development.
 
-```bash
+``` bash
 just run 
 ```
 
@@ -10,13 +10,13 @@ With the default settings, this will expose jenkins on [http://localhost:8080](h
 
 ## Change the container name
 
-```bash
+``` bash
 just --set container someName run
 ```
 
 ## Change the port forwarding target
 
-```bash
+``` bash
 just --set port 9000 run
 ```
 
@@ -24,7 +24,7 @@ just --set port 9000 run
 
 Parameters passed to `just run` are sent as flags to the `docker run` command.
 
-```bash
+``` bash
 just run -e SOMEVAR="some var"
 ```
 
@@ -34,7 +34,7 @@ Local directories can be configured as Git SCM Library Sources even if they don'
 
 For example, if `~/local-libraries` is a directory containing a local git repository then to mount it to the container you would run:
 
-```bash
+``` bash
 just run -v ~/local-libraries:/local-libraries 
 ```
 
@@ -44,7 +44,7 @@ You could then configure a Library Source using the file protocol to specify the
 !!! tip 
     When using this technique, changes to the libraries must be committed to be found. In a separate terminal, run:
 
-    ```bash
+    ``` bash
     just watch ~/local-libraries
     ```
 

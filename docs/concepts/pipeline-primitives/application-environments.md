@@ -10,7 +10,7 @@ Within the Application Environments block, environments are defined through nest
 
 For example, the following code block would create `dev` and `test` variables, each referencing an Application Environment object. These variables can be resolved within the Pipeline Template or Library Steps.
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 application_environments{
   dev
   test
@@ -25,7 +25,7 @@ If not declared, these fields will default to the Application Environment key.
 
 For example:
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 application_environments{
   dev
   test{
@@ -56,7 +56,7 @@ The order Application Environments are defined within the Pipeline Configuration
 
 For example, defining the following Application Environments
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 application_environments{
   dev
   test
@@ -83,7 +83,7 @@ These custom fields can be used to capture characteristics about the Application
 
 For example, if there were IP addresses that the pipeline needed to access during execution:
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 application_environments{
   dev{
     ip_addresses = [ "1.2.3.4", "1.2.3.5" ]
@@ -101,7 +101,7 @@ This would add an `ip_addresses` property to the `dev` and `prod` objects while 
 
 A common pattern is to use Application Environments in conjunction with steps that perform automated deployments. If a library were to contribute a `deploy_to` step that accepted an Application Environment as an input parameter, then a Pipeline Template could be created that leverages these variables.
 
-```groovy
+``` groovy title="Jenkinsfile"
 do_some_tests()
 deploy_to dev
 deploy_to prod
@@ -109,8 +109,7 @@ deploy_to prod
 
 A contrived example of a Library Step that follows this pattern is below.
 
-```groovy
-// within deploy_to.groovy
+``` groovy title="deploy_to.groovy"
 void call(app_env){
   // use the default long_name property to dynamically name the stage
   stage("Deploy to ${app_env.long_name}"){

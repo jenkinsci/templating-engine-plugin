@@ -20,7 +20,7 @@ The `stageContext` variable allows a step to determine if it's being executed as
 Assume a library called `demo` is available within a configured [Library Source](../library-development/library-source.md).
 
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     stages{
       continuous_integration{
         unit_test
@@ -31,13 +31,12 @@ Assume a library called `demo` is available within a configured [Library Source]
     }
     ```
 === "Pipeline Template"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     continuous_integration param1: "foo", param2: "bar"
     unit_test()
     ```
-=== "unit_test.groovy"
-    ```groovy
-    // demo/steps/unit_test.groovy
+=== "Library Step"
+    ``` groovy title="demo/steps/unit_test.groovy"
     void call(){
       println "stage name = ${stepContext.name}"
       println "param1 = ${stageContext.args.param1}"
@@ -47,7 +46,7 @@ Assume a library called `demo` is available within a configured [Library Source]
 
 The console log from this pipeline would look similar to:
 
-```text
+``` text
 ...
 stage name = continuous_integration
 param1 = foo
@@ -65,7 +64,7 @@ param2 = null
 A common example would be to create a continuous integration stage to keep templates DRY.
 
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     ...
     stages{
       continuous_integration{
@@ -77,7 +76,7 @@ A common example would be to create a continuous integration stage to keep templ
     }
     ```
 === "Pipeline Template"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     on_pull_request to: develop, {
       continuous_integration()
     }

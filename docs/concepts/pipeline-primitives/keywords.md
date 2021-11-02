@@ -8,7 +8,7 @@ Keywords are defined via the `keywords{}` block in the Pipeline Configuration.
 
 For example,
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 keywords{
   foo = "bar" 
 }
@@ -22,7 +22,7 @@ would then result in a `foo` variable with the value `"bar"`.
 
 Keywords can be used to define a `globals` variable accessible from the Pipeline Template and Library Steps.
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 keywords{
   globals{
     one = 1
@@ -36,14 +36,14 @@ keywords{
 Keywords can be used to define regular expressions corresponding to common branch names for use from the Pipeline Template to keep the template easy to read.  
 
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     keywords{
       main = ~/^[mM]a(in|ster)$/
       develop = ~/^[Dd]evelop(ment|er|)$/
     }
     ```
 === "Pipeline Template"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     on_pull_request to: develop, {
       /*
         execute on a PR to branches matching the regular expression

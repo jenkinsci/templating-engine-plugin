@@ -2,7 +2,7 @@
 
 ## Headers
 
-```markdown
+``` markdown
 # H1
 ## H2
 ### H3
@@ -24,7 +24,7 @@
 There are 3 primary ways embed a hyperlink.
 
 === "Markdown"
-    ```markdown
+    ``` markdown
     1. you can use an [inline link](https://google.com)
     2. you can use a [link by reference][1]
     3. you can use the [link text itself] as the reference
@@ -50,7 +50,7 @@ There are 3 primary ways embed a hyperlink.
 <!-- markdownlint-restore -->
 
 === "Markdown"
-    ```markdown
+    ``` markdown
     |  column 1  |   column 2  | column 3     |
     | ---------- | :---------: | -----------: |
     | column 1   | column 2    | column 3  is |
@@ -67,7 +67,7 @@ There are 3 primary ways embed a hyperlink.
 ## Inline Code Snippets
 
 === "Markdown"
-    ```markdown
+    ``` markdown
     Inline `code` snippets use `backticks` around them
     ```
 === "Rendered"
@@ -78,8 +78,8 @@ There are 3 primary ways embed a hyperlink.
 code blocks use three backticks and the language name for syntax highlighting:
 
 === "Markdown"
-    `````markdown
-    ```groovy
+    ````` markdown
+    ``` groovy title="filename.groovy"
     def s = [ 1, 2, 3]
     s.each{ item ->
       println item
@@ -87,7 +87,7 @@ code blocks use three backticks and the language name for syntax highlighting:
     ```
     `````
 === "Rendered"
-    ```groovy
+    ``` groovy title="filename.groovy"
     def s = [ 1, 2, 3]
     s.each{ item ->
       println item
@@ -118,7 +118,7 @@ A list of the available emojis can be found at [emojipedia](https://emojipedia.o
 
 [Content Tabs](https://squidfunk.github.io/mkdocs-material/reference/content-tabs/) have been used throughout this page.
 
-```markdown
+``` markdown
 === "Tab Title A"
     some markdown content
 === "Tab Title B"
@@ -133,7 +133,7 @@ A list of the available emojis can be found at [emojipedia](https://emojipedia.o
 ## Footnotes
 
 === "Markdown"
-    ```markdown
+    ``` markdown
     Footnotes[^1] are supported.
     [^1]: some footnote information
     ```

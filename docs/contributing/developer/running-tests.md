@@ -4,7 +4,7 @@ Unit tests for JTE are written using [Spock](https://spockframework.org/spock/do
 
 To run all the tests, run:
 
-```bash
+``` bash
 just test
 ```
 
@@ -14,7 +14,7 @@ The gradle test report is published to `build/reports/tests/test/index.html`
 
 To run tests for a specific Class, `StepWrapperSpec` for example, run:
 
-```bash
+``` bash
 just test '*.StepWrapperSpec'
 ```
 
@@ -26,6 +26,6 @@ Once executed, the JaCoCo coverage report can be found at: `build/reports/jacoco
 
 To disable this, run:
 
-```bash
+``` bash
 just --set coverage false test
 ```

@@ -16,7 +16,7 @@ Static step aliases are static lists of strings to cast the step to at runtime.
 
 `@StepAlias` can take a `String` parameter to change the name of the step at runtime.
 
-```groovy
+``` groovy title="generic.groovy"
 @StepAlias("build") [1]
 void call(){
     println "running as build!"
@@ -29,7 +29,7 @@ void call(){
 
 `@StepAlias` can also accept an array of Strings to alias the step to multiple names.
 
-```groovy
+``` groovy title="generic.groovy"
 @StepAlias(["build", "unit_test"]) [1]
 void call(){
     println "running as either build or unit_test!"
@@ -45,7 +45,7 @@ This can be accomplished by providing a `dynamic` parameter that should be a `Cl
 
 For example, if a library called `alias` had a step called `generic.groovy` then an `aliases` library parameter could be created:
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 libraries{
   alias{
     aliases = ["build", "unit_test"] [1]
@@ -57,7 +57,7 @@ libraries{
 
 This `aliases` parameter can then be consumed within the dynamic step alias closure:
 
-```groovy
+``` groovy title="generic.groovy"
 @StepAlias(dynamic = { return config.aliases }) [1]
 void call(){
     println "running as either build or unit_test!"
@@ -72,7 +72,7 @@ By default, when `@StepAlias` is present in a step file, a step with the origina
 
 This behavior can be overridden via the `keepOriginal` annotation parameter.
 
-```groovy
+``` groovy title="generic.groovy"
 @StepAlias(value = "build", keepOriginal = true) [1]
 void call(){
     println "running as either build() or generic()"

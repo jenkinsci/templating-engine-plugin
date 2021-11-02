@@ -40,7 +40,7 @@ To address this, JTE has pivoted from the flags `merge=true` & `override=true` t
 These annotations can be placed on individual fields within a block, enabling field-level governance.
 
 === "Pre-2.0"
-    ```groovy
+    ``` groovy
     someBlock{
       merge = true // future configs can add fields to this block
       my_governed_field = "some value"// cannot be modified
@@ -52,7 +52,7 @@ These annotations can be placed on individual fields within a block, enabling fi
     }
     ```
 === "Post-2.0"
-    ```groovy
+    ``` groovy
     @merge someBlock{ // future configs can add fields to this block
       my_governed_field = "some value"
     }
@@ -68,14 +68,14 @@ Previously, there were top level configuration values like `allow_scm_jenkinsfil
 These values are now in the `jte` block in the pipeline_config
 
 === "Pre-2.0"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     allow_scm_jenkinsfile = false
     pipeline_template = "my_template"
     libraries{} // just here to show the relation to the root
     ```
 
 === "Post-2.0"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     jte{
       allow_scm_jenkinsfile = false
       pipeline_template = "my_template"
@@ -91,14 +91,14 @@ Previously, library steps that implemented lifecycle hooks were required to acce
 This parameter was typically called `context` but could be called anything.
 
 === "Pre-2.0"
-    ```groovy
+    ``` groovy
     @AfterStep({ context.step == "build" }) // variable called context
     void call(context){ // hooks required to accept a method parameter
       println "running after the ${context.step} step"
     }
     ```
 === "Post-2.0"
-    ```groovy
+    ``` groovy
     @AfterStep({ hookContext.step == "build"}) // variable called hookContext
     void call(){ // no method parameter required
       println "running after the ${hookContext.step} step" // hookContext variable autowired

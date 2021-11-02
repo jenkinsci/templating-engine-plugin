@@ -23,15 +23,15 @@ The `pipelineConfig` is accessible from everywhere and allows access to the aggr
 !!! example "Example Usage of `pipelineConfig`"
     An example of accessing the Pipeline Configuration via `pipelineConfig`:
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         keywords{
           foo = "bar"
         }
         random_field = 11
         ```
     === "Pipeline Template"
-        ```groovy
-        println pipelineconfig.keywords.foo
+        ``` groovy title="Jenkinsfile"
+        println pipelineConfig.keywords.foo
         println pipelineConfig.random_field
         ```
 
@@ -51,7 +51,7 @@ This is different from the `pipelineConfig` variable. The `pipelineConfig` varia
     The `jte` would be used in this scenario to invoke the `build()` step from the `gradle` and `npm` libraries. 
     
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         jte{
           permissive_initialization = true
         }
@@ -61,7 +61,7 @@ This is different from the `pipelineConfig` variable. The `pipelineConfig` varia
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         // invoke the gradle build step
         jte.libraries.gradle.build()
         // invoke the npm build step
@@ -98,15 +98,15 @@ The `config` variable represents the library configuration for the library that 
     Assume there's a `gradle` library that contributes a `build()` step.
 
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         libraries{
           gradle{
             version = "6.3"
           }
         }
         ```
-    === "build.groovy"
-        ```groovy
+    === "Library build() Step"
+        ``` groovy title="build.groovy"
         void call(){
           String gradleVersion = config.version
         }
@@ -125,7 +125,7 @@ The `hookContext` variable provides information about the current step to [Lifec
     The following example shows how to use the `hookContext` variable so that a Lifecycle Hook only triggers after the `build()` step from the `gradle` library.
 
     === "Lifecycle Hook Step"
-        ```groovy
+        ``` groovy
         @AfterStep({ hookContext.library == "gradle" && hookContext.step == "build" })
         void call(){
           println "running after the ${hookContext.library}'s ${hookContext.step} step"
@@ -144,7 +144,7 @@ The `stageContext` variable provides information about the current [Stage](../co
 !!! example "Example usage of `stageContext`"
     The following example shows how to modify step behavior based upon Stage context.
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         libraries{
           npm // contributes unit_test()
           sonarqube // contributes static_code_analysis()
@@ -156,8 +156,8 @@ The `stageContext` variable provides information about the current [Stage](../co
           }
         }
         ```
-    === "NPM: unit_test.groovy"
-        ```groovy
+    === "NPM unit_test() Step"
+        ``` groovy title="unit_test.groovy"
         void call(){
           if(stageContext.name == "ci"){
             println "running as part of the ci Stage"
@@ -177,14 +177,14 @@ The `stepContext` allows step introspection, such as querying the name of the li
 
 !!! example "Example usage of `stepContext`"
     === "Aliased Step"
-        ```groovy
+        ``` groovy title="generic.groovy"
         @StepAlias(["build", "unit_test"])
         void call(){
           println "currently running as ${stepContext.name}"
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         build() // prints "currently running as build"
         unit_test() // prints "currently running as unit_test"
         ```

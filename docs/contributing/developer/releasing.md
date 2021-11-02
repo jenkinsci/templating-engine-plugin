@@ -4,7 +4,7 @@
 
 For example:
 
-```bash
+``` bash
 just release 2.0.4
 ```
 

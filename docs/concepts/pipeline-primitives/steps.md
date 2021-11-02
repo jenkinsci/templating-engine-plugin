@@ -25,19 +25,19 @@ To define Placeholder Steps, use the `template_methods{}` block.
 
     In case that's not true, the `template_methods{}` block has been configured to substitute Placeholder Steps to avoid an exception being thrown. 
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         unit_test()
         build()
         ```
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         template_methods{
           unit_test
           build
         }
         ```
     === "Build Log"
-        ```text
+        ``` text
         [Pipeline] Start of Pipeline
         [JTE][Step - null/unit_test.call()]
         [Pipeline] echo

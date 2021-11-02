@@ -1,4 +1,4 @@
-FROM squidfunk/mkdocs-material:7.3.3
+FROM squidfunk/mkdocs-material:7.3.6
 RUN pip install \
     mkdocs-gen-files \
     mkdocs-exclude \

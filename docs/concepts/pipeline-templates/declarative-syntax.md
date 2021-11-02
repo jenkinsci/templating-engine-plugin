@@ -11,7 +11,7 @@ With JTE, pipeline authors can create Pipeline Templates that look like a custom
 Take the following Pipeline Template and Pipeline Configuration for example:
 
 === "Pipeline Template"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     on_pull_request to: develop, {
       continuous_integration()
     }
@@ -29,7 +29,7 @@ Take the following Pipeline Template and Pipeline Configuration for example:
     }
     ```
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     libraries{
       git       // supplies on_pull_request, on_merge
       docker    // supplies build
@@ -79,7 +79,7 @@ The way to bypass this in Declarative Syntax to invoke the Library Step is to in
 !!! tip "Declarative Step Resolution Example"
     === "Declarative Pipeline Syntax"
         Assume a `sh` Library Step has been loaded.
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         pipeline{
           agent any
           stages{

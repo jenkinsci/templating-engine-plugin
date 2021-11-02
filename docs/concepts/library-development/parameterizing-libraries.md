@@ -8,7 +8,7 @@ To achieve this level of reusability, it's best to externalize hard coded values
 
 When specifying a library to be loaded, users can pass arbitrary configurations to the library:
 
-```groovy
+``` groovy title="pipeline_config.groovy"
 libraries{
   example{ [1]
     someField = "my value" [2]

@@ -2,7 +2,7 @@
 
 To build the JPI, run:
 
-```bash
+``` bash
 just jpi
 ```
 

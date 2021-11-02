@@ -13,7 +13,7 @@ Instead, overloaded steps must be accessed using the [Pipeline Primitive Namespa
     The following example assumes a `gradle` and `npm` library are available that both contribute a `build()` step.
 
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         jte{
           permissive_initialization = true // pipeline will fail if not set
         }
@@ -23,7 +23,7 @@ Instead, overloaded steps must be accessed using the [Pipeline Primitive Namespa
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         // build() <-- would fail because step is overloaded
         jte.libraries.npm.build() 
         jte.libraries.gradle.build()
@@ -52,7 +52,7 @@ To invoke the original Jenkins Pipeline DSL Step, use the [`steps` Global Variab
     The following example shows how to override the default `node` step to augment its functionality.
 
     === "`node.groovy`"
-        ```groovy
+        ``` groovy title="node.groovy"
         // support the original node interface
         void call(String label = null, Closure body){
             if(label){
@@ -70,7 +70,7 @@ To invoke the original Jenkins Pipeline DSL Step, use the [`steps` Global Variab
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         // assume the Pipeline Configuration loaded the library contributing node.groovy
         node{ println "hi" }
         node("my-label"){ println "hi" }

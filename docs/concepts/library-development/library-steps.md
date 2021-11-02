@@ -15,7 +15,7 @@ This can be modified using [Step Aliasing](./step-aliasing.md).
 
 Most steps should implement the `call` method.
 
-```groovy
+``` groovy title="library_step.groovy"
 void call(){}
 ```
 
@@ -51,14 +51,14 @@ All Library Steps are autowired with several variables:
 Library Steps can accept method parameters just like any other method.
 
 !!! example "Library Step Method Parameters"
-    === "printMessage.groovy"
-        ```groovy
+    === "Library Step"
+        ``` groovy title="printMessage.groovy"
         void call(String message){
           println "here's your message: ${message}"
         }
         ```
     === "Step Invocation"
-        ```groovy
+        ``` groovy
         printMessage("hello, world!")
         ```
 
@@ -84,7 +84,7 @@ Frequently, teams will create a `deploy_to` step that accepts an [Application En
 !!! example "Deployment Steps"
     The following Pipeline Template, Pipeline Configuration, and Deployment step demonstrate a safe use of a library step accepting a method parameter.
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         unit_test()
         build()
         deploy_to dev
@@ -92,7 +92,7 @@ Frequently, teams will create a `deploy_to` step that accepts an [Application En
         deploy_to prod
         ```
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         libraries{
           npm     // contributes unit_test, build
           cypress // contributes integration_test
@@ -108,8 +108,7 @@ Frequently, teams will create a `deploy_to` step that accepts an [Application En
         }
         ```
     === "Deployment Step"
-        ```groovy
-        // ansible/steps/deploy_to.groovy
+        ``` groovy title="ansible/steps/deploy_to.groovy"
         void call(app_env){
           println "deploying to the ip: ${app_env.ip}"
         }

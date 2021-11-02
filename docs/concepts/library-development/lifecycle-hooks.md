@@ -42,7 +42,7 @@ While executing, the code within the `Closure` parameter will be able to resolve
 
 Example Syntax:
 
-```groovy
+``` groovy title="library_step.groovy"
 @BeforeStep({ hookContext.step.equals("build") })
 void call(){
     // execute something right before the Library Step called build is executed.

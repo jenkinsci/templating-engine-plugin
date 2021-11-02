@@ -6,7 +6,7 @@ This page outlines the schema for [Library Configuration Files](../concepts/libr
 
 ### Schema
 
-```groovy
+``` groovy title="library_config.groovy"
 fields{ [1]
   required{} [2]
   optional{} [3]
@@ -47,7 +47,7 @@ The current options for data types to test for are:
 
 !!! example "Type Validation Example"
     === "Library Configuration File"
-        ```groovy
+        ``` groovy title="library_config.groovy"
         fields{
           required{
             parameterA = String [1]
@@ -63,8 +63,8 @@ The current options for data types to test for are:
     1. ensures that `parameterA` was configured and is an instance of a String
     2. ensures that `parameterB` was configured and is an instance of a Number
     3. ensures that `parameterC` was configured and is an instance of a Boolean
-    4. _if_ `parameterD` was configured, ensures it's a String
-    5. _if_ `parameterE` was configured, ensures it's a Boolean
+4._if_`parameterD` was configured, ensures it's a String
+5._if_ `parameterE` was configured, ensures it's a Boolean
 
 #### Enum Validation
 
@@ -72,7 +72,7 @@ The enum validation ensures that a library parameter value is one of the options
 
 !!! example "Enum Validation Example"
     === "Library Configuration File"
-        ```groovy
+        ``` groovy title="library_config.groovy"
         fields{
           required{
             parameterA = [ "a", "b", 11 ] [1]
@@ -87,7 +87,7 @@ Regular expression validation uses Groovy's [match operator](https://docs.groovy
 
 !!! example "Regular Expression Example"
     === "Library Configuration File"
-        ```groovy
+        ``` groovy title="library_config.groovy"
         fields{
           required{
             parameterA = ~/^s.*/ [1]
@@ -103,7 +103,7 @@ Library parameters can be arbitrarily nested within the pipeline configuration.
 For example, the following pipeline configuration would be valid to pass the `example.nestedParameter` parameter to a library named `testing`.
 
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     libraries{
       testing{
         example{
@@ -113,7 +113,7 @@ For example, the following pipeline configuration would be valid to pass the `ex
     }
     ```
 === "Library Configuration"
-    ```groovy
+    ``` groovy title="library_config.groovy"
     fields{
       required{
         example{

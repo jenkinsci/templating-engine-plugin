@@ -25,11 +25,11 @@ The Pipeline Configuration syntax is a nested builder language that relies on Bl
 Properties of the Pipeline Configuration are set using Groovy's [Variable Assignment](https://groovy-lang.org/semantics.html) syntax.
 
 === "Pipeline Configuration DSL"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     foo = "bar"
     ```
 === "Resulting `pipelineConfig`"
-    ```groovy
+    ``` groovy
     assert pipelineConfig == [ foo: "bar" ]
     ```
 
@@ -39,12 +39,12 @@ Properties of the Pipeline Configuration are set using Groovy's [Variable Assign
     Take the following example: 
 
     === "Pipeline Configuration DSL"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         x = "x" 
         String y = "y"
         ```
     === "Resulting `pipelineConfig`"
-        ```groovy
+        ``` groovy
         assert pipelineConfig == [ x: "x" ]
         ```
 
@@ -55,14 +55,14 @@ Properties of the Pipeline Configuration are set using Groovy's [Variable Assign
 The Pipeline Configuration DSL supports nested properties using Blocks.
 
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     a{
       x = 1,
       y = 2
     }
     ```
 === "Resulting `pipelineConfig`"
-    ```groovy
+    ``` groovy
     assert pipelineConfig == [
       a: [
         x: 1
@@ -76,7 +76,7 @@ The Pipeline Configuration DSL supports nested properties using Blocks.
 A special case is empty blocks and unset properties. Both situations result in an empty map being set in the Pipeline Configuration.
 
 === "Pipeline Config"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     a{
       x = 1
       y{}
@@ -84,7 +84,7 @@ A special case is empty blocks and unset properties. Both situations result in a
     }
     ```
 === "Resulting `pipelineConfig`"
-    ```groovy
+    ``` groovy
     assert pipelineConfig == [
       a: [
         x: 1,
@@ -101,7 +101,7 @@ To support [Pipeline Governance](../pipeline-governance/overview.md), the Pipeli
 These annotations are called `@override` and `@merge` and both can be placed on a block and property.
 
 === "Pipeline Configuration"
-    ```groovy
+    ``` groovy title="pipeline_config.groovy"
     @merge a{
       x = 1
       @override y = 2

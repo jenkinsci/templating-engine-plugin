@@ -10,13 +10,13 @@ If libraries were loaded, the `jte` variable will have a `libraries` property th
 
 !!! example "Invoking a Step Using The Primitive Namespace"
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         libraries{
           npm // contributes a build() step
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         jte.libraries.npm.build()
         ```
 
@@ -26,13 +26,13 @@ If [Keywords](./keywords.md) were defined, the `jte` variable will have a `keywo
 
 !!! example "Accessing Keywords"
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         keywords{
           foo = "bar"
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         assert jte.keywords.foo == "bar"
         ```
 
@@ -42,7 +42,7 @@ If [Application Environments](./application-environments.md) were defined, the `
 
 !!! example "Accessing Application Environments"
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         application_environments{
           dev{
             ip = "1.1.1.1"
@@ -53,7 +53,7 @@ If [Application Environments](./application-environments.md) were defined, the `
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         assert jte.application_environments.dev.ip == "1.1.1.1"
         assert jte.application_environments.prod.ip == "2.2.2.2"
         ```
@@ -64,7 +64,7 @@ If [Stages](./stages.md) were defined, the `jte` variable will have an `stages` 
 
 !!! example "Accessing Application Environments"
     === "Pipeline Configuration"
-        ```groovy
+        ``` groovy title="pipeline_config.groovy"
         libraries{
           npm // contributes unit_test, build
         }
@@ -76,6 +76,6 @@ If [Stages](./stages.md) were defined, the `jte` variable will have an `stages` 
         }
         ```
     === "Pipeline Template"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         jte.stages.continuous_integration()
         ```

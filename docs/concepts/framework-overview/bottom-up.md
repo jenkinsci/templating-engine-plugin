@@ -14,7 +14,7 @@ Imagine that there are **three** applications that each need a pipeline to autom
 Click through the tabs below to see a pipeline for a Gradle application, a Maven application, and an NPM application.
 
 === "Gradle"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     // a basic Gradle pipeline
     stage("Unit Test"){
       node{
@@ -28,7 +28,7 @@ Click through the tabs below to see a pipeline for a Gradle application, a Maven
     }
     ```
 === "Maven"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     // a basic Maven pipeline
     stage("Unit Test"){
       node{
@@ -42,7 +42,7 @@ Click through the tabs below to see a pipeline for a Gradle application, a Maven
     }
     ```
 === "NPM"
-    ```groovy
+    ``` groovy title="Jenkinsfile"
     // a basic NPM pipeline
     stage("Unit Test"){
       node{
@@ -116,8 +116,7 @@ The entire philosophy behind the Jenkins Template Engine stems from the concept 
 
 What if it was possible to translate the three separate pipelines above into the following Pipeline Template:
 
-```groovy
-// file: Jenkinsfile
+``` groovy  title="Jenkinsfile"
 unit_test()
 build()
 ```
@@ -131,8 +130,7 @@ Next, you'll need to define your implementations of the `unit_test()` and `build
 Implement the `unit_test()` and `build()` steps by refactoring the original pipelines above.
 
 === "Gradle: `unit_test`"
-    ```groovy
-    // file: gradle/steps/unit_test.groovy
+    ``` groovy title="gradle/steps/unit_test.groovy"
     void call(){
       stage("Unit Test"){
         node{
@@ -142,8 +140,7 @@ Implement the `unit_test()` and `build()` steps by refactoring the original pipe
     }
     ```
 === "Gradle: `build`"
-    ```groovy
-    // file: gradle/steps/build.groovy
+    ``` groovy title="gradle/steps/build.groovy"
     void call(){
       stage("Build"){
         node{
@@ -154,8 +151,7 @@ Implement the `unit_test()` and `build()` steps by refactoring the original pipe
     ```
 <br>
 === "Maven: `unit_test`"
-    ```groovy
-    // file: maven/steps/unit_test.groovy
+    ``` groovy title="maven/steps/unit_test.groovy"
     void call(){
       stage("Unit Test"){
         node{
@@ -165,8 +161,7 @@ Implement the `unit_test()` and `build()` steps by refactoring the original pipe
     }
     ```
 === "Maven: `build`"
-    ```groovy
-    // file: maven/steps/build.groovy
+    ``` groovy title="maven/steps/build.groovy"
     void call(){
       stage("Build"){
         node{
@@ -177,8 +172,7 @@ Implement the `unit_test()` and `build()` steps by refactoring the original pipe
     ```
 <br>
 === "NPM: `unit_test`"
-    ```groovy
-    // file: npm/steps/unit_test.groovy
+    ``` groovy title="npm/steps/unit_test.groovy"
     void call(){
       stage("Unit Test"){
         node{
@@ -188,8 +182,7 @@ Implement the `unit_test()` and `build()` steps by refactoring the original pipe
     }
     ```
 === "NPM: `build`"
-    ```groovy
-    // file: npm/steps/build.groovy
+    ``` groovy title="npm/steps/build.groovy"
     void call(){
       stage("Build"){
         node{
@@ -210,7 +203,7 @@ Implement the `unit_test()` and `build()` steps by refactoring the original pipe
 
 If you go back and look at the comments indicating the files those steps are placed in, you'll notice the following file structure:
 
-```text
+``` text
 .
 ├── gradle
 │   └── steps
@@ -246,8 +239,7 @@ The Pipeline Configuration uses a groovy-based configuration language to ensure 
 
 For example, here's a Pipeline Configuration that specifies the `npm` library should be loaded.
 
-```groovy
-// file: pipeline_config.groovy
+``` groovy title="pipeline_config.groovy"
 libraries{
   npm
 }

@@ -16,7 +16,7 @@ Library classes should implement the `Serializable` interface whenever possible.
 For example, a `Utility` class coming from an `example` library:
 
 <!-- markdownlint-disable code-block-style-->
-```groovy
+``` groovy title="example.groovy"
 package example
 class Utility implements Serializable {}
 ```
@@ -42,7 +42,7 @@ Library classes can not resolve Jenkins pipeline DSL functions such as `sh` or `
 For example, to use the `echo` pipeline step one could do the following:
 
 === "Utility Class"
-    ```groovy
+    ``` groovy title="example.groovy"
     package example
 
     class Utility implements Serializable{
@@ -53,7 +53,7 @@ For example, to use the `echo` pipeline step one could do the following:
     ```
   
 === "Library Step"  
-    ```groovy
+    ``` groovy title="echo_example.groovy"
     import example.Utility
 
     void call(){
@@ -69,7 +69,7 @@ Unlike with library steps, the `config` and `pipelineConfig` variables aren't au
 To access these variables, they can be passed to the class through constructor or method parameters.
 
 === "Utility Class"
-    ```groovy
+    ``` groovy title="example.groovy"
     package example
 
     class Utility implements Serializable{
@@ -84,7 +84,7 @@ To access these variables, they can be passed to the class through constructor o
     }
     ```
 === "Library Step"
-    ```groovy
+    ``` groovy title="get_config.groovy"
     import example.Utility
 
     void call(){

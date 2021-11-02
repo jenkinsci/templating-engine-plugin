@@ -13,7 +13,7 @@ The methods on the step can then represent different actions the utility can tak
 
 !!! example "Utility Step Example: Git"
     === "Git Utility Step"
-        ```groovy
+        ``` groovy title="git.groovy"
         void add(String files){
           sh "git add ${files}"
         }
@@ -27,7 +27,7 @@ The methods on the step can then represent different actions the utility can tak
         }
         ```
     === "Usage"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         node{
           checkout scm
           writeFile file: 'test.txt', text: 'hello, world'
@@ -45,7 +45,7 @@ Expressive DSLs can be created when coupling multi-method steps with Groovy's [C
     Command Chains could be used to improve upon the previous example.
 
     === "Without Command Chains"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         node{
           checkout scm
           writeFile file: 'test.txt', text: 'hello, world'
@@ -55,7 +55,7 @@ Expressive DSLs can be created when coupling multi-method steps with Groovy's [C
         }
         ```
     === "**With** Command Chains"
-        ```groovy
+        ``` groovy title="Jenkinsfile"
         node{
           checkout scm
           writeFile file: 'test.txt', text: 'hello, world'
