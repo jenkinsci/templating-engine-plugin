@@ -65,9 +65,9 @@ The current options for data types to test for are:
     1. ensures that `parameterA` was configured and is an instance of a String
     2. ensures that `parameterB` was configured and is an instance of a Number
     3. ensures that `parameterC` was configured and is an instance of a Boolean
-4._if_`parameterD` was configured, ensures it's a String
-5._if_`parameterE` was configured, ensures it's a Boolean
-6._if_ `parameterF` was configured, ensures it's an ArrayList
+    4. _if_`parameterD` was configured, ensures it's a String
+    5. _if_`parameterE` was configured, ensures it's a Boolean
+    6. _if_ `parameterF` was configured, ensures it's an ArrayList
 
 #### Enum Validation
 
