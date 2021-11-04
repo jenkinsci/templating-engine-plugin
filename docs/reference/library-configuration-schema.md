@@ -21,10 +21,10 @@ Within the `required` and `optional` blocks, list the parameters the library sup
 
 <!-- markdownlint-disable -->
 !!! note
-    If a library doesn't include a library configuration file, then users can supply arbitrary parameters to the library from the Pipeline Configuration.
+    If a library **doesn't** include a library configuration file, then users can supply arbitrary parameters to the library from the Pipeline Configuration.
 
-    If a library does include a library configuration file, then users will only be able to supply parameters that are listed within the `required` and `optional` blocks.
-    The presence of extraneous parameters will fail the build. 
+    If a library **does** include a library configuration file, then users will only be able to supply parameters that are listed within the `required` and `optional` blocks.
+    The presence of extraneous parameters will fail the build.
 <!-- markdownlint-restore -->
 
 ### Supported Validations
@@ -37,13 +37,14 @@ Type validation confirms that a library parameter is an instance of a particular
 
 The current options for data types to test for are:
 
-* boolean / Boolean
+* Boolean / boolean
 * String
 * Integer / int
 * Double
 * BigDecimal
 * Float
 * Number
+* ArrayList
 
 !!! example "Type Validation Example"
     === "Library Configuration File"
@@ -57,6 +58,7 @@ The current options for data types to test for are:
           optional{
             parameterD = String [4]
             parameterE = Boolean [5]
+            parameterF = ArrayList [6]
           }
         }
         ```
@@ -64,11 +66,12 @@ The current options for data types to test for are:
     2. ensures that `parameterB` was configured and is an instance of a Number
     3. ensures that `parameterC` was configured and is an instance of a Boolean
 4._if_`parameterD` was configured, ensures it's a String
-5._if_ `parameterE` was configured, ensures it's a Boolean
+5._if_`parameterE` was configured, ensures it's a Boolean
+6._if_ `parameterF` was configured, ensures it's an ArrayList
 
 #### Enum Validation
 
-The enum validation ensures that a library parameter value is one of the options defined by a list in the library configuration.
+Enum validation ensures that a library parameter value is one of the options defined by a list in the library configuration.
 
 !!! example "Enum Validation Example"
     === "Library Configuration File"
