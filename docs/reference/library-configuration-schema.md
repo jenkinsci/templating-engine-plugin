@@ -44,6 +44,7 @@ The current options for data types to test for are:
 * BigDecimal
 * Float
 * Number
+* List
 * ArrayList
 
 !!! example "Type Validation Example"
@@ -58,7 +59,8 @@ The current options for data types to test for are:
           optional{
             parameterD = String [4]
             parameterE = Boolean [5]
-            parameterF = ArrayList [6]
+            parameterF = List [6]
+            parameterG = ArrayList [7]
           }
         }
         ```
@@ -67,7 +69,8 @@ The current options for data types to test for are:
     3. ensures that `parameterC` was configured and is an instance of a Boolean
     4. _if_`parameterD` was configured, ensures it's a String
     5. _if_`parameterE` was configured, ensures it's a Boolean
-    6. _if_ `parameterF` was configured, ensures it's an ArrayList
+    6. _if_ `parameterF` was configured, ensures it's a List
+    7. _if_ `parameterG` was configured, ensures it's an ArrayList
 
 #### Enum Validation
 
