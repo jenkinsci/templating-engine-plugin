@@ -85,9 +85,9 @@ The way to bypass this in Declarative Syntax to invoke the Library Step is to in
           stages{
             stage("Example"){
               steps{
-                sh "some script" [1]
+                sh "some script" // (1)
                 script{
-                  sh "some script" [2]
+                  sh "some script" // (2)
                 }
               }
             }
@@ -95,7 +95,7 @@ The way to bypass this in Declarative Syntax to invoke the Library Step is to in
         }
         ```
 
-        1. This `sh` call would invoke the original Jenkins DSL Pipeline Step
-        2. This `sh` call, in the `script{}` block, would invoke the loaded JTE Library Step
+        1.  This `sh` call would invoke the original Jenkins DSL Pipeline Step
+        2.  This `sh` call, in the `script{}` block, would invoke the loaded JTE Library Step
 
 [^1]: Taken from the [Declarative Syntax](https://www.jenkins.io/doc/book/pipeline/syntax/#compare) documentation.

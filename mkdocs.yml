@@ -8,6 +8,7 @@ theme:
     - navigation.tabs
     - navigation.sections
     - navigation.top
+    - content.code.annotate
 
 repo_url: https://github.com/jenkinsci/templating-engine-plugin
 
@@ -41,7 +42,8 @@ markdown_extensions:
   - abbr
   - footnotes
   - attr_list
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.highlight
   - pymdownx.superfences
   - toc:

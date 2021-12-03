@@ -10,10 +10,10 @@ When specifying a library to be loaded, users can pass arbitrary configurations 
 
 ``` groovy title="pipeline_config.groovy"
 libraries{
-  example{ [1]
-    someField = "my value" [2]
-    nested{ [3]
-      someOtherField = 11 [4]
+  example{ // (1)
+    someField = "my value" // (2)
+    nested{ // (3)
+      someOtherField = 11 // (4)
     }
   }
 }

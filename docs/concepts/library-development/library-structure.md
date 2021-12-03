@@ -15,19 +15,19 @@ The name of the directory is the library identifier used within the Pipeline Con
 
 ## Example Library Structure
 
-``` text
-exampleLibraryName [1]
-├── steps [2]
-│   └── step1.groovy [3]
+``` bash
+exampleLibraryName # (1)
+├── steps # (2)
+│   └── step1.groovy # (3)
 │   └── step2.groovy
-├── resources [4]
-│   ├── someResource.txt [5]
+├── resources # (4)
+│   ├── someResource.txt # (5)
 │   └── nested
-│       └── anotherResource.json [5]
-├── src [7]
+│       └── anotherResource.json # (6)
+├── src # (7)
 │   └── example
-│       └── Utility.groovy [8]
-└── library_config.groovy [9]
+│       └── Utility.groovy # (8)
+└── library_config.groovy # (9)
 ```
 
 1. This library would be loaded via the `exampleLibraryName` identifier in the `libraries{}` block

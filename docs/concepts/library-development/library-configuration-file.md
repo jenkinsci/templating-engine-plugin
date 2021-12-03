@@ -18,10 +18,10 @@ Methods within steps annotated with `@Validate` will execute before the Pipeline
 For example, if a library wanted to validate a more complex use case such as ensuring a library parameter named `threshold` was greater than or equal to zero but less than or equal to 100 the following could be implemented:
 
 ``` groovy title="threshold_check.groovy"
-@Validate [1]
-void call(context){ [2]
-  if(config.threshold < 0 || config.threshold > 100){ [3]
-    error "Library parameter 'threshold' must be within the range of: 0 <= threshold <= 100" [4]
+@Validate // (1)
+void call(context){ // (2)
+  if(config.threshold < 0 || config.threshold > 100){ // (3)
+    error "Library parameter 'threshold' must be within the range of: 0 <= threshold <= 100" // (4)
   }
 }
 ```

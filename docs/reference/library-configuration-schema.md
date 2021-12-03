@@ -7,9 +7,9 @@ This page outlines the schema for [Library Configuration Files](../concepts/libr
 ### Schema
 
 ``` groovy title="library_config.groovy"
-fields{ [1]
-  required{} [2]
-  optional{} [3]
+fields{ // (1)
+  required{} // (2)
+  optional{} // (3)
 }
 ```
 
@@ -52,25 +52,26 @@ The current options for data types to test for are:
         ``` groovy title="library_config.groovy"
         fields{
           required{
-            parameterA = String [1]
-            parameterB = Number [2]
-            parameterC = Boolean [3]
+            parameterA = String // (1)
+            parameterB = Number // (2)
+            parameterC = Boolean // (3)
           }
           optional{
-            parameterD = String [4]
-            parameterE = Boolean [5]
-            parameterF = List [6]
-            parameterG = ArrayList [7]
+            parameterD = String // (4)
+            parameterE = Boolean // (5)
+            parameterF = List // (6)
+            parameterG = ArrayList // (7)
           }
         }
         ```
-    1. ensures that `parameterA` was configured and is an instance of a String
-    2. ensures that `parameterB` was configured and is an instance of a Number
-    3. ensures that `parameterC` was configured and is an instance of a Boolean
-    4. _if_`parameterD` was configured, ensures it's a String
-    5. _if_`parameterE` was configured, ensures it's a Boolean
-    6. _if_ `parameterF` was configured, ensures it's a List
-    7. _if_ `parameterG` was configured, ensures it's an ArrayList
+
+        1. ensures that `parameterA` was configured and is an instance of a String
+        2. ensures that `parameterB` was configured and is an instance of a Number
+        3. ensures that `parameterC` was configured and is an instance of a Boolean
+        4. _if_`parameterD` was configured, ensures it's a String
+        5. _if_`parameterE` was configured, ensures it's a Boolean
+        6. _if_`parameterF` was configured, ensures it's a List
+        7. _if_ `parameterG` was configured, ensures it's an ArrayList
 
 #### Enum Validation
 
@@ -81,11 +82,12 @@ Enum validation ensures that a library parameter value is one of the options def
         ``` groovy title="library_config.groovy"
         fields{
           required{
-            parameterA = [ "a", "b", 11 ] [1]
+            parameterA = [ "a", "b", 11 ] // (1)
           }
         }
         ```
-    1. ensures that `parameterA` was configured and is set to either 'a', 'b', or 11
+
+        1. ensures that `parameterA` was configured and is set to either 'a', 'b', or 11
 
 #### Regular Expression Validation
 
@@ -96,17 +98,18 @@ Regular expression validation uses Groovy's [match operator](https://docs.groovy
         ``` groovy title="library_config.groovy"
         fields{
           required{
-            parameterA = ~/^s.*/ [1]
+            parameterA = ~/^s.*/ // (1)
           }
         }
         ```
-    1. ensures that `parameterA` starts with `s`
+
+        1. ensures that `parameterA` starts with `s`
 
 ### Nested Parameters
 
-Library parameters can be arbitrarily nested within the pipeline configuration.
+Library parameters can be arbitrarily nested within the Pipeline Configuration.
 
-For example, the following pipeline configuration would be valid to pass the `example.nestedParameter` parameter to a library named `testing`.
+For example, the following Pipeline Configuration would be valid to pass the `example.nestedParameter` parameter to a library named `testing`.
 
 === "Pipeline Configuration"
     ``` groovy title="pipeline_config.groovy"

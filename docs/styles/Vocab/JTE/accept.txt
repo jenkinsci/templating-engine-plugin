@@ -21,3 +21,4 @@
 Divio
 [Mm]arkdownlint
 md
+[Ee]num

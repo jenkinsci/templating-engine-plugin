@@ -8,6 +8,8 @@ For example:
 just release 2.0.4
 ```
 
+---
+
 This will:
 
 1. create a `release/2.0.4` branch
