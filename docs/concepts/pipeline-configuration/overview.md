@@ -35,4 +35,4 @@ Pipeline Configurations can be stored in a couple different locations depending 
 | Job Type             | Pipeline Configuration Location                                                                                                               |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
 | Pipeline Job         | Either in the Jenkins UI or at the root of a remote source code repository as a file called `pipeline_config.groovy`                          |
-| Multi-Branch Project | At the root of the repository in a file named `pipeline_config.groovy` in the branch job that was created as part of the Multi-Branch Project |
+| Multi-Branch Project | At the root of the repository in a file named `pipeline_config.groovy` (or to any arbitrary path in the repository as configured by `configurationPath`) in the branch job that was created as part of the Multi-Branch Project |

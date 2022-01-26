@@ -21,11 +21,33 @@ import hudson.model.DescriptorVisibilityFilter
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
+import org.kohsuke.stapler.DataBoundSetter
 
 /**
  * Allows JTE to be used in a MultiBranch Pipeline
  */
 class MultibranchTemplateFlowDefinition extends TemplateFlowDefinition {
+
+    String scriptPath
+    String configurationPath
+
+    @DataBoundSetter
+    void setScriptPath(String scriptPath){
+        this.scriptPath = scriptPath
+    }
+
+    String getScriptPath(){
+        return scriptPath
+    }
+
+    @DataBoundSetter
+    void setConfigurationPath(String configurationPath){
+        this.configurationPath = configurationPath
+    }
+
+    String getConfigurationPath(){
+        return configurationPath
+    }
 
     @Extension
     static class DescriptorImpl extends FlowDefinitionDescriptor {

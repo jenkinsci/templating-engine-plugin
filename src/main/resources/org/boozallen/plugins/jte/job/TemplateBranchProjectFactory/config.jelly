@@ -16,6 +16,12 @@
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+    <f:entry title="Pipeline Template Path" field="scriptPath">
+        <f:textbox default="Jenkinsfile"/>
+    </f:entry>
+    <f:entry title="Pipeline Configuration Path" field="configurationPath">
+        <f:textbox default="pipeline_config.groovy"/>
+    </f:entry>
     <f:entry title="${%Exclude branches without a pipeline configuration file}" field="filterBranches">
         <f:checkbox default="false"/>
     </f:entry>

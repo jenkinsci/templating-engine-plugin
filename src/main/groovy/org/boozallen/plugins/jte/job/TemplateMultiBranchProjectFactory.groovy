@@ -27,6 +27,7 @@ import jenkins.branch.OrganizationFolder
 import jenkins.model.TransientActionFactory
 import jenkins.scm.api.SCMSource
 import jenkins.scm.api.SCMSourceCriteria
+import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
 import org.jenkinsci.plugins.workflow.cps.Snippetizer
 import org.jenkinsci.plugins.workflow.multibranch.AbstractWorkflowBranchProjectFactory
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
@@ -40,6 +41,8 @@ import org.kohsuke.stapler.DataBoundSetter
  */
 class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMSourceCriteria {
 
+    String scriptPath
+    String configurationPath
     Boolean filterBranches
 
     // jenkins requires this be here
@@ -48,10 +51,34 @@ class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMS
     TemplateMultiBranchProjectFactory(){}
 
     Object readResolve() {
+        if (this.scriptPath == null) {
+            this.scriptPath = 'Jenkinsfile'
+        }
+        if (this.configurationPath == null) {
+            this.configurationPath = ScmPipelineConfigurationProvider.CONFIG_FILE
+        }
         if (this.filterBranches == null) {
             this.filterBranches = false
         }
         return this
+    }
+
+    @DataBoundSetter
+    void setScriptPath(String scriptPath){
+        this.scriptPath = scriptPath
+    }
+
+    String getScriptPath(){
+        return scriptPath
+    }
+
+    @DataBoundSetter
+    void setConfigurationPath(String configurationPath){
+        this.configurationPath = configurationPath
+    }
+
+    String getConfigurationPath(){
+        return configurationPath
     }
 
     @DataBoundSetter
@@ -72,6 +99,8 @@ class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMS
 
     private AbstractWorkflowBranchProjectFactory newProjectFactory() {
         TemplateBranchProjectFactory factory = new TemplateBranchProjectFactory()
+        factory.setScriptPath(this.scriptPath)
+        factory.setConfigurationPath(this.configurationPath)
         factory.setFilterBranches(this.filterBranches)
         return factory
     }

@@ -36,6 +36,7 @@ import javax.annotation.Nonnull
  */
 class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
 
+    String configurationPath
     Boolean filterBranches
 
     // jenkins requires this be here
@@ -44,10 +45,22 @@ class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
     TemplateBranchProjectFactory(){}
 
     Object readResolve() {
+        if (this.configurationPath == null) {
+            this.configurationPath = ScmPipelineConfigurationProvider.CONFIG_FILE
+        }
         if (this.filterBranches == null) {
             this.filterBranches = false
         }
         return this
+    }
+
+    @DataBoundSetter
+    void setConfigurationPath(String configurationPath){
+        this.configurationPath = configurationPath
+    }
+
+    String getConfigurationPath(){
+        return configurationPath
     }
 
     @DataBoundSetter
@@ -61,7 +74,10 @@ class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
 
     @Override
     protected FlowDefinition createDefinition() {
-        return new MultibranchTemplateFlowDefinition()
+        MultibranchTemplateFlowDefinition definition = new MultibranchTemplateFlowDefinition()
+        definition.setScriptPath(this.scriptPath)
+        definition.setConfigurationPath(this.configurationPath)
+        return definition
     }
 
     @Override
@@ -75,20 +91,20 @@ class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
                 }
 
                 // if user chose to filter branches, check for pipeline config file
-                SCMProbeStat stat = probe.stat(ScmPipelineConfigurationProvider.CONFIG_FILE)
+                SCMProbeStat stat = probe.stat(configurationPath)
                 switch (stat.getType()) {
                     case SCMFile.Type.NONEXISTENT:
                         if (stat.getAlternativePath() != null) {
-                            listener.getLogger().format("      ‘%s’ not found (but found ‘%s’, search is case sensitive)%n", ScmPipelineConfigurationProvider.CONFIG_FILE, stat.getAlternativePath())
+                            listener.getLogger().format("      ‘%s’ not found (but found ‘%s’, search is case sensitive)%n", configurationPath, stat.getAlternativePath())
                         } else {
-                            listener.getLogger().format("      ‘%s’ not found%n", ScmPipelineConfigurationProvider.CONFIG_FILE)
+                            listener.getLogger().format("      ‘%s’ not found%n", configurationPath)
                         }
                         return false
                     case SCMFile.Type.DIRECTORY:
-                        listener.getLogger().format("      ‘%s’ found but is a directory not a file%n", ScmPipelineConfigurationProvider.CONFIG_FILE)
+                        listener.getLogger().format("      ‘%s’ found but is a directory not a file%n", configurationPath)
                         return false
                     default:
-                        listener.getLogger().format("      ‘%s’ found%n", ScmPipelineConfigurationProvider.CONFIG_FILE)
+                        listener.getLogger().format("      ‘%s’ found%n", configurationPath)
                         return true
                 }
             }

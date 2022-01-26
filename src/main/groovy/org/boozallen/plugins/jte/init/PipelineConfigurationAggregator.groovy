@@ -20,6 +20,7 @@ import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfiguration
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
+import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
@@ -74,7 +75,14 @@ class PipelineConfigurationAggregator {
         } else {
             // get job config if present
             FileSystemWrapper fsw = FileSystemWrapper.createFromJob(flowOwner)
-            String repoConfigFile = fsw.getFileContents(ScmPipelineConfigurationProvider.CONFIG_FILE, "Template Configuration File", false)
+            // enable custom path to config file instead of default pipeline_config.groovy at root
+            String configurationPath
+            if (flowDefinition instanceof MultibranchTemplateFlowDefinition) {
+                configurationPath = flowDefinition.getConfigurationPath()
+            } else {
+                configurationPath = ScmPipelineConfigurationProvider.CONFIG_FILE
+            }
+            String repoConfigFile = fsw.getFileContents(configurationPath, "Template Configuration File", false)
             if (repoConfigFile){
                 try{
                     jobConfig = new PipelineConfigurationDsl(flowOwner).parse(repoConfigFile)
