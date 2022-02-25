@@ -272,9 +272,9 @@ class GlobalCollisionValidatorSpec extends Specification {
         given:
         primitivesByName = [:]
         (0..127).each { i ->
-            String step_name = "step_${i}".toString()
-            DummyPrimitive fake_step = new DummyPrimitive(name: step_name)
-            primitivesByName[step_name] = [ fake_step ]
+            String stepName = "step_${i}"
+            DummyPrimitive fakeStep = new DummyPrimitive(name: stepName)
+            primitivesByName[stepName] = [ fakeStep ]
         }
         when:
         validator.checkForJenkinsStepCollisions(primitivesByName, logger)
