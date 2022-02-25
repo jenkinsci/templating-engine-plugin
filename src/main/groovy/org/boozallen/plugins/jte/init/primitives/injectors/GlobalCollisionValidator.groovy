@@ -95,7 +95,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
         List<String> functionNames = StepDescriptor.all().collect { step ->
             step.getFunctionName()
         }
-        List<String> stepCollisions = primitivesByName.keySet().intersect(functionNames)
+        List<String> stepCollisions = primitivesByName.keySet().intersect(functionNames) as List
         if(!stepCollisions.isEmpty()) {
             List<String> msg = ["Template Primitives are overwriting Jenkins steps with the following names:"]
             stepCollisions.eachWithIndex { step, idx ->

@@ -30,6 +30,7 @@ import org.junit.Rule
 import org.jvnet.hudson.test.JenkinsRule
 import org.jvnet.hudson.test.WithoutJenkins
 import spock.lang.Ignore
+import spock.lang.Issue
 import spock.lang.Specification
 
 class GlobalCollisionValidatorSpec extends Specification {
@@ -263,6 +264,23 @@ class GlobalCollisionValidatorSpec extends Specification {
         then:
         noExceptionThrown()
         1 * logger.printWarning(_)
+    }
+
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/256")
+    @WithoutJenkins
+    def "regression: more than 128 steps throws exception"(){
+        given:
+        primitivesByName = [:]
+        (0..127).each { i ->
+            String step_name = "step_${i}".toString()
+            DummyPrimitive fake_step = new DummyPrimitive(name: step_name)
+            primitivesByName[step_name] = [ fake_step ]
+        }
+        when:
+        validator.checkForJenkinsStepCollisions(primitivesByName, logger)
+
+        then:
+        noExceptionThrown()
     }
 
 }
