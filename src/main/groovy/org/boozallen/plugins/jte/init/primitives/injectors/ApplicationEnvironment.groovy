@@ -58,9 +58,20 @@ class ApplicationEnvironment extends TemplatePrimitive implements Serializable{
 
     @Override String getName(){ return name }
 
-    Object getProperty(String name){
-        def meta = ApplicationEnvironment.metaClass.getMetaProperty(name)
-        return meta ? meta.getProperty(this) : config?."${name}"
+    Object getProperty(String property){
+        // first check user-defined configuration
+        if (config.containsKey(property)){
+            return config?."${property}"
+        }
+
+        // then check this object itself
+        def meta = ApplicationEnvironment.metaClass.getMetaProperty(property)
+        if (meta){
+            return meta.getProperty(this)
+        }
+
+        // otherwise return null if property is missing
+        return null
     }
 
     @SuppressWarnings("UnusedMethodParameter")

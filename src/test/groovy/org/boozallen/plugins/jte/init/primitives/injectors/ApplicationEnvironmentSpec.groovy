@@ -22,6 +22,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -404,6 +405,25 @@ class ApplicationEnvironmentSpec extends Specification {
             ''',
             template: '''
             assert jte.application_environments.dev.custom_field == "banana"
+            '''
+        )
+        expect:
+        jenkins.buildAndAssertSuccess(job)
+    }
+
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/254")
+    def "ApplicationEnvironment respects name configuration"(){
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            application_environments{
+                dev{
+                    name = "custom"
+                }
+            }
+            ''',
+            template: '''
+            assert dev.name == "custom"
             '''
         )
         expect:
