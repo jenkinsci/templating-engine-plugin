@@ -113,7 +113,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             jteDir.list(includes).each{ stepFile ->
                 StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig)
                 List<StepAlias> aliases = getStepAliases(step)
-                if(shouldKeepOriginal(aliases)) {
+                if(aliases.isEmpty() || shouldKeepOriginal(aliases)) {
                     step.setParent(library)
                     library.add(step)
                 }
