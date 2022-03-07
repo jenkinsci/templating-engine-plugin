@@ -112,12 +112,12 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             library.setParent(libCollector)
             jteDir.list(includes).each{ stepFile ->
                 StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig)
-                StepAlias alias = getStepAlias(step)
-                if(shouldKeepOriginal(alias)) {
+                List<StepAlias> aliases = getStepAliases(step)
+                if(shouldKeepOriginal(aliases)) {
                     step.setParent(library)
                     library.add(step)
                 }
-                Set<String> stepAliases = retrieveStepAliases(step, alias, flowOwner)
+                Set<String> stepAliases = retrieveStepAliases(step, aliases, flowOwner)
                 if(!stepAliases.isEmpty()) {
                     stepAliases.each{ aliasString ->
                         StepWrapper clone = step.clone()
@@ -149,52 +149,62 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
      * @param flowOwner run
      * @return whether or not to keep the original step name
      */
-    private boolean shouldKeepOriginal(StepAlias alias){
-        return alias ? alias.keepOriginal() : true
+    private boolean shouldKeepOriginal(List<StepAlias> aliases){
+        return true in aliases.collect{ alias -> alias.keepOriginal() }
     }
 
-    private Set<String> retrieveStepAliases(StepWrapper step, StepAlias alias, FlowExecutionOwner flowOwner){
-        if(alias == null) {
+    /**
+     * Returns a list of names to alias the current step to based on the availalbe
+     * @StepAlias annotations present.
+     * @param step the step to alias
+     * @param aliases the list of @StepAlias annotations present
+     * @param flowOwner the pipeline run
+     * @return a Set of aliases
+     */
+    private Set<String> retrieveStepAliases(StepWrapper step, List<StepAlias> aliases, FlowExecutionOwner flowOwner){
+        if(aliases.isEmpty()){
             return []
         }
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-        List<String> aliasList = []
-        // handle static aliases
-        aliasList.addAll(alias.value())
-        // handle dynamic aliases
-        Binding b = new Binding([config: step.getScript().getConfig()])
-        Closure c = alias.dynamic().newInstance(b, b)
-        try{
-            Object result = c.call()
-            switch(result.getClass()){
-                case String:
-                    aliasList.add(result)
-                    break
-                case GStringImpl:
-                    aliasList.add(result.toString())
-                    break
-                case Collection:
-                    result.each{ r ->
-                        if(r instanceof String){
-                            aliasList.add(r)
-                        } else if (r instanceof GStringImpl){
-                            aliasList.add(r.toString())
-                        } else {
-                            throw new JTEException("@StepAlias Dynamic closure returned a collection with non-string element: ${result}")
+        Set<String> aliasList = []
+        aliases.each { alias ->
+            // handle static aliases
+            aliasList.addAll(alias.value())
+            // handle dynamic aliases
+            Binding b = new Binding([config: step.getScript().getConfig()])
+            Closure c = alias.dynamic().newInstance(b, b)
+            try {
+                Object result = c.call()
+                switch (result.getClass()) {
+                    case String:
+                        aliasList.add(result)
+                        break
+                    case GStringImpl:
+                        aliasList.add(result.toString())
+                        break
+                    case Collection:
+                        result.each { r ->
+                            if (r instanceof String) {
+                                aliasList.add(r)
+                            } else if (r instanceof GStringImpl) {
+                                aliasList.add(r.toString())
+                            } else {
+                                throw new JTEException("@StepAlias Dynamic closure returned a collection with non-string element: ${result}")
+                            }
                         }
-                    }
-                    break
-                case NullObject:
-                    break
-                default:
-                    throw new JTEException("@StepAlias Dynamic closure must return a string, received: ${result.getClass()}")
+                        break
+                    case NullObject:
+                        break
+                    default:
+                        throw new JTEException("@StepAlias Dynamic closure must return a string, received: ${result.getClass()}")
+                }
+            } catch (any) {
+                logger.printError("Error evaluating @StepAlias dynamic closure for the ${step.library}'s ${step.name} step")
+                throw any
             }
-        } catch(any){
-            logger.printError("Error evaluating @StepAlias dynamic closure for the ${step.library}'s ${step.name} step")
-            throw any
-        }
-        if(aliasList.isEmpty()){
-            logger.printWarning("@StepAlias did not define any aliases for the ${step.library}'s ${step.name} step")
+            if (aliasList.isEmpty()) {
+                logger.printWarning("@StepAlias did not define any aliases for the ${step.library}'s ${step.name} step")
+            }
         }
         return aliasList
     }
@@ -204,20 +214,21 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
      * returns null if no @StepAlias
      * throws exception if multiple alias annotations
      */
-    private StepAlias getStepAlias(StepWrapper step){
+    private List<StepAlias> getStepAliases(StepWrapper step){
         List<StepAlias> annotations = step.getScript().class.methods.collect{ method ->
             method.getAnnotation(StepAlias)
         } - null
-        int n = annotations.size()
-        switch(n){
-            case 0:
-                return null
-            case 1:
-                return annotations.first()
-            default:
-                throw new JTEException("There can only be one @StepAlias annotation per step. Found ${n} in ${step.library} library's ${step.name}.groovy")
-        }
+        return annotations
     }
+
+    /*
+    @StepAlias("whatever")
+    void call(){}
+
+    @StepAlias("somethingelse")
+    void wahtever(){}
+
+     */
 
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){
         WorkflowJob job = flowOwner.run().getParent()
