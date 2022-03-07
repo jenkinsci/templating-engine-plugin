@@ -117,6 +117,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
                     step.setParent(library)
                     library.add(step)
                 }
+                // fetch the aliases for the current step, if any
                 Set<String> stepAliases = retrieveStepAliases(step, aliases, flowOwner)
                 if(!stepAliases.isEmpty()) {
                     stepAliases.each{ aliasString ->

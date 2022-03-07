@@ -4,9 +4,17 @@ Step Aliasing allows library developers to cast the same step to one or more ste
 
 By default, steps will assume the basename of the files that define them. i.e, a `build.groovy` step file will create a `build` step.
 
-Step Aliasing, allows you to change the name (or names) of the step that's going to be created.
+Step Aliasing allows you to change the name (or names) of the step that's going to be created.
 
 This annotation is automatically imported, just like [lifecycle hooks](lifecycle-hooks.md).
+
+## Overview
+
+The use case often arises where a library has multiple steps that are all essentially the same thing.
+
+Step Aliases allow you to write a step one time and invoke it using multiple names.
+
+Steps have access to a [`stepContext` variable](/reference/autowired-variables#stepcontext) to determine the current context of the step, such as the name being used and whether or not the step is an alias. 
 
 ## Static Step Aliases
 
@@ -60,7 +68,7 @@ This `aliases` parameter can then be consumed within the dynamic step alias clos
 ``` groovy title="generic.groovy"
 @StepAlias(dynamic = { return config.aliases }) // (1)
 void call(){
-    println "running as either build or unit_test!"
+    println "running as ${stepContext.name}!"
 }
 ```
 

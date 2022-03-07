@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -345,29 +346,27 @@ class StepAliasSpec extends Specification {
         jenkins.assertLogContains('build: running the step', run)
         jenkins.assertLogContains('unit_test: running the step', run)
     }
-    def "StepAlias on multiple methods throws exception"(){
+
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/259")
+    def "default parameters on StepAlias method works as expected"(){
         given:
         TestLibraryProvider libProvider = new TestLibraryProvider()
         libProvider.addStep('alias', 'npm_invoke', """
-        @StepAlias("build")
-        void call(){
+        @StepAlias(["build", "unit_test"])
+        void call(param = []){
             return "running the step"
         }
-
-        @StepAlias("unit_test")
-        void whatever(){}
         """
         )
-
         libProvider.addGlobally()
 
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: '''
+        config: '''
             libraries{
               alias
             }''',
-            template: '''
+        template: '''
             println "build: ${build()}"
             println "unit_test: ${unit_test()}"
             '''
@@ -377,9 +376,45 @@ class StepAliasSpec extends Specification {
         run = job.scheduleBuild2(0).get()
 
         then:
-        jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains("There can only be one @StepAlias annotation per step.", run)
+        jenkins.assertBuildStatusSuccess(run)
     }
+
+    def "StepAliases across methods work as expected"(){
+        given:
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('alias', 'npm_invoke', """
+        @StepAlias(["build"])
+        void call(){
+            println "running the \${stepContext.name} step"
+        }
+
+        @StepAlias(["unit_test"])
+        void other(){}
+        """
+        )
+        libProvider.addGlobally()
+
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+        config: '''
+        libraries{
+          alias
+        }''',
+        template: '''
+        build()
+        unit_test()
+        '''
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("running the build step", run)
+        jenkins.assertLogContains("running the unit_test step", run)
+    }
+
     def "StepContext name is resolvable in an aliased step"(){
         given:
         TestLibraryProvider libProvider = new TestLibraryProvider()
