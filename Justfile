@@ -144,7 +144,7 @@ finish:
   fi
 
   # re-sync main & delete the previous branch
-  git fetch -a 
+  git fetch --all
   git checkout main
   git merge upstream/main
   git push origin main
