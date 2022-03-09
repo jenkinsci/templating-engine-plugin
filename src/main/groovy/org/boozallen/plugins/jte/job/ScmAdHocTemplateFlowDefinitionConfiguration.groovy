@@ -22,6 +22,7 @@ import hudson.scm.SCM
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
@@ -54,7 +55,7 @@ class ScmAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefin
     PipelineConfigurationObject getConfig(FlowExecutionOwner flowOwner) throws Exception{
         PipelineConfigurationObject configObject = null
         if (scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(flowOwner, scm)
+            FileSystemWrapper fsw = FileSystemWrapperFactory.create(flowOwner, scm)
             String configFile = fsw.getFileContents(pipelineConfigurationPath, "Pipeline Configuration File")
             if (configFile){
                 try{
@@ -77,7 +78,7 @@ class ScmAdHocTemplateFlowDefinitionConfiguration extends AdHocTemplateFlowDefin
     String getTemplate(FlowExecutionOwner flowOwner){
         String jenkinsfile = null
         if(scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(flowOwner, scm)
+            FileSystemWrapper fsw = FileSystemWrapperFactory.create(flowOwner, scm)
             jenkinsfile = fsw.getFileContents(this.pipelineTemplatePath, "Template")
         }
         return jenkinsfile

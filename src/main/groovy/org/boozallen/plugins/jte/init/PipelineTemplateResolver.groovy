@@ -20,6 +20,7 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -50,7 +51,7 @@ class PipelineTemplateResolver {
                 return template
             }
         } else {
-            FileSystemWrapper fs = FileSystemWrapper.createFromJob(flowOwner)
+            FileSystemWrapper fs = FileSystemWrapperFactory.create(flowOwner)
             // enable custom path to template file instead of default Jenkinsfile at root
             String templatePath
             if (flowDefinition instanceof MultibranchTemplateFlowDefinition) {

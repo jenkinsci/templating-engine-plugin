@@ -22,6 +22,7 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -74,7 +75,7 @@ class PipelineConfigurationAggregator {
             jobConfig = flowDefinition.getPipelineConfiguration(flowOwner)
         } else {
             // get job config if present
-            FileSystemWrapper fsw = FileSystemWrapper.createFromJob(flowOwner)
+            FileSystemWrapper fsw = FileSystemWrapperFactory.create(flowOwner)
             // enable custom path to config file instead of default pipeline_config.groovy at root
             String configurationPath
             if (flowDefinition instanceof MultibranchTemplateFlowDefinition) {

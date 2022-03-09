@@ -24,6 +24,7 @@ import hudson.plugins.git.extensions.GitSCMExtension
 import jenkins.plugins.git.GitSampleRepoRule
 import jenkins.scm.api.SCMFileSystem
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TestFlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
@@ -70,7 +71,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         p.hasLibrary(owner, libraryName)
@@ -90,7 +91,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         p.hasLibrary(owner, libraryName)
@@ -107,7 +108,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         !p.hasLibrary(owner, libraryName)
@@ -167,7 +168,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         when:
         p.loadLibrary(owner, libraryName, srcDir, libDir)
@@ -203,7 +204,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         when:
         p.loadLibrary(owner, libraryName, srcDir, libDir)
@@ -230,7 +231,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         p.hasLibrary(owner, libraryName)
@@ -254,7 +255,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         p.hasLibrary(owner, libraryName)
@@ -279,7 +280,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         p.hasLibrary(owner, libraryName)
@@ -303,7 +304,7 @@ class ScmLibraryProviderSpec extends Specification {
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
         GroovySpy(FileSystemWrapper, global: true)
-        FileSystemWrapper.createFromSCM(owner, scm) >> fsw
+        FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
         !p.hasLibrary(owner, libraryName)

@@ -22,6 +22,7 @@ import hudson.scm.SCM
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.kohsuke.stapler.DataBoundConstructor
@@ -58,7 +59,7 @@ class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
     PipelineConfigurationObject getConfig(FlowExecutionOwner owner){
         PipelineConfigurationObject configObject = null
         if (scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            FileSystemWrapper fsw = FileSystemWrapperFactory.create(owner, scm)
             String filePath = "${baseDir ? "${baseDir}/" : ""}${CONFIG_FILE}"
             String configFile = fsw.getFileContents(filePath, "Pipeline Configuration File")
             if (configFile){
@@ -77,7 +78,7 @@ class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
     String getJenkinsfile(FlowExecutionOwner owner){
         String jenkinsfile = null
         if(scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            FileSystemWrapper fsw = FileSystemWrapperFactory.create(owner, scm)
             String filePath = "${baseDir ? "${baseDir}/" : ""}Jenkinsfile"
             jenkinsfile = fsw.getFileContents(filePath, "Template")
         }
@@ -88,7 +89,7 @@ class ScmPipelineConfigurationProvider extends PipelineConfigurationProvider{
     String getTemplate(FlowExecutionOwner owner, String template){
         String pipelineTemplate = null
         if(scm && !(scm instanceof NullSCM)){
-            FileSystemWrapper fsw = FileSystemWrapper.createFromSCM(owner, scm)
+            FileSystemWrapper fsw = FileSystemWrapperFactory.create(owner, scm)
             String filePath = "${baseDir ? "${baseDir}/" : ""}${PIPELINE_TEMPLATE_DIRECTORY}/${template}"
             pipelineTemplate = fsw.getFileContents(filePath, "Pipeline Template")
         }

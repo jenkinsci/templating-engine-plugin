@@ -22,6 +22,7 @@ import hudson.scm.SCM
 import jenkins.scm.api.SCMFile
 import jenkins.scm.api.SCMFileSystem
 import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -156,10 +157,10 @@ class ScmLibraryProvider extends LibraryProvider{
         return [baseDir, s?.trim()].findAll{ it }.join("/")
     }
 
-    // lol CodeNarc is probably right and we should find a new place for this
+    // TODO: lol CodeNarc is probably right and we should find a new place for this
     @SuppressWarnings('FactoryMethodName')
     SCMFileSystem createFs(FlowExecutionOwner flowOwner){
-        return FileSystemWrapper.createFromSCM(flowOwner, scm) as SCMFileSystem
+        return FileSystemWrapperFactory.create(flowOwner, scm) as SCMFileSystem
     }
 
     @Extension
