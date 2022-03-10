@@ -70,7 +70,7 @@ class ScmLibraryProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -90,7 +90,7 @@ class ScmLibraryProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -107,7 +107,7 @@ class ScmLibraryProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -167,7 +167,7 @@ class ScmLibraryProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         when:
@@ -203,7 +203,7 @@ class ScmLibraryProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         when:
@@ -230,7 +230,7 @@ class ScmLibraryProviderSpec extends Specification {
         owner.getRootDir() >> rootDir
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -254,7 +254,7 @@ class ScmLibraryProviderSpec extends Specification {
         owner.getRootDir() >> rootDir
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -279,7 +279,7 @@ class ScmLibraryProviderSpec extends Specification {
         owner.getRootDir() >> rootDir
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -303,7 +303,7 @@ class ScmLibraryProviderSpec extends Specification {
         owner.getRootDir() >> rootDir
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(job, scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:

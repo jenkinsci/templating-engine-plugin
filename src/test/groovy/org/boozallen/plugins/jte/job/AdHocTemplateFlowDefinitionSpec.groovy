@@ -92,7 +92,7 @@ class AdHocTemplateFlowDefinitionSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: flowOwner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(flowOwner, scm) >> fsw
 
         def definition = new AdHocTemplateFlowDefinition(flowDefConfig)
@@ -129,7 +129,7 @@ keywords{
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: flowOwner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(flowOwner, scm) >> fsw
 
         def definition = new AdHocTemplateFlowDefinition(flowDefConfig)

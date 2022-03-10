@@ -90,7 +90,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -112,7 +112,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -132,7 +132,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -157,7 +157,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -172,7 +172,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
         FileSystemWrapper fsw = Mock {
             getFileContents(*_) >> 'mock file contents'
         }
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(*_) >> fsw
 
         PipelineConfigurationDsl dsl = Mock {
@@ -220,7 +220,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -239,7 +239,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -260,7 +260,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -278,7 +278,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -315,7 +315,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -334,7 +334,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -355,7 +355,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
@@ -373,7 +373,7 @@ class ScmPipelineConfigurationProviderSpec extends Specification {
 
         FileSystemWrapper fsw = new FileSystemWrapper(owner: owner)
         fsw.fs = SCMFileSystem.of(jenkins.createProject(WorkflowJob), scm)
-        GroovySpy(FileSystemWrapper, global: true)
+        GroovySpy(FileSystemWrapperFactory, global: true)
         FileSystemWrapperFactory.create(owner, scm) >> fsw
 
         expect:
