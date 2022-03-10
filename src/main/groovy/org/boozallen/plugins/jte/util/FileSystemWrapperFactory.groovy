@@ -50,19 +50,28 @@ class FileSystemWrapperFactory {
             throw new IllegalStateException("Job cannot be null when creating FileSystemWrapper")
         }
 
+        FileSystemWrapper fsw
         if (scm) {
-            return this.fromSCM(owner, job, scm)
+            fsw = this.fromSCM(owner, job, scm)
         }
 
         ItemGroup<?> parent = job.getParent()
         if (parent instanceof WorkflowMultiBranchProject) {
             TaskListener listener = owner.getListener()
-            return this.fromMultiBranchProject(owner, job, listener)
+            fsw = this.fromMultiBranchProject(owner, job, listener)
         }
 
         FlowDefinition definition = job.getDefinition()
         if (definition instanceof CpsScmFlowDefinition) {
-            return this.fromPipelineJob(owner, job)
+            fsw = this.fromPipelineJob(owner, job)
+        }
+
+        if(fsw){
+            if(fsw.fs == null){
+                TemplateLogger logger = new TemplateLogger(owner.getListener())
+                logger.printWarning("FileSystemWrapperFactory: Unable to create SCMFileSystem: job: ${job.getFullName()}, scm: ${scm}")
+            }
+            return fsw
         }
 
         throw new IllegalStateException("Unable to build a FileSystemWrapper")
