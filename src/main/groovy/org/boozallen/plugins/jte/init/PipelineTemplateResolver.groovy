@@ -18,12 +18,8 @@ package org.boozallen.plugins.jte.init
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
-import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
-import org.boozallen.plugins.jte.util.FileSystemWrapper
-import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
@@ -52,13 +48,12 @@ class PipelineTemplateResolver {
             if (flowDefinition instanceof AdHocTemplateFlowDefinition){
                 logger.print "Obtained Pipeline Template from job configuration"
                 return template
-            } else {
-                // templates from SCM depend on Pipeline Configuration
-                if (jteBlockWrapper.allow_scm_jenkinsfile){
-                    return template
-                }
-                logger.printWarning "Repository provided Jenkinsfile that will not be used, per organizational policy."
             }
+            // templates from SCM depend on Pipeline Configuration
+            if (jteBlockWrapper.allow_scm_jenkinsfile){
+                return template
+            }
+            logger.printWarning "Repository provided Jenkinsfile that will not be used, per organizational policy."
         }
 
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)

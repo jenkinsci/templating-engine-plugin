@@ -16,16 +16,8 @@
 package org.boozallen.plugins.jte.init
 
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
-import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
-import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
-import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
-import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
-import org.boozallen.plugins.jte.util.FileSystemWrapper
-import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
-import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 

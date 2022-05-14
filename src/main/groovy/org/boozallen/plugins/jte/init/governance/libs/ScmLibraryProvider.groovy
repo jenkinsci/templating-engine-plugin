@@ -21,7 +21,6 @@ import hudson.Util
 import hudson.scm.SCM
 import jenkins.scm.api.SCMFile
 import jenkins.scm.api.SCMFileSystem
-import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
