@@ -108,9 +108,9 @@ class FileSystemWrapperFactory {
             SCMRevision rev = scmSource.getTrustedRevision(tip, listener)
             fs = SCMFileSystem.of(scmSource, head, rev)
         } else {
-            SCM job_scm = branch.getScm()
-            fs = SCMFileSystem.of(job, job_scm)
-            scmKey = job_scm.getKey()
+            SCM jobSCM = branch.getScm()
+            fs = SCMFileSystem.of(job, jobSCM)
+            scmKey = jobSCM.getKey()
         }
         FileSystemWrapper fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
         return fsw
@@ -118,9 +118,9 @@ class FileSystemWrapperFactory {
 
     private static FileSystemWrapper fromPipelineJob(FlowExecutionOwner owner, WorkflowJob job){
         FlowDefinition definition = job.getDefinition()
-        SCM job_scm = definition.getScm()
-        String scmKey = job_scm.getKey()
-        SCMFileSystem fs = SCMFileSystem.of(job, job_scm)
+        SCM jobSCM = definition.getScm()
+        String scmKey = jobSCM.getKey()
+        SCMFileSystem fs = SCMFileSystem.of(job, jobSCM)
         FileSystemWrapper fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
         return fsw
     }
