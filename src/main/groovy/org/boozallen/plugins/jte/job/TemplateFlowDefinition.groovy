@@ -82,4 +82,18 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         return template
     }
 
+    /**
+     * Fetch the job's Pipeline Configuration
+     * @param flowOwner
+     * @return Pipeline Configuration if present, null otherwise
+     */
+    abstract PipelineConfigurationObject getPipelineConfiguration(FlowExecutionOwner flowOwner)
+
+    /**
+     * Fetch the job's Pipeline Template, if present
+     * @param flowOwner
+     * @return template if present, null otherwise
+     */
+    abstract String getTemplate(FlowExecutionOwner flowOwner)
+
 }

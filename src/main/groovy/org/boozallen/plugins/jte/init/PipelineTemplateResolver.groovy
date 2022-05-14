@@ -19,6 +19,7 @@ import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
+import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -40,36 +41,27 @@ class PipelineTemplateResolver {
     }
 
     String resolve(PipelineConfigurationObject config){
-        FlowDefinition flowDefinition = job.getDefinition()
+        TemplateFlowDefinition flowDefinition = job.getDefinition()
         JteBlockWrapper jteBlockWrapper = config.jteBlockWrapper
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
 
-        if (flowDefinition instanceof AdHocTemplateFlowDefinition){
-            String template = flowDefinition.getTemplate(flowOwner)
-            if(template){
+        // check for job-level template
+        String template = flowDefinition.getTemplate(flowOwner)
+        if (template){
+            // templates configured in Jenkins UI are always permitted.
+            if (flowDefinition instanceof AdHocTemplateFlowDefinition){
                 logger.print "Obtained Pipeline Template from job configuration"
                 return template
-            }
-        } else {
-            FileSystemWrapper fs = FileSystemWrapperFactory.create(flowOwner)
-            // enable custom path to template file instead of default Jenkinsfile at root
-            String templatePath
-            if (flowDefinition instanceof MultibranchTemplateFlowDefinition) {
-                templatePath = flowDefinition.getScriptPath()
             } else {
-                templatePath = "Jenkinsfile"
-            }
-            String repoJenkinsfile = fs.getFileContents(templatePath, "Repository Jenkinsfile", false)
-            if (repoJenkinsfile){
+                // templates from SCM depend on Pipeline Configuration
                 if (jteBlockWrapper.allow_scm_jenkinsfile){
-                    return repoJenkinsfile
+                    return template
                 }
                 logger.printWarning "Repository provided Jenkinsfile that will not be used, per organizational policy."
             }
         }
 
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)
-
         // if aggregated config declares use of a Named Pipeline Template, look for it:
         if (jteBlockWrapper.pipeline_template){
             for (tier in tiers){

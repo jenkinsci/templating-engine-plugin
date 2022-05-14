@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
+import hudson.Util
 import hudson.model.TaskListener
 import jenkins.branch.MultiBranchProject
 import jenkins.scm.api.SCMFile
@@ -56,7 +57,7 @@ class TemplateBranchProjectFactory extends WorkflowBranchProjectFactory {
 
     @DataBoundSetter
     void setConfigurationPath(String configurationPath){
-        this.configurationPath = configurationPath
+        this.configurationPath = Util.fixEmptyAndTrim(configurationPath) ?: ScmPipelineConfigurationProvider.CONFIG_FILE
     }
 
     String getConfigurationPath(){

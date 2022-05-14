@@ -16,9 +16,17 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
+import hudson.Util
 import hudson.model.Descriptor
 import hudson.model.DescriptorVisibilityFilter
+import org.boozallen.plugins.jte.init.governance.config.ScmPipelineConfigurationProvider
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationDsl
+import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
+import org.boozallen.plugins.jte.util.FileSystemWrapper
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
+import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.flow.FlowDefinitionDescriptor
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 import org.kohsuke.stapler.DataBoundSetter
@@ -31,9 +39,19 @@ class MultibranchTemplateFlowDefinition extends TemplateFlowDefinition {
     String scriptPath
     String configurationPath
 
+    Object readResolve() {
+        if (this.scriptPath == null) {
+            this.scriptPath = 'Jenkinsfile'
+        }
+        if (this.configurationPath == null) {
+            this.configurationPath = ScmPipelineConfigurationProvider.CONFIG_FILE
+        }
+        return this
+    }
+
     @DataBoundSetter
     void setScriptPath(String scriptPath){
-        this.scriptPath = scriptPath
+        this.scriptPath = Util.fixEmptyAndTrim(scriptPath) ?: 'Jenkinsfile'
     }
 
     String getScriptPath(){
@@ -42,11 +60,35 @@ class MultibranchTemplateFlowDefinition extends TemplateFlowDefinition {
 
     @DataBoundSetter
     void setConfigurationPath(String configurationPath){
-        this.configurationPath = configurationPath
+        this.configurationPath = Util.fixEmptyAndTrim(configurationPath) ?: ScmPipelineConfigurationProvider.CONFIG_FILE
     }
 
     String getConfigurationPath(){
         return configurationPath
+    }
+
+    @Override
+    PipelineConfigurationObject getPipelineConfiguration(FlowExecutionOwner flowOwner) {
+        PipelineConfigurationObject jobConfig = null
+        FileSystemWrapper fsw = FileSystemWrapperFactory.create(flowOwner)
+        String repoConfigFile = fsw.getFileContents(configurationPath, "Template Configuration File", false)
+        if (repoConfigFile){
+            try{
+                jobConfig = new PipelineConfigurationDsl(flowOwner).parse(repoConfigFile)
+            } catch(any){
+                TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+                logger.printError("Error parsing the pipeline configuration file in SCM.")
+                throw any
+            }
+        }
+        return jobConfig
+    }
+
+    @Override
+    String getTemplate(FlowExecutionOwner flowOwner){
+        FileSystemWrapper fs = FileSystemWrapperFactory.create(flowOwner)
+        String template = fs.getFileContents(this.scriptPath, "Repository Jenkinsfile", false)
+        return template
     }
 
     @Extension

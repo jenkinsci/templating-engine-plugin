@@ -16,6 +16,7 @@
 package org.boozallen.plugins.jte.job
 
 import hudson.Extension
+import hudson.Util
 import hudson.model.Action
 import hudson.model.ItemGroup
 import hudson.model.Item
@@ -65,7 +66,7 @@ class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMS
 
     @DataBoundSetter
     void setScriptPath(String scriptPath){
-        this.scriptPath = scriptPath
+        this.scriptPath = Util.fixEmptyAndTrim(scriptPath) ?: 'Jenkinsfile'
     }
 
     String getScriptPath(){
@@ -74,7 +75,7 @@ class TemplateMultiBranchProjectFactory extends MultiBranchProjectFactory.BySCMS
 
     @DataBoundSetter
     void setConfigurationPath(String configurationPath){
-        this.configurationPath = configurationPath
+        this.configurationPath = Util.fixEmptyAndTrim(configurationPath) ?: ScmPipelineConfigurationProvider.CONFIG_FILE
     }
 
     String getConfigurationPath(){

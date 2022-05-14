@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
 import org.boozallen.plugins.jte.job.MultibranchTemplateFlowDefinition
+import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.boozallen.plugins.jte.util.FileSystemWrapper
 import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.TemplateLogger
@@ -69,32 +70,8 @@ class PipelineConfigurationAggregator {
     }
 
     PipelineConfigurationObject getJobPipelineConfiguration(){
-        PipelineConfigurationObject jobConfig = null
-        FlowDefinition flowDefinition = job.getDefinition()
-        if(flowDefinition instanceof AdHocTemplateFlowDefinition){
-            jobConfig = flowDefinition.getPipelineConfiguration(flowOwner)
-        } else {
-            // get job config if present
-            FileSystemWrapper fsw = FileSystemWrapperFactory.create(flowOwner)
-            // enable custom path to config file instead of default pipeline_config.groovy at root
-            String configurationPath
-            if (flowDefinition instanceof MultibranchTemplateFlowDefinition) {
-                configurationPath = flowDefinition.getConfigurationPath()
-            } else {
-                configurationPath = ScmPipelineConfigurationProvider.CONFIG_FILE
-            }
-            String repoConfigFile = fsw.getFileContents(configurationPath, "Template Configuration File", false)
-            if (repoConfigFile){
-                try{
-                    jobConfig = new PipelineConfigurationDsl(flowOwner).parse(repoConfigFile)
-                } catch(any){
-                    TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-                    logger.printError("Error parsing ${job.getName()}'s configuration file in SCM.")
-                    throw any
-                }
-            }
-        }
-        return jobConfig
+        TemplateFlowDefinition flowDefinition = job.getDefinition()
+        return flowDefinition.getPipelineConfiguration(flowOwner)
     }
 
 }
