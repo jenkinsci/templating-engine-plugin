@@ -14,6 +14,7 @@ The methods on the step can then represent different actions the utility can tak
 !!! example "Utility Step Example: Git"
 
     === "Git Utility Step"
+
         ``` groovy title="git.groovy"
         void add(String files){
           sh "git add ${files}"
@@ -27,7 +28,9 @@ The methods on the step can then represent different actions the utility can tak
           sh "git push" 
         }
         ```
+
     === "Usage"
+
         ``` groovy title="Jenkinsfile"
         node{
           checkout scm
@@ -36,7 +39,7 @@ The methods on the step can then represent different actions the utility can tak
           git.commit('add test file')
           git.push()
         }
-    ```
+        ```
 
 ## Groovy Command Chain
 
