@@ -28,11 +28,17 @@ class HookContext implements Serializable{
      * {@code null} prior to and post pipeline template execution
      */
     String library
+
     /**
      * the name of the step that triggered the lifecycle hook
      * <p>
      * {@code null} prior to and post pipeline template execution
      */
     String step
+
+    /**
+     * indicates whether an uncaught exception has been thrown.
+     */
+    Boolean exceptionThrown = false
 
 }

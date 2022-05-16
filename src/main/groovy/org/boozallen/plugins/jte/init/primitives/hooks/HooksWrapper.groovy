@@ -24,8 +24,9 @@ import java.lang.annotation.Annotation
 class HooksWrapper implements Serializable{
 
     private static final long serialVersionUID = 1L
-    static void invoke(Class<? extends Annotation> annotation){
-        HookInjector.getHooksClass().invoke(annotation)
+    static void invoke(Class<? extends Annotation> annotation, Boolean exceptionThrown = false){
+        HookContext context = new HookContext(exceptionThrown: exceptionThrown)
+        HookInjector.getHooksClass().invoke(annotation, context)
     }
 
 }

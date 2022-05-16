@@ -58,6 +58,7 @@ class StepWrapperCPS implements Serializable{
                 TemplateLogger.createDuringRun().print "[Step - ${library}/${name}.${methodName}(${argsList})]"
                 result = InvokerHelper.getMetaClass(script).invokeMethod(script, methodName, args)
             } catch (x) {
+                context.exceptionThrown = true
                 throw new InvokerInvocationException(x)
             } finally{
                 Hooks.invoke(AfterStep, context)

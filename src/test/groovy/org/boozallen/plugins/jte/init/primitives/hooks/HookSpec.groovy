@@ -316,4 +316,33 @@ class HookSpec extends Specification {
         '@CleanUp'    | false
     }
 
+    def "hooksContext.exceptionThrown is true when pipeline is going to fail"() {
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @Notify
+        void call(){
+          println "exception thrown = \${hookContext.exceptionThrown}"
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+                hooksLibrary
+            }
+            ''',
+            template: 'error "oops"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("exception thrown = true", run)
+    }
+
 }
