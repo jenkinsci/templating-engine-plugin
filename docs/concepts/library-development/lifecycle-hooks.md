@@ -26,7 +26,7 @@ Lifecycle Hook annotations can be placed on any method inside a step.
 
 Every step has an autowired `hookContext` variable which provides steps with relevant information about what triggered the hook.
 
---8<-- "snippets/hookContext.md"
+~~--8<-- "snippets/hookContext.md"~~
 
 ## Conditional Hook Execution
 

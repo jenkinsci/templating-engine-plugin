@@ -112,7 +112,10 @@ nav:
     - 'tutorials/overview.md'
   - How-To Guides: 
     - 'how-to/overview.md'
-    - 'how-to/upgrade-2.0/index.md'
+    - Library Development:
+      - 'how-to/library-development/lifecycle-hooks-on-failure.md'
+    - Upgrade Guides:
+      - 'how-to/upgrade-2.0/index.md'
   - Contributing:
     - 'contributing/overview.md'
     - 'contributing/fork-based.md'

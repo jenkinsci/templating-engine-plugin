@@ -442,4 +442,74 @@ class HookSpec extends Specification {
         jenkins.assertLogContains("exception thrown = false", run)
     }
 
+    def "@Notify after step failure runs once"() {
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @Notify({ hookContext.step && hookContext.exceptionThrown })
+        void call(){
+          println "step \${hookContext.step} threw exception"
+        }
+        """)
+        libProvider.addStep('hooksLibrary', 'sampleStep', """
+        void call(){
+          error('oops') 
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+                hooksLibrary
+            }
+            ''',
+            template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("step sampleStep threw exception", run)
+        jenkins.assertLogNotContains("step null threw exception", run)
+    }
+
+    def "@Notify after pipeline failure runs once"() {
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @Notify({ !hookContext.step && hookContext.exceptionThrown })
+        void call(){
+          println "step \${hookContext.step} threw exception"
+        }
+        """)
+        libProvider.addStep('hooksLibrary', 'sampleStep', """
+        void call(){
+          error('oops') 
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: '''
+            libraries{
+                hooksLibrary
+            }
+            ''',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("step null threw exception", run)
+        jenkins.assertLogNotContains("step sampleStep threw exception", run)
+    }
+
 }
