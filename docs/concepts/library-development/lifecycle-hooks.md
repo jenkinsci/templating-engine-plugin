@@ -26,28 +26,25 @@ Lifecycle Hook annotations can be placed on any method inside a step.
 
 Every step has an autowired `hookContext` variable which provides steps with relevant information about what triggered the hook.
 
-| Property              | Description                                                                                                                    |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `hookContext.library` | The name of the library that contributed the step associated with the step. Value is `null` for hooks not triggered by a step. |
-| `hookContext.step`    | The name of the Library Step that triggered the hook. Value is `null` for hooks not triggered by a step.                       |
+--8<-- "snippets/hookContext.md"
 
 ## Conditional Hook Execution
 
 Sometimes you'll only want to invoke the Hook when certain conditions are met, such as a build failure or in relation to another step (like before static code analysis).
 
 Each annotation accepts a `Closure` parameter.
-If the return object of this closure is <http://www.groovy-lang.org/semantics.html#Groovy-Truth[truthy>] then the hook will be executed.
+If the return object of this closure is [truthy](http://www.groovy-lang.org/semantics.html#Groovy-Truth) then the hook will be executed.
 
 While executing, the code within the `Closure` parameter will be able to resolve the `hookContext` variable, the library configuration of the library that loads the step via the `config` variable, and the `currentBuild` variable made available in Jenkins Pipelines.
 
-Example Syntax:
+???+ success "Example Hook Usage"
 
-``` groovy title="library_step.groovy"
-@BeforeStep({ hookContext.step.equals("build") })
-void call(){
-    // execute something right before the Library Step called build is executed.
-}
-```
+    ``` groovy title="library_step.groovy"
+    @BeforeStep({ hookContext.step.equals("build") })
+    void call(){
+      // execute something right before the Library Step called build is executed.
+    }
+    ```
 
 !!! note
     The closure parameter is optional. If omitted, the hook will always be executed.

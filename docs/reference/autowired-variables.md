@@ -7,7 +7,7 @@ This page outlines the various autowired variables, their scope, and what data t
 ## Overview
 
 | Variable <img width=75/> | Description                                                                                                                 | Scope <img width=200/>                                                   |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `pipelineConfig`         | Represents the aggregated Pipeline Configuration                                                                            | Accessible everywhere                                                    |
 | `jte`                    | The [Primitive Namespace](../concepts/pipeline-primitives/primitive-namespace.md) object                                    | Accessible everywhere                                                    |
 | `config`                 | Represents a library's configuration provided by the aggregated Pipeline Configuration                                      | Within [Library Steps](../concepts/library-development/library-steps.md) |
@@ -116,10 +116,7 @@ The `config` variable represents the library configuration for the library that 
 
 The `hookContext` variable provides information about the current step to [Lifecycle Hooks](../concepts/library-development/lifecycle-hooks.md).
 
-| Property  | Type     | Description                                                                                                                                                                       |
-|-----------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `library` | `String` | The library that contributed the step that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step.                                            |
-| `step`    | `String` | The name of the [Library Step](../concepts/library-development/library-steps.md) that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step. |
+--8<-- "snippets/hookContext.md"
 
 !!! example "Example `hookContext` usage"
     The following example shows how to use the `hookContext` variable so that a Lifecycle Hook only triggers after the `build()` step from the `gradle` library.
@@ -136,10 +133,10 @@ The `hookContext` variable provides information about the current step to [Lifec
 
 The `stageContext` variable provides information about the current [Stage](../concepts/pipeline-primitives/stages.md).
 
-| Property | Type   | Description                                                                                                                                                                      |
-|----------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name` | `String` | The name of the current Stage being executed. `null` if step isn't being executed as part of a Stage.                                                                            |
-| `args` | `Map`    | The [named parameters](http://docs.groovy-lang.org/docs/groovy-2.5.0-beta-1/html/documentation/#_named_arguments) provided to the Stage. An empty Map if no parameters provided. |
+| Property | Type     | Description                                                                                                                                                                      |
+| -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`   | `String` | The name of the current Stage being executed. `null` if step isn't being executed as part of a Stage.                                                                            |
+| `args`   | `Map`    | The [named parameters](http://docs.groovy-lang.org/docs/groovy-2.5.0-beta-1/html/documentation/#_named_arguments) provided to the Stage. An empty Map if no parameters provided. |
 
 !!! example "Example usage of `stageContext`"
     The following example shows how to modify step behavior based upon Stage context.
@@ -170,7 +167,7 @@ The `stageContext` variable provides information about the current [Stage](../co
 The `stepContext` allows step introspection, such as querying the name of the library providing the step or the current name of the step.
 
 | Property  | Type      | Description                                                                                                                                                         |
-|-----------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `library` | `String`  | The name of the library that contributed the step                                                                                                                   |
 | `name`    | `String`  | The **current name** of the step. May differ from the basename of the step's groovy file if using [Step Aliasing](../concepts/library-development/step-aliasing.md) |
 | `isAlias` | `Boolean` | Is true when `stepContext.name` refers to an alias                                                                                                                  |
