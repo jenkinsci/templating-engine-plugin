@@ -92,6 +92,7 @@ class PipelineTemplateCompiler extends GroovyShellDecorator {
      * template execution.
      */
     @Override
+    @SuppressWarnings("MethodSize")
     void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
         if (isFromJTE(execution)) {
             cc.addCompilationCustomizers(new CompilationCustomizer(CompilePhase.CONVERSION) {

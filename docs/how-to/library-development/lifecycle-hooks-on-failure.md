@@ -16,7 +16,7 @@ A common use case is using the conditional execution functionality of lifecycle 
 
 Typically, the `@Notify` hook should be used for pipeline code to send alerts.
 
-The `@Notify` steps runs both after steps and at the end of the pipeline. 
+The `@Notify` steps runs both after steps and at the end of the pipeline.
 
 To ascertain which event triggered the hook, you can use the `step` field on the `hookContext` variable.
 

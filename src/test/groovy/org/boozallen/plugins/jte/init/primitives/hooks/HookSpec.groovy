@@ -420,7 +420,7 @@ class HookSpec extends Specification {
         """)
         libProvider.addStep('hooksLibrary', 'sampleStep', """
         void call(){
-          println "no error" 
+          println "no error"
         }
         """)
         libProvider.addGlobally()
@@ -454,7 +454,7 @@ class HookSpec extends Specification {
         """)
         libProvider.addStep('hooksLibrary', 'sampleStep', """
         void call(){
-          error('oops') 
+          error('oops')
         }
         """)
         libProvider.addGlobally()
@@ -489,7 +489,7 @@ class HookSpec extends Specification {
         """)
         libProvider.addStep('hooksLibrary', 'sampleStep', """
         void call(){
-          error('oops') 
+          error('oops')
         }
         """)
         libProvider.addGlobally()

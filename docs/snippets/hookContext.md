@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 -->
 | Property          | Type      | Description                                                                                                                                                                                                                      |
 | ----------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `library`         | `String`  | The library that contributed the step that triggered the Lifecycle Hook. Is `null` when the Lifecycle Hook wasn't triggered by a step.                                                                                           |
