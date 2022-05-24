@@ -17,6 +17,7 @@ package org.boozallen.plugins.jte.init
 
 import org.junit.Rule
 import org.jvnet.hudson.test.RestartableJenkinsRule
+import spock.lang.Issue
 import spock.lang.Specification
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
@@ -131,6 +132,7 @@ class ResumabilitySpec extends Specification {
         }
     }
 
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/191")
     def "Restart mid-step resumes successfully"() {
         when:
         story.then { jenkins ->
