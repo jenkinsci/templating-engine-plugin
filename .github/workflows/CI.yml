@@ -27,6 +27,7 @@ jobs:
         with:
           arguments: --no-daemon codenarc
       - uses: actions/upload-artifact@v1
+        if: failure()
         with:
           name: codenarc-results
           path: build/reports
@@ -42,6 +43,7 @@ jobs:
       with:
         arguments: --no-daemon test jacocoTestReport
     - uses: actions/upload-artifact@v1
+      if: failure()
       with:
         name: test-results
         path: build/reports
