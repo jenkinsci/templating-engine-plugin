@@ -17,6 +17,9 @@ package org.boozallen.plugins.jte.job
 
 import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.JOB
 
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
+import org.jenkinsci.plugins.pipeline.modeldefinition.causes.RestartDeclarativePipelineCause
+import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause
 import org.boozallen.plugins.jte.init.PipelineConfigurationAggregator
 import org.boozallen.plugins.jte.init.PipelineTemplateResolver
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
@@ -54,11 +57,19 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
 
     @Override
     FlowExecution create(FlowExecutionOwner owner, TaskListener listener, List<? extends Action> actions) throws Exception {
-        // if this is a replay run, just skip initialization
-        for (Action a : actions) {
-            if (a instanceof CpsFlowFactoryAction2) {
-                return ((CpsFlowFactoryAction2) a).create(this, owner, actions)
+        WorkflowRun run = owner.run()
+        ReplayCause replay = run.getCause(ReplayCause)
+        RestartDeclarativePipelineCause restartDeclarative = run.getCause(RestartDeclarativePipelineCause)
+        if(replay || restartDeclarative){
+            WorkflowRun previous = replay ? replay.getOriginal() : restartDeclarative.getOriginal()
+            TemplatePrimitiveCollector primitiveCollector = previous.getAction(TemplatePrimitiveCollector)
+            if(!primitiveCollector){
+                throw new IllegalStateException("Unable to replay pipeline. Could not find previous TemplatePrimitiveCollector.")
             }
+            run.addOrReplaceAction(primitiveCollector)
+            List<? extends Action> newActions = [ actions, primitiveCollector ].flatten()
+            CpsFlowFactoryAction2 replayAction = actions.find{ action -> action instanceof CpsFlowFactoryAction2 }
+            return replayAction.create(this, owner, newActions)
         }
         String template = initializePipeline(owner)
         FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
