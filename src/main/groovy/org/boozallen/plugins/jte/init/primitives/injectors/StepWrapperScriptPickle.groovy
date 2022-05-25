@@ -49,6 +49,9 @@ class StepWrapperScriptPickle extends Pickle{
         return new TryRepeatedly<StepWrapperScript>(1, 0){
             @Override
             protected StepWrapperScript tryResolve(){
+                if(flowOwner == null){
+                    return null
+                }
                 WorkflowRun run = flowOwner.run()
                 TemplatePrimitiveCollector jte = run.getAction(TemplatePrimitiveCollector)
                 if (jte == null){
