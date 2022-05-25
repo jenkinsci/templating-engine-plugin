@@ -36,7 +36,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
 
     private static final long serialVersionUID = 1L
 
-    /**a
+    /**
      * The library configuration
      */
     protected LinkedHashMap config
