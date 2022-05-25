@@ -34,9 +34,9 @@ import com.google.common.util.concurrent.ListenableFuture
  */
 class StepWrapperScriptPickle extends Pickle{
 
-    private StepContext stepContext
-    private HookContext hookContext
-    private StageContext stageContext
+    private final StepContext stepContext
+    private final HookContext hookContext
+    private final StageContext stageContext
 
     private StepWrapperScriptPickle(StepWrapperScript script){
         stepContext = script.getStepContext()

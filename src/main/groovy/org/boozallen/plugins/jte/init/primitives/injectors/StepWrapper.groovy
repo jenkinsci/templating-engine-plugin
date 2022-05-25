@@ -16,10 +16,8 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import groovy.transform.AutoClone
-import hudson.Extension
 import hudson.FilePath
 import jenkins.model.Jenkins
-import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
@@ -28,9 +26,6 @@ import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
-import org.jenkinsci.plugins.workflow.pickles.Pickle
-import org.jenkinsci.plugins.workflow.support.pickles.SingleTypedPickleFactory
-import org.jenkinsci.plugins.workflow.support.pickles.XStreamPickle
 
 /**
  * A library step
