@@ -60,7 +60,7 @@ class StepWrapperScriptPickle extends Pickle{
                     step.getLibrary() == stepContext.library
                 }
                 if (step == null){
-                    throw new IllegalStateException(("Unable to determine StepWrapper"))
+                    throw new IllegalStateException("Unable to determine StepWrapper")
                 }
                 StepWrapperScript script = step.getScript(flowOwner)
                 script.setStepContext(stepContext)
