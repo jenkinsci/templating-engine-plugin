@@ -512,4 +512,364 @@ class HookSpec extends Specification {
         jenkins.assertLogNotContains("step sampleStep threw exception", run)
     }
 
+    def "hookContext.library is correct within the closure param"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep({ hookContext.library == "gradle" })
+        void call(){
+          println "hookContext.library = gradle"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: 'libraries{ hooksLibrary; gradle }',
+            template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.library = gradle", run)
+    }
+
+    def "hookContext.library is correct within the step itself"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep
+        void call(){
+          println "hookContext.library = \${hookContext.library}"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.library = gradle", run)
+    }
+
+    def "hookContext.library is null during @Init"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @Init
+        void call(){
+          println "hookContext.library = null"
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary }',
+                template: 'echo "hi"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.library = null", run)
+    }
+
+    def "hookContext.library is null during @CleanUp"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @CleanUp
+        void call(){
+          println "hookContext.library = null"
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary }',
+                template: 'echo "hi"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.library = null", run)
+    }
+
+    def "hookContext.step is correct within the closure param"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep({ hookContext.step == "sampleStep" })
+        void call(){
+          println "hookContext.step = sampleStep"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.step = sampleStep", run)
+    }
+
+    def "hookContext.step is correct within the step itself"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep
+        void call(){
+          println "hookContext.step = \${hookContext.step}"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.step = sampleStep", run)
+    }
+
+    def "hookContext.step is null during @Init"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @Init
+        void call(){
+          println "hookContext.step = \${hookContext.step}"
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary }',
+                template: 'echo "hi"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.step = null", run)
+    }
+
+    def "hookContext.step is null during @CleanUp"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @CleanUp
+        void call(){
+          println "hookContext.step = \${hookContext.step}"
+        }
+        """)
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary }',
+                template: 'echo "hi"'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.step = null", run)
+    }
+
+    def "hookContext.methodName is correct for 'call' within the closure param"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep({ hookContext.methodName == "call" })
+        void call(){
+          println "hookContext.methodName = call"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.methodName = call", run)
+    }
+
+    def "hookContext.methodName is correct for 'call' within the step itself"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep
+        void call(){
+          println "hookContext.methodName = \${hookContext.methodName}"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.methodName = call", run)
+    }
+
+    def "hookContext.methodName is correct for non-call method within the closure param"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep({ hookContext.methodName == "notCall" })
+        void call(){
+          println "hookContext.methodName = notCall"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void notCall(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep.notCall()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.methodName = notCall", run)
+    }
+
+    def "hookContext.methodName is correct for non-call method within the step itself"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @AfterStep
+        void call(){
+          println "hookContext.methodName = \${hookContext.methodName}"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void notCall(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep.notCall()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.methodName = notCall", run)
+    }
+
+    def "hookContext.methodName is null during @Init"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @Init
+        void call(){
+          println "hookContext.methodName = \${hookContext.methodName}"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.methodName = null", run)
+    }
+
+    def "hookContext.methodName is null during @CleanUp"(){
+        given:
+        def run
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('hooksLibrary', 'theHooks', """
+        @CleanUp
+        void call(){
+          println "hookContext.methodName = \${hookContext.methodName}"
+        }
+        """)
+        libProvider.addStep('gradle', 'sampleStep', "void call(){ println 'no-op' }")
+        libProvider.addGlobally()
+
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'libraries{ hooksLibrary; gradle }',
+                template: 'sampleStep()'
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("hookContext.methodName = null", run)
+    }
+
 }

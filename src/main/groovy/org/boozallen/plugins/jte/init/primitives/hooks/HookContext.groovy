@@ -37,6 +37,14 @@ class HookContext implements Serializable{
     String step
 
     /**
+     * the name of the method within the step that was invoked.
+     * helpful for triggering hooks after multi-method steps.
+     * <p>
+     * {@code null} prior to and post pipeline template execution
+     */
+    String methodName
+
+    /**
      * indicates whether an uncaught exception has been thrown.
      */
     Boolean exceptionThrown = false

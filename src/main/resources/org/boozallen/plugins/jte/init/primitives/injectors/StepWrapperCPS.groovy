@@ -46,13 +46,13 @@ class StepWrapperCPS implements Serializable{
         // pass parent StepWrapper contexts to the script so they can be resolved during step execution
         StepWrapperScript script = parent.script
         script.setStepContext(parent.stepContext)
-        script.setHookContext(parent.hookContext)
         script.setStageContext(parent.stageContext)
 
         String argsList = args.collect{ arg -> arg.getClass().simpleName }.join(", ")
         if(InvokerHelper.getMetaClass(script).respondsTo(script, methodName, args)){
             def result
-            HookContext context = new HookContext(step: name, library: library)
+            HookContext context = new HookContext(step: name, library: library, methodName: methodName)
+            script.setHookContext(context)
             try{
                 Hooks.invoke(BeforeStep, context)
                 TemplateLogger.createDuringRun().print "[Step - ${library}/${name}.${methodName}(${argsList})]"
