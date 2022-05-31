@@ -16,6 +16,8 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.model.Result
+import org.boozallen.plugins.jte.init.governance.GovernanceTier
+import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.util.TestUtil
@@ -28,147 +30,34 @@ import spock.lang.Specification
 
 class StepWrapperSpec extends Specification {
 
+    // shared to make the test suite faster
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
+    TestLibraryProvider libProvider = new TestLibraryProvider()
 
-    /**
-     * for performance, use a common jenkins and library source.
-     * individual tests will reference steps defined in this library
-     */
-    @SuppressWarnings('MethodSize')
-    def setupSpec() {
-        TestLibraryProvider libProvider = new TestLibraryProvider()
-        libProvider.addStep('exampleLibrary', 'callNoParam', '''
-        void call(){
-            println "step ran"
-        }
-        ''')
-        libProvider.addStep('exampleLibrary', 'callOneParam', """
-        void call(x){
-            println "x=\${x}"
-        }
-        """)
-        libProvider.addStep('exampleLibrary', 'callTwoParam', """
-        void call(x, y){
-            println "x=\${x}"
-            println "y=\${y}"
-        }
-        """)
-        libProvider.addStep('exampleLibrary', 'someStep', """
-        void someMethod(){
-            println "step ran"
-        }
-        void someMethod(x){
-            println "x=\${x}"
-        }
-        void someMethod(x,y){
-            println "x=\${x}"
-            println "y=\${y}"
-        }
-        """)
-        libProvider.addStep('exampleLibrary', 'testConfig', """
-        void call(){
-            println "x=\${config.x}"
-        }
-        """)
-        libProvider.addStep('exampleLibrary', 'usePipelineSteps', '''
-        void call(){
-            node{
-                sh "echo canyouhearmenow"
-            }
-        }
-        ''')
-        libProvider.addStep('exampleLibrary', 'returnsSomething', '''
-        void call(){
-            return "foo"
-        }
-        ''')
-        libProvider.addStep('hasHooks', 'hookStep', '''
-        @BeforeStep
-        void before(context){
-            println "BeforeStep Hook"
-        }
-        @AfterStep
-        void after(context){
-            println "AfterStep Hook"
-        }
-        @Notify
-        void notify(context){
-            println "Notify Hook"
-        }
-        ''')
-        libProvider.addStep('hasHooks', 'theStep', '''
-        void call(){
-            println "the actual step"
-        }
-        ''')
-        libProvider.addStep('libA', 'stepA', '''
-        void call(){
-            println "step: A"
-        }
-        ''')
-        libProvider.addStep('libB', 'stepB', '''
-        void call(){
-            stepA()
-        }
-        ''')
-        libProvider.addResource('resourcesA', 'myResource.txt', 'my resource from resourcesA')
-        libProvider.addStep('resourcesA', 'fetchResource', '''
-        void call(){
-          println resource("myResource.txt")
-        }
-        ''')
-        libProvider.addResource('resourcesA', 'myOtherResource.sh', 'echo hi')
-        libProvider.addResource('resourcesA', 'nested/somethingElse.txt', 'hello, world')
-        libProvider.addStep('resourcesA', 'fetchNestedResource', '''
-        void call(){
-          println resource("nested/somethingElse.txt")
-        }
-        ''')
-        libProvider.addStep('resourcesB', 'fetchCrossLibrary', '''
-        void call(){
-          println resource("nested/somethingElse.txt")
-        }
-        ''')
-        libProvider.addStep('resourcesB', 'doesNotExist', '''
-        void call(){
-          println resource("nope.txt")
-        }
-        ''')
-        libProvider.addStep('resourcesB', 'absolutePath', '''
-        void call(){
-          println resource("/nope.txt")
-        }
-        ''')
+    // add the new library source for each test
+    def setup() {
+        libProvider.addGlobally()
+    }
 
-        libProvider.addSrc('hasClassA', 'src/boozallen/Utility.groovy', '''
+    // after each test, remove the library source
+    // for a fresh start.
+    def cleanup(){
+        TemplateGlobalConfig global = TemplateGlobalConfig.get()
+        GovernanceTier tier = global.getTier()
+        tier.setLibrarySources([])
+    }
+
+    def "Library class can be imported and used in a pipeline template"() {
+        given:
+        libProvider.addSrc('utility', 'src/boozallen/Utility.groovy', '''
         package boozallen
         class Utility implements Serializable{
           void doThing(steps){ steps.echo "doing a thing" }
         }
         ''')
-        libProvider.addStep('hasClassA', 'useClass', '''
-        import boozallen.Utility
-        void call(){
-          Utility u = new Utility()
-          u.doThing(steps)
-        }
-        ''')
-        libProvider.addStep('hasClassB', 'useClassB', '''
-        import boozallen.Utility
-        void call(){
-          Utility u = new Utility()
-          u.doThing(steps)
-        }
-        ''')
-
-        libProvider.addGlobally()
-    }
-
-    def "Library class can be imported and used in a pipeline template"() {
-        given:
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-            config: 'libraries{ hasClassA }',
+            config: 'libraries{ utility }',
             template: '''
             import boozallen.Utility
 
@@ -187,9 +76,23 @@ class StepWrapperSpec extends Specification {
 
     def "Library class can be imported and used from same library"() {
         given:
+        libProvider.addSrc('utility', 'src/boozallen/Utility.groovy', '''
+        package boozallen
+        class Utility implements Serializable{
+          void doThing(steps){ steps.echo "doing a thing" }
+        }
+        ''')
+        libProvider.addStep('utility', 'useClass', '''
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        ''')
+
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: 'libraries{ hasClassA }',
+                config: 'libraries{ utility }',
                 template: 'useClass()'
         )
 
@@ -203,12 +106,32 @@ class StepWrapperSpec extends Specification {
 
     def "Library class from A can be used in B when A is loaded first"() {
         given:
+        libProvider.addSrc('utility', 'src/boozallen/Utility.groovy', '''
+        package boozallen
+        class Utility implements Serializable{
+          void doThing(steps){ steps.echo "doing a thing" }
+        }
+        ''')
+        libProvider.addStep('utility', 'useClass', '''
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        ''')
+        libProvider.addStep('otherLibrary', 'useClassB', '''
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
                 config: '''
                 libraries{
-                  hasClassA
-                  hasClassB
+                  utility
+                  otherLibrary
                 }''',
                 template: 'useClassB()'
         )
@@ -223,12 +146,32 @@ class StepWrapperSpec extends Specification {
 
     def "Library class from A can be used in B when B is loaded first"() {
         given:
+        libProvider.addSrc('utility', 'src/boozallen/Utility.groovy', '''
+        package boozallen
+        class Utility implements Serializable{
+          void doThing(steps){ steps.echo "doing a thing" }
+        }
+        ''')
+        libProvider.addStep('utility', 'useClass', '''
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        ''')
+        libProvider.addStep('otherLibrary', 'useClassB', '''
+        import boozallen.Utility
+        void call(){
+          Utility u = new Utility()
+          u.doThing(steps)
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
                 config: '''
                 libraries{
-                  hasClassB
-                  hasClassA
+                  otherLibrary
+                  utility
                 }''',
                 template: 'useClassB()'
         )
@@ -243,10 +186,15 @@ class StepWrapperSpec extends Specification {
 
     def "steps invocable via call shorthand with no params"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            println "step ran"
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'callNoParam()'
+            template: 'step()'
         )
 
         when:
@@ -259,10 +207,15 @@ class StepWrapperSpec extends Specification {
 
     def "step logs invocation"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            println "step ran"
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'callNoParam()'
+            template: 'step()'
         )
 
         when:
@@ -270,15 +223,20 @@ class StepWrapperSpec extends Specification {
 
         then:
         jenkins.assertBuildStatusSuccess(run)
-        jenkins.assertLogContains('[JTE][Step - exampleLibrary/callNoParam.call()]', run)
+        jenkins.assertLogContains('[JTE][Step - exampleLibrary/step.call()]', run)
     }
 
     def "steps invocable via call shorthand with one param"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', """
+        void call(x){
+            println "x=\${x}"
+        }
+        """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'callOneParam("foo")'
+            template: 'step("foo")'
         )
 
         when:
@@ -291,10 +249,16 @@ class StepWrapperSpec extends Specification {
 
     def "steps invocable via call shorthand with more than one param"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', """
+        void call(x, y){
+            println "x=\${x}"
+            println "y=\${y}"
+        }
+        """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'callTwoParam("foo","bar")'
+            template: 'step("foo","bar")'
         )
 
         when:
@@ -308,10 +272,15 @@ class StepWrapperSpec extends Specification {
 
     def "steps can invoke non-call methods with no params"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', """
+        void someMethod(){
+            println "step ran"
+        }
+        """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'someStep.someMethod()'
+            template: 'step.someMethod()'
         )
 
         when:
@@ -324,10 +293,15 @@ class StepWrapperSpec extends Specification {
 
     def "steps can invoke non-call methods with 1 param"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', """
+        void someMethod(x){
+            println "x=\${x}"
+        }
+        """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'someStep.someMethod("foo")'
+            template: 'step.someMethod("foo")'
         )
 
         when:
@@ -340,10 +314,16 @@ class StepWrapperSpec extends Specification {
 
     def "steps can invoke non-call methods with more than 1 param"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', """
+        void someMethod(x,y){
+            println "x=\${x}"
+            println "y=\${y}"
+        }
+        """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'someStep.someMethod("foo", "bar")'
+            template: 'step.someMethod("foo", "bar")'
         )
 
         when:
@@ -357,6 +337,11 @@ class StepWrapperSpec extends Specification {
 
     def "steps can access configuration via config variable"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', """
+        void call(){
+            println "x=\${config.x}"
+        }
+        """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -366,7 +351,7 @@ class StepWrapperSpec extends Specification {
                 }
             }
             ''',
-            template: 'testConfig()'
+            template: 'step()'
         )
 
         when:
@@ -379,10 +364,17 @@ class StepWrapperSpec extends Specification {
 
     def "steps can invoke pipeline steps directly"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            node{
+                sh "echo canyouhearmenow"
+            }
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'usePipelineSteps()'
+            template: 'step()'
         )
 
         when:
@@ -395,11 +387,16 @@ class StepWrapperSpec extends Specification {
 
     def "return step return result through StepWrapper"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            return "foo"
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
             template: """
-            x = returnsSomething()
+            x = step()
             println "x=\${x}"
             """
         )
@@ -414,10 +411,15 @@ class StepWrapperSpec extends Specification {
 
     def "step method not found throws TemplateException"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            println "step ran"
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'callNoParam.nonExistent()'
+            template: 'step.nonExistent()'
         )
 
         when:
@@ -425,11 +427,16 @@ class StepWrapperSpec extends Specification {
 
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
-        jenkins.assertLogContains('Step callNoParam from the library exampleLibrary does not have the method nonExistent()', run)
+        jenkins.assertLogContains('Step step from the library exampleLibrary does not have the method nonExistent()', run)
     }
 
     def "step override during initialization throws exception"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            println "step ran"
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -437,7 +444,7 @@ class StepWrapperSpec extends Specification {
                 exampleLibrary
             }
             keywords{
-                callNoParam = "oops"
+                step = "oops"
             }
             ''',
             template: 'println "doesnt matter"'
@@ -452,10 +459,15 @@ class StepWrapperSpec extends Specification {
 
     def "step override post initialization throws exception"() {
         given:
+        libProvider.addStep('exampleLibrary', 'step', '''
+        void call(){
+            println "step ran"
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ exampleLibrary }',
-            template: 'callNoParam = "oops"'
+            template: 'step = "oops"'
         )
 
         when:
@@ -467,6 +479,16 @@ class StepWrapperSpec extends Specification {
 
     def "Step can invoke another step"() {
         given:
+        libProvider.addStep('libA', 'stepA', '''
+        void call(){
+            println "step: A"
+        }
+        ''')
+        libProvider.addStep('libB', 'stepB', '''
+        void call(){
+            stepA()
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -488,6 +510,12 @@ class StepWrapperSpec extends Specification {
 
     def "library resource can be fetched within a step"() {
         given:
+        libProvider.addResource('resourcesA', 'myResource.txt', 'my resource from resourcesA')
+        libProvider.addStep('resourcesA', 'step', '''
+        void call(){
+          println resource("myResource.txt")
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -495,7 +523,7 @@ class StepWrapperSpec extends Specification {
                 resourcesA
             }
             ''',
-            template: 'fetchResource()'
+            template: 'step()'
         )
 
         when:
@@ -508,6 +536,12 @@ class StepWrapperSpec extends Specification {
 
     def "library resource method can't be called from outside a step"() {
         given:
+        libProvider.addResource('resourcesA', 'myResource.txt', 'my resource from resourcesA')
+        libProvider.addStep('resourcesA', 'step', '''
+        void call(){
+          println resource("myResource.txt")
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -528,6 +562,12 @@ class StepWrapperSpec extends Specification {
 
     def "nested library resource can be fetched within a step"() {
         given:
+        libProvider.addResource('resourcesA', 'nested/somethingElse.txt', 'hello, world')
+        libProvider.addStep('resourcesA', 'step', '''
+        void call(){
+          println resource("nested/somethingElse.txt")
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -535,7 +575,7 @@ class StepWrapperSpec extends Specification {
                 resourcesA
             }
             ''',
-            template: 'fetchNestedResource()'
+            template: 'step()'
         )
 
         when:
@@ -548,6 +588,17 @@ class StepWrapperSpec extends Specification {
 
     def "step can only retrieve resource from own library"() {
         given:
+        libProvider.addResource('resourcesA', 'nested/somethingElse.txt', 'hello, world')
+        libProvider.addStep('resourcesA', 'stepA', '''
+        void call(){
+          println resource("nested/somethingElse.txt")
+        }
+        ''')
+        libProvider.addStep('resourcesB', 'stepB', '''
+        void call(){
+          println resource("nested/somethingElse.txt")
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -556,7 +607,7 @@ class StepWrapperSpec extends Specification {
                 resourcesB
             }
             ''',
-            template: 'fetchNestedResource(); fetchCrossLibrary()'
+            template: 'stepA(); stepB()'
         )
 
         when:
@@ -570,6 +621,11 @@ class StepWrapperSpec extends Specification {
 
     def "step fetching non-existent resource throws exception"() {
         given:
+        libProvider.addStep('resourcesB', 'step', '''
+        void call(){
+          println resource("nope.txt")
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -577,7 +633,7 @@ class StepWrapperSpec extends Specification {
                 resourcesB
             }
             ''',
-            template: 'doesNotExist()'
+            template: 'step()'
         )
 
         when:
@@ -590,6 +646,11 @@ class StepWrapperSpec extends Specification {
 
     def "step fetching resource with absolute path throws exception"() {
         given:
+        libProvider.addStep('resourcesB', 'step', '''
+        void call(){
+          println resource("/nope.txt")
+        }
+        ''')
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: '''
@@ -597,7 +658,7 @@ class StepWrapperSpec extends Specification {
                 resourcesB
             }
             ''',
-            template: 'absolutePath()'
+            template: 'step()'
         )
 
         when:
@@ -610,6 +671,11 @@ class StepWrapperSpec extends Specification {
 
     def "getParentChain returns the correct path"() {
         given:
+        libProvider.addStep('resourcesB', 'step', '''
+        void call(){
+          println resource("/nope.txt")
+        }
+        ''')
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ resourcesB }',
             template: "println 'doesnt matter'"
@@ -618,12 +684,12 @@ class StepWrapperSpec extends Specification {
         jenkins.waitForCompletion(run)
         TemplatePrimitiveCollector c = run.getAction(TemplatePrimitiveCollector)
         StepWrapper step = c.findAll { primitive ->
-            primitive.getName() == 'absolutePath'
+            primitive.getName() == 'step'
         }.first()
 
         expect:
         jenkins.assertBuildStatusSuccess(run)
-        step.getParentChain() == 'jte.libraries.resourcesB.absolutePath'
+        step.getParentChain() == 'jte.libraries.resourcesB.step'
     }
 
 }
