@@ -71,27 +71,21 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
             CpsFlowFactoryAction2 replayAction = actions.find{ action -> action instanceof CpsFlowFactoryAction2 }
             return replayAction.create(this, owner, newActions)
         }
-        String template = initializePipeline(owner)
-        FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
-        return new CpsFlowExecution(template, true, owner, hint)
-    }
-
-    /**
-     * Performs JTE's Pipeline Initialization Process
-     * @param owner
-     * @return the Pipeline Template for the Run
-     */
-    String initializePipeline(FlowExecutionOwner owner){
         // Step 1: Aggregate pipeline configs
         PipelineConfigurationAggregator configurationAggregator = new PipelineConfigurationAggregator(owner)
         PipelineConfigurationObject config = configurationAggregator.aggregate()
-        // Step 2: Invoke TemplatePrimitiveInjectors
-        TemplatePrimitiveInjector.orchestrate(owner, config)
-        // Step 3: determine the Pipeline Template
+        // Step 2: determine the Pipeline Template
         PipelineTemplateResolver templateResolver = new PipelineTemplateResolver(owner)
         String template = templateResolver.resolve(config)
-        return template
+        // Step 3: create CpsFlowExecution
+        FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
+        CpsFlowExecution exec = new CpsFlowExecution(template, true, owner, hint)
+        // Step 3: Invoke TemplatePrimitiveInjectors
+        TemplatePrimitiveInjector.orchestrate(exec, config)
+
+        return exec
     }
+
 
     /**
      * Fetch the job's Pipeline Configuration

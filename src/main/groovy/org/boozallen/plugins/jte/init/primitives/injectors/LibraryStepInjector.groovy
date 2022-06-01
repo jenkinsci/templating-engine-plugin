@@ -30,6 +30,7 @@ import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.runtime.GStringImpl
 import org.codehaus.groovy.runtime.NullObject
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
@@ -41,7 +42,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     private static final String KEY = "libraries"
 
     @Override
-    void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+    void validateConfiguration(CpsFlowExecution exec, PipelineConfigurationObject config){
+        FlowExecutionOwner flowOwner = exec.getOwner()
         LinkedHashMap aggregatedConfig = config.getConfig()
         AggregateException errors = new AggregateException()
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
@@ -79,7 +81,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     }
 
     @Override
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+        FlowExecutionOwner flowOwner = exec.getOwner()
         // fetch library providers and determine library resolution order
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
         boolean reverseProviders = config.jteBlockWrapper.reverse_library_resolution

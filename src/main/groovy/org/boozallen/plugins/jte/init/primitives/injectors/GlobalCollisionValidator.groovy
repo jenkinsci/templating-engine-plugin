@@ -22,6 +22,7 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.GlobalVariable
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor
@@ -32,7 +33,8 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 @Extension class GlobalCollisionValidator extends TemplatePrimitiveInjector{
 
     @Override
-    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config) {
+    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config) {
+        FlowExecutionOwner flowOwner = exec.getOwner()
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
 

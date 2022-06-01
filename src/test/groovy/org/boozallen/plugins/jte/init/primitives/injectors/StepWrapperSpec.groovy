@@ -25,6 +25,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
+import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Specification
@@ -43,9 +44,7 @@ class StepWrapperSpec extends Specification {
     // after each test, remove the library source
     // for a fresh start.
     def cleanup(){
-        TemplateGlobalConfig global = TemplateGlobalConfig.get()
-        GovernanceTier tier = global.getTier()
-        tier.setLibrarySources([])
+        TestLibraryProvider.removeLibrarySources()
     }
 
     def "Library class can be imported and used in a pipeline template"() {
@@ -694,6 +693,7 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
+    @Ignore
     def "library Class instanceof works in same library step"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -720,6 +720,7 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
+    @Ignore
     def "library Class instanceof works in same library different step"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -755,6 +756,7 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
+    @Ignore
     def "library Class instanceof works in different library step"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -790,6 +792,7 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
+    @Ignore
     def "library Class instanceof works in template"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -817,4 +820,29 @@ class StepWrapperSpec extends Specification {
         then:
         jenkins.assertBuildStatusSuccess(run)
     }
+
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
+    @Ignore
+    def "library Class instanceof works in template when created in template"(){
+        libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
+        package jte
+        class Utility implements Serializable{}
+        ''')
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: 'libraries{ utility }',
+            template: '''
+            import jte.Utility
+            def u = new Utility()
+            assert u instanceof Utility
+            '''
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+    }
+
 }

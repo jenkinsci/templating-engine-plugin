@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.reflection.CachedMethod
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
@@ -83,18 +84,18 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param flowOwner the run's FlowExecutionOwner
      * @param config the aggregated pipeline configuration
      */
-    static void orchestrate(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
-        invoke("validateConfiguration", flowOwner, config)
-        invoke("injectPrimitives", flowOwner, config)
-        invoke("validatePrimitives", flowOwner, config)
+    static void orchestrate(CpsFlowExecution exec, PipelineConfigurationObject config){
+        invoke("validateConfiguration", exec, config)
+        invoke("injectPrimitives", exec, config)
+        invoke("validatePrimitives", exec, config)
     }
 
     /**
      * Used to validate the pipeline configuration is structurally correct
-     * @param flowOwner the run's flowOwner
+     * @param exec the current CpsFlowExecution
      * @param config the aggregated pipeline configuration
      */
-    void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+    void validateConfiguration(CpsFlowExecution exec, PipelineConfigurationObject config){}
 
     /**
      * parse the aggregated pipeline configuration to instantiate a {@link TemplatePrimitive} and store it
@@ -103,7 +104,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
      */
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){}
 
     /**
      * A second pass allowing the different injector's to inspect what TemplatePrimitives
@@ -112,7 +113,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
      */
-    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){}
+    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){}
 
     TemplatePrimitiveCollector getPrimitiveCollector(FlowExecutionOwner flowOwner){
         WorkflowRun run = flowOwner.run()
@@ -144,7 +145,9 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
                     injector.invokeMethod(phase, args)
                 }
             } catch(any){
-                TemplateLogger logger = new TemplateLogger(args[0].getListener())
+                CpsFlowExecution exec = args[0]
+                FlowExecutionOwner flowOwner = exec.getOwner()
+                TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
                 String msg = [ any.getMessage(), any.getStackTrace()*.toString() ].flatten().join("\n")
                 logger.printError(msg)
                 errors.add(any)

@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -34,7 +35,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector, TemplateMethodInjector])
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+        FlowExecutionOwner flowOwner = exec.getOwner()
         TemplatePrimitiveNamespace stages = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate namespace with stages from pipeline config
@@ -56,7 +58,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     }
 
     @Override
-    void validatePrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+        FlowExecutionOwner flowOwner = exec.getOwner()
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
         LinkedHashMap aggregatedConfig = config.getConfig()
         LinkedHashMap stagesWithUndefinedSteps = [:]

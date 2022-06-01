@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.ConfigValidator
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -34,7 +35,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     static final String ERROR_HEADER = "Pipeline Configuration JTE Block Errors:"
 
     @Override
-    void validateConfiguration(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+    void validateConfiguration(CpsFlowExecution exec, PipelineConfigurationObject config){
+        FlowExecutionOwner flowOwner = exec.getOwner()
         LinkedHashMap aggregatedConfig = config.getConfig()
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
         if(aggregatedConfig.containsKey("jte")){

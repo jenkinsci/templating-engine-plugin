@@ -22,6 +22,7 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
@@ -33,7 +34,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     @Override
     @RunAfter(LibraryStepInjector)
-    void injectPrimitives(FlowExecutionOwner flowOwner, PipelineConfigurationObject config){
+    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+        FlowExecutionOwner flowOwner = exec.getOwner()
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
         TemplatePrimitiveNamespace steps = new TemplatePrimitiveNamespace(name: KEY)
 
