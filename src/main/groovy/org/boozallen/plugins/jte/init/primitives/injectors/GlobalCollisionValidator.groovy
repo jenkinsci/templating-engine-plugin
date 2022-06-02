@@ -36,7 +36,7 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
     void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config) {
         FlowExecutionOwner flowOwner = exec.getOwner()
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
 
         Map<String, List<TemplatePrimitive>> primitivesByName = [:]
         primitiveCollector.getPrimitives().each{ primitive ->

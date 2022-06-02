@@ -40,10 +40,10 @@ import java.util.logging.Logger
 @SuppressWarnings(['NoDef', 'MethodReturnTypeRequired'])
 class StepWrapperFactory{
 
-    private final FlowExecutionOwner flowOwner
+    private final CpsFlowExecution exec
 
-    StepWrapperFactory(FlowExecutionOwner flowOwner){
-        this.flowOwner = flowOwner
+    StepWrapperFactory(CpsFlowExecution exec){
+        this.exec = exec
     }
 
     /**
@@ -147,12 +147,13 @@ class StepWrapperFactory{
          * of the template to the Step. attaching the flowOwner is
          * necessary for certain Jenkins Pipeline steps to work appropriately.
          */
-        FlowDurabilityHint durabilityHint = TemplateFlowDefinition.determineFlowDurabilityHint(flowOwner)
-        CpsFlowExecution exec = new CpsFlowExecution(sourceText, false, flowOwner, durabilityHint)
+        FlowDurabilityHint durabilityHint = exec.getDurabilityHint()
+        FlowExecutionOwner flowOwner = exec.getOwner()
+        CpsFlowExecution stepExec = new CpsFlowExecution(sourceText, false, flowOwner, durabilityHint)
         // tell StepWrapperShellDecorator this is a step
-        exec.metaClass[StepWrapperShellDecorator.FLAG] = true
+        stepExec.metaClass[StepWrapperShellDecorator.FLAG] = true
         try{
-            script = exec.parseScript() as StepWrapperScript
+            script = stepExec.parseScript() as StepWrapperScript
         } catch(any){
             TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
             logger.printError("Failed to parse step text. Library: ${step.library}. Step: ${step.name}.")

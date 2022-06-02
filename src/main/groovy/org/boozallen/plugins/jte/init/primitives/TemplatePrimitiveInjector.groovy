@@ -115,14 +115,14 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      */
     void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){}
 
-    TemplatePrimitiveCollector getPrimitiveCollector(FlowExecutionOwner flowOwner){
-        WorkflowRun run = flowOwner.run()
+    TemplatePrimitiveCollector getPrimitiveCollector(CpsFlowExecution exec){
+        WorkflowRun run = exec.getOwner().run()
         if(!run){
             throw new JTEException("Invalid Context. Cannot determine run.")
         }
         TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
         if(primitiveCollector == null){
-            primitiveCollector = new TemplatePrimitiveCollector()
+            primitiveCollector = new TemplatePrimitiveCollector(exec)
         }
         return primitiveCollector
     }

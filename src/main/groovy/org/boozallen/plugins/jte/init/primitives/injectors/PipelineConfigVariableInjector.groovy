@@ -44,7 +44,7 @@ import javax.annotation.Nonnull
         pipelineConfigNamespace.add(pipelineConfig)
 
         // add the namespace to the collector and save it on the run
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
         primitiveCollector.addNamespace(pipelineConfigNamespace)
         flowOwner.run().addOrReplaceAction(primitiveCollector)
     }

@@ -36,13 +36,13 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @RunAfter(LibraryStepInjector)
     void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         FlowExecutionOwner flowOwner = exec.getOwner()
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
         TemplatePrimitiveNamespace steps = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate namespace with default steps from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-        StepWrapperFactory stepFactory = new StepWrapperFactory(flowOwner)
+        StepWrapperFactory stepFactory = new StepWrapperFactory(exec)
         aggregatedConfig[KEY].each{ stepName, stepConfig ->
             // if step already exists, print warning
             if (primitiveCollector.hasStep(stepName)){

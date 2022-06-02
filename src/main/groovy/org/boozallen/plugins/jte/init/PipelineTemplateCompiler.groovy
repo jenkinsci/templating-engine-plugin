@@ -67,17 +67,6 @@ class PipelineTemplateCompiler extends GroovyShellDecorator {
         Field shellBinding = GroovyShell.getDeclaredField("context")
         shellBinding.setAccessible(true)
         shellBinding.set(shell, new TemplateBinding())
-
-        // add loaded libraries `src` directories to the classloader
-        File jte = context.getOwner().getRootDir()
-        File srcDir = new File(jte, "jte/src")
-        if (srcDir.exists()){
-            if(srcDir.isDirectory()) {
-                shell.getClassLoader().addURL(srcDir.toURI().toURL())
-            } else {
-                LOGGER.log(Level.WARNING, "${srcDir.getPath()} is not a directory.")
-            }
-        }
     }
 
     @Override

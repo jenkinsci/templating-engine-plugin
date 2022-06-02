@@ -54,7 +54,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
         // add the namespace to the collector and save it on the run
         if(appEnvs.getPrimitives()) {
-            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
             primitiveCollector.addNamespace(appEnvs)
             flowOwner.run().addOrReplaceAction(primitiveCollector)
         }

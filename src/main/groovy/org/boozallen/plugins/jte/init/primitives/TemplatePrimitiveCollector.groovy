@@ -24,6 +24,7 @@ import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.DSL
@@ -42,6 +43,8 @@ class TemplatePrimitiveCollector extends InvisibleAction{
 
     List<TemplatePrimitiveNamespace> namespaces = []
 
+    transient ClassLoader classLoader
+
     static List<GlobalVariable> getGlobalVariablesByName(String name, Run run){
         return GlobalVariable.forRun(run).findAll{ variable ->
             variable.getName() == name
@@ -56,7 +59,7 @@ class TemplatePrimitiveCollector extends InvisibleAction{
      */
     static TemplatePrimitiveCollector current(){
         CpsThread thread = CpsThread.current()
-        if(!thread){
+        if (!thread) {
             throw new IllegalStateException("CpsThread not present.")
         }
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
@@ -71,6 +74,11 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         } catch(IllegalStateException e){
             return null
         }
+    }
+
+    TemplatePrimitiveCollector(CpsFlowExecution exec){
+        exec.parseScript()
+        this.classLoader = exec.getTrustedShell().getClassLoader()
     }
 
     void addNamespace(TemplatePrimitiveNamespace namespace){

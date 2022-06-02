@@ -51,7 +51,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
         // add namespace to collector if there are primitives
         if(stages.getPrimitives()){
             // add the namespace to the collector and save it on the run
-            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
             primitiveCollector.addNamespace(stages)
             flowOwner.run().addOrReplaceAction(primitiveCollector)
         }
@@ -60,7 +60,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @Override
     void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         FlowExecutionOwner flowOwner = exec.getOwner()
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(flowOwner)
+        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
         LinkedHashMap aggregatedConfig = config.getConfig()
         LinkedHashMap stagesWithUndefinedSteps = [:]
         aggregatedConfig[KEY].each{ name, stageConfig ->

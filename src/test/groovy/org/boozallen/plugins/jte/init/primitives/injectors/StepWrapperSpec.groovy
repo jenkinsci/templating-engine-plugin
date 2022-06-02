@@ -693,7 +693,6 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
-    @Ignore
     def "library Class instanceof works in same library step"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -720,7 +719,6 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
-    @Ignore
     def "library Class instanceof works in same library different step"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -735,14 +733,15 @@ class StepWrapperSpec extends Specification {
         libProvider.addStep("utility", "checkUtility", """
         import jte.Utility
         void call(def u){
+          println Utility.getClassLoader()
+          println u.class.getClassLoader()
           assert u instanceof Utility
         }
         """)
         def run
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
-                config: 'libraries{ utility }',
-                template: '''
-            import jte.Utility
+            config: 'libraries{ utility }',
+            template: '''
             def u = createUtility()
             checkUtility(u)
             '''
@@ -756,7 +755,6 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
-    @Ignore
     def "library Class instanceof works in different library step"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -792,7 +790,6 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
-    @Ignore
     def "library Class instanceof works in template"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte
@@ -822,7 +819,6 @@ class StepWrapperSpec extends Specification {
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
-    @Ignore
     def "library Class instanceof works in template when created in template"(){
         libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
         package jte

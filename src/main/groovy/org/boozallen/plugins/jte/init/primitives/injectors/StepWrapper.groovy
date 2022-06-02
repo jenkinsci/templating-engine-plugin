@@ -23,6 +23,7 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.util.JTEException
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -102,8 +103,8 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
      * memoized getter.
      * impl will be null after a pipeline is resumed following an ungraceful shut down
      */
-    StepWrapperScript getScript(FlowExecutionOwner flowOwner = null){
-        script = script ?: parseSource(flowOwner)
+    StepWrapperScript getScript(CpsFlowExecution exec = null){
+        script = script ?: parseSource(exec)
         return script
     }
 
@@ -132,7 +133,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
      * Jenkins has ungracefully restarted and the pipeline is resuming
      * @return
      */
-    StepWrapperScript parseSource(FlowExecutionOwner flowOwner = null){
+    StepWrapperScript parseSource(CpsFlowExecution exec = null){
         String source
         if(sourceFile){
             FilePath f = new FilePath(new File(sourceFile))
@@ -147,15 +148,15 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
             throw new IllegalStateException("Unable to determine StepWrapper[library: ${library}, name: ${name}] source.")
         }
 
-        FlowExecutionOwner owner = flowOwner
-        if(owner == null){
+        CpsFlowExecution e = exec
+        if(e == null){
             CpsThread thread = CpsThread.current()
             if(!thread){
                 throw new IllegalStateException("CpsThread not present.")
             }
-            owner = thread.getExecution().getOwner()
+            e = thread.getExecution()
         }
-        StepWrapperFactory factory = new StepWrapperFactory(owner)
+        StepWrapperFactory factory = new StepWrapperFactory(e)
         return factory.prepareScript(this, source)
     }
 
