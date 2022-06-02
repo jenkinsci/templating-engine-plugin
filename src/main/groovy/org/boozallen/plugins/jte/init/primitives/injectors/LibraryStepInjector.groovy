@@ -225,15 +225,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         return annotations
     }
 
-    /*
-    @StepAlias("whatever")
-    void call(){}
-
-    @StepAlias("somethingelse")
-    void wahtever(){}
-
-     */
-
     private List<LibraryProvider> getLibraryProviders(FlowExecutionOwner flowOwner){
         WorkflowJob job = flowOwner.run().getParent()
         List<GovernanceTier> tiers = GovernanceTier.getHierarchy(job)
