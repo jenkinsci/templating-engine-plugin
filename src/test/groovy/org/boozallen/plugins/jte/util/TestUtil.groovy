@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.util
 
+import com.cloudbees.hudson.plugins.folder.Folder
 import org.boozallen.plugins.jte.init.governance.config.ConsoleDefaultPipelineTemplate
 import org.boozallen.plugins.jte.init.governance.config.ConsolePipelineConfiguration
 import org.boozallen.plugins.jte.job.AdHocTemplateFlowDefinition
@@ -32,8 +33,18 @@ class TestUtil {
      * @param args named parameters.  template and config expected keys
      * @param jenkins the JenkinsRule for the test
      */
-    static WorkflowJob createAdHoc(LinkedHashMap args, JenkinsRule jenkins, String name = null) {
-        WorkflowJob job =  name ? jenkins.createProject(WorkflowJob, name) : jenkins.createProject(WorkflowJob)
+    static WorkflowJob createAdHoc(LinkedHashMap args, JenkinsRule jenkins) {
+        WorkflowJob job = jenkins.createProject(WorkflowJob)
+        return configureJob(args, job)
+    }
+
+    static WorkflowJob createAdHocInFolder(LinkedHashMap args, Folder folder){
+        String name = "test${folder.getItems().size()}"
+        WorkflowJob job = folder.createProject(WorkflowJob, name)
+        return configureJob(args, job)
+    }
+
+    static WorkflowJob configureJob(LinkedHashMap args, WorkflowJob job){
         ConsolePipelineConfiguration pipelineConfig = new ConsolePipelineConfiguration(args.containsKey('config'), args.config)
         ConsoleDefaultPipelineTemplate pipelineTemplate = new ConsoleDefaultPipelineTemplate(args.containsKey('template'), args.template)
         def templateConfiguration = new ConsoleAdHocTemplateFlowDefinitionConfiguration(pipelineTemplate, pipelineConfig)
