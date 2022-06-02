@@ -27,7 +27,6 @@ import spock.lang.Specification
 
 class LibraryStepInjectorSpec extends Specification {
 
-
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
 
     def cleanup(){
@@ -45,8 +44,8 @@ class LibraryStepInjectorSpec extends Specification {
         then:
         jenkins.assertBuildStatus(Result.FAILURE, run)
         jenkins.assertLogContains("Library doesNotExist not found", run)
-
     }
+
     def "library is loaded successfully"(){
         given:
         TestLibraryProvider lib = new TestLibraryProvider()
@@ -116,7 +115,6 @@ class LibraryStepInjectorSpec extends Specification {
         def run = job.scheduleBuild2(0).get()
         then:
         jenkins.assertBuildStatusSuccess(run)
-
     }
 
     def "library on more granular governance tier gets loaded"() {
