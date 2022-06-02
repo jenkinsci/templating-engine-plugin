@@ -44,9 +44,9 @@ class ReplaySpec extends Specification{
           }
         }
         '''
-        WorkflowJob p = TestUtil.createAdHoc(
+        WorkflowJob p = TestUtil.createAdHoc(jenkins,
                 config: 'keywords{ message = "hello world" }',
-                template: template, jenkins, 'p'
+                template: template
         )
         then:
         WorkflowRun b1 = jenkins.assertBuildStatusSuccess(p.scheduleBuild2(0))

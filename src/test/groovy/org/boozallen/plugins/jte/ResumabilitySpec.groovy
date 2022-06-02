@@ -51,23 +51,24 @@ class ResumabilitySpec extends Specification {
 
     def "Pipeline resumes after graceful restart"() {
         when:
+        WorkflowJob job
         story.then { jenkins ->
-            WorkflowJob p = TestUtil.createAdHoc(
+            job = TestUtil.createAdHoc(jenkins,
                 template: '''
                 println "running before sleep"
                 semaphore "wait"
                 println "running after sleep"
-                ''', jenkins, 'p'
+                '''
             )
-            WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart('wait/1', b)
+            WorkflowRun run = job.scheduleBuild2(0).waitForStart()
+            SemaphoreStep.waitForStart('wait/1', run)
         }
 
         then:
         story.then { jenkins ->
             SemaphoreStep.success('wait/1', true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
-            WorkflowRun run = p.getLastBuild()
+            job = jenkins.getInstance().getItemByFullName(job.getName(), WorkflowJob)
+            WorkflowRun run = job.getLastBuild()
             jenkins.waitForCompletion(run)
             jenkins.assertBuildStatusSuccess(run)
             jenkins.assertLogContains('running after sleep', run)
@@ -76,8 +77,9 @@ class ResumabilitySpec extends Specification {
 
     def "Stages succeed after pipeline graceful restart"() {
         when:
+        WorkflowJob job
         story.then { jenkins ->
-            WorkflowJob p = TestUtil.createAdHoc(
+            job = TestUtil.createAdHoc(jenkins,
                 config: '''
                 libraries{ gradle }
                 stages{ ci{ build } }
@@ -87,17 +89,17 @@ class ResumabilitySpec extends Specification {
                 semaphore "wait"
                 println "running after sleep"
                 ci()
-                ''', jenkins, 'p'
+                '''
             )
-            WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart('wait/1', b)
+            WorkflowRun run = job.scheduleBuild2(0).waitForStart()
+            SemaphoreStep.waitForStart('wait/1', run)
         }
 
         then:
         story.then { jenkins ->
             SemaphoreStep.success('wait/1', true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
-            WorkflowRun run = p.getLastBuild()
+            job = jenkins.getInstance().getItemByFullName(job.getName(), WorkflowJob)
+            WorkflowRun run = job.getLastBuild()
             jenkins.waitForCompletion(run)
             jenkins.assertBuildStatusSuccess(run)
             jenkins.assertLogContains('build step from test gradle library', run)
@@ -106,8 +108,9 @@ class ResumabilitySpec extends Specification {
 
     def "Steps succeed after pipeline graceful restart"() {
         when:
+        WorkflowJob job
         story.then { jenkins ->
-            WorkflowJob p = TestUtil.createAdHoc(
+            job = TestUtil.createAdHoc(jenkins,
                 config: '''
                 libraries{ gradle }
                 stages{ ci{ build } }
@@ -116,45 +119,44 @@ class ResumabilitySpec extends Specification {
                 println "running before sleep"
                 semaphore "wait"
                 build()
-                ''', jenkins, 'p'
+                '''
             )
-            WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart('wait/1', b)
+            WorkflowRun run = job.scheduleBuild2(0).waitForStart()
+            SemaphoreStep.waitForStart('wait/1', run)
         }
 
         then:
         story.then { jenkins ->
             SemaphoreStep.success('wait/1', true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
-            WorkflowRun b = p.getLastBuild()
-            jenkins.waitForCompletion(b)
-            jenkins.assertBuildStatusSuccess(b)
-            jenkins.assertLogContains('build step from test gradle library', b)
+            job = jenkins.getInstance().getItemByFullName(job.getName(), WorkflowJob)
+            WorkflowRun run = job.getLastBuild()
+            jenkins.waitForCompletion(run)
+            jenkins.assertBuildStatusSuccess(run)
+            jenkins.assertLogContains('build step from test gradle library', run)
         }
     }
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/191")
-    @Ignore("Works locally. Fails in GitHub Actions.")
     def "Restart mid-step resumes successfully"() {
         when:
+        WorkflowJob job
         story.then { jenkins ->
-            WorkflowJob p = TestUtil.createAdHoc(
+            job = TestUtil.createAdHoc(jenkins,
                 config: 'libraries{ gradle }',
-                template: 'sleepInStep()',
-                jenkins, 'p'
+                template: 'sleepInStep()'
             )
-            WorkflowRun b = p.scheduleBuild2(0).waitForStart()
-            SemaphoreStep.waitForStart('wait/1', b)
+            WorkflowRun run = job.scheduleBuild2(0).waitForStart()
+            SemaphoreStep.waitForStart('wait/1', run)
         }
 
         then:
         story.then { jenkins ->
             SemaphoreStep.success('wait/1', true)
-            WorkflowJob p = jenkins.getInstance().getItemByFullName('p', WorkflowJob)
-            WorkflowRun b = p.getLastBuild()
-            jenkins.waitForCompletion(b)
-            jenkins.assertBuildStatusSuccess(b)
-            jenkins.assertLogContains('running after sleep', b)
+            job = jenkins.getInstance().getItemByFullName(job.getName(), WorkflowJob)
+            WorkflowRun run = job.getLastBuild()
+            jenkins.waitForCompletion(run)
+            jenkins.assertBuildStatusSuccess(run)
+            jenkins.assertLogContains('running after sleep', run)
         }
     }
 
