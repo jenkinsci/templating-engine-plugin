@@ -18,14 +18,22 @@ package org.boozallen.plugins.jte.init.primitives.injectors;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.model.Queue;
+import hudson.model.Run;
 import org.boozallen.plugins.jte.init.primitives.ReservedVariableName;
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext;
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext;
+import org.boozallen.plugins.jte.init.primitives.injectors.StepContext;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
 import org.jenkinsci.plugins.workflow.cps.CpsScript;
+import org.jenkinsci.plugins.workflow.cps.CpsThread;
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The base script used during step execution
@@ -33,6 +41,8 @@ import java.util.LinkedHashMap;
  * context fields are set at runtime in StepWrapperCPS
  */
 public abstract class StepWrapperScript extends CpsScript {
+
+    private final Logger LOGGER = Logger.getLogger(StepWrapperScript.class.getName());
 
     /**
      * The library configuration
@@ -61,8 +71,45 @@ public abstract class StepWrapperScript extends CpsScript {
     private String resourcesPath;
     private String buildRootDir;
 
-
     public StepWrapperScript() throws IOException { super(); }
+
+    @Override
+    public Run<?,?> $buildNoException(){
+        CpsFlowExecution execution = getExecution();
+        if(execution == null){
+            return null;
+        }
+        try{
+            return $build();
+        }catch(IOException x){
+            LOGGER.log(Level.WARNING, null, x);
+            return null;
+        }
+    }
+
+    @Override
+    public Run<?,?> $build() throws IOException {
+        CpsFlowExecution execution = getExecution();
+        if(execution == null){
+            return null;
+        }
+        FlowExecutionOwner owner = getExecution().getOwner();
+        Queue.Executable qe = owner.getExecutable();
+        if (qe instanceof Run) {
+            return (Run) qe;
+        } else {
+            return null;
+        }
+    }
+
+    CpsFlowExecution getExecution(){
+        CpsThread c = CpsThread.current();
+        if (c == null){
+            return null;
+        }
+        return c.getExecution();
+    }
+
 
     public void setConfig(LinkedHashMap config){
         this.config = config;

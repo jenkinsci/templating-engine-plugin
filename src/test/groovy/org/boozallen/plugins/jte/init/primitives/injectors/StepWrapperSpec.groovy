@@ -49,8 +49,8 @@ class StepWrapperSpec extends Specification {
 
     def "Library class can be imported and used in a pipeline template"() {
         given:
-        libProvider.addSrc('utility', 'src/boozallen/Utility.groovy', '''
-        package boozallen
+        libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
+        package jte
         class Utility implements Serializable{
           void doThing(steps){ steps.echo "doing a thing" }
         }
@@ -59,7 +59,7 @@ class StepWrapperSpec extends Specification {
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
             config: 'libraries{ utility }',
             template: '''
-            import boozallen.Utility
+            import jte.Utility
 
             Utility u = new Utility()
             u.doThing(steps)
@@ -776,7 +776,6 @@ class StepWrapperSpec extends Specification {
         WorkflowJob job = TestUtil.createAdHoc(jenkins,
                 config: 'libraries{ utility; libA; libB }',
                 template: '''
-            import jte.Utility
             def u = createUtility()
             checkUtility(u)
             '''

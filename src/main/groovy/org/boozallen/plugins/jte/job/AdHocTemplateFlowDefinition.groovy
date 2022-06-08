@@ -62,7 +62,7 @@ class AdHocTemplateFlowDefinition extends TemplateFlowDefinition implements Seri
     protected Object readResolve(){
         if( configProvider == null ){
             this.configProvider = ConsoleAdHocTemplateFlowDefinitionConfiguration.create(
-                    this.providePipelineTemplate, this.template, this.providePipelineConfig, this.pipelineConfig
+                this.providePipelineTemplate, this.template, this.providePipelineConfig, this.pipelineConfig
             )
         }
 

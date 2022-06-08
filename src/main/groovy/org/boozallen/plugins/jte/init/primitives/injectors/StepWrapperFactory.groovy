@@ -15,24 +15,31 @@
 */
 package org.boozallen.plugins.jte.init.primitives.injectors
 
+import hudson.Extension
 import hudson.FilePath
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.primitives.TemplateBinding
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
+import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.boozallen.plugins.jte.util.TemplateLogger
-import hudson.Extension
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
+import org.codehaus.groovy.tools.GroovyClass
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SandboxResolvingClassLoader
+import org.jenkinsci.plugins.workflow.cps.CpsGroovyShell
+import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
+import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
-import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.boozallen.plugins.jte.job.TemplateFlowDefinition
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
+import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.CheckForNull
+import java.lang.reflect.Field
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Produces StepWrappers
@@ -147,15 +154,14 @@ class StepWrapperFactory{
          * of the template to the Step. attaching the flowOwner is
          * necessary for certain Jenkins Pipeline steps to work appropriately.
          */
-        FlowDurabilityHint durabilityHint = exec.getDurabilityHint()
-        FlowExecutionOwner flowOwner = exec.getOwner()
-        CpsFlowExecution stepExec = new CpsFlowExecution(sourceText, false, flowOwner, durabilityHint)
-        // tell StepWrapperShellDecorator this is a step
-        stepExec.metaClass[StepWrapperShellDecorator.FLAG] = true
         try{
-            script = stepExec.parseScript() as StepWrapperScript
+            GroovyShell shell = getShell()
+            if(exec.getShell() == null || exec.getTrustedShell() == null){
+                exec.parseScript()
+            }
+            script = shell.reparse(shell.generateScriptName(), sourceText) as StepWrapperScript
         } catch(any){
-            TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
+            TemplateLogger logger = new TemplateLogger(exec.getOwner().getListener())
             logger.printError("Failed to parse step text. Library: ${step.library}. Step: ${step.name}.")
             throw any
         }
@@ -168,30 +174,32 @@ class StepWrapperFactory{
          * 4. an optional StageContext
          * 5. an optional HookContext
          */
+        TemplateBinding binding = new TemplateBinding()
+        binding.setVariable("steps", new DSL(exec.getOwner()))
         script.with{
-            setBinding(new TemplateBinding())
-            $initialize()
+            setBinding(binding)
             setConfig(step.config)
-            setBuildRootDir(flowOwner.getRootDir())
+            setBuildRootDir(exec.getOwner().getRootDir())
             setResourcesPath("jte/${step.library}/resources")
         }
         return script
     }
 
+    GroovyShell getShell(){
+        def trustedShellFactory = new CpsGroovyShellFactory(exec).forTrusted()
+        Field decoratorsF = CpsGroovyShellFactory.getDeclaredField("decorators")
+        decoratorsF.setAccessible(true)
+        List<GroovyShellDecorator> decorators = trustedShellFactory.decorators
+        decorators.add(new StepWrapperShellDecorator())
+        decoratorsF.set(trustedShellFactory, decorators)
+        return trustedShellFactory.build()
+    }
+
+
     /**
      * Registers a compiler customization for parsing StepWrappers
      */
-    @Extension static class StepWrapperShellDecorator extends GroovyShellDecorator {
-
-        private static final Logger LOGGER = new Logger(StepWrapperShellDecorator.name)
-        /**
-         * The name of a property that will be added to CpsFlowExecution's used to
-         * parse a StepWrapper script.
-         * <p>
-         * Simplifies determining if a CpsFlowExecution's script compilation should
-         * be modified by this decorator.
-         */
-        private static final String FLAG = "JTE_STEP"
+    static class StepWrapperShellDecorator extends GroovyShellDecorator {
 
         /**
          * Sets the base script of library step files
@@ -200,9 +208,7 @@ class StepWrapperFactory{
          */
         @Override
         void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
-            if(execution.hasProperty(FLAG)){
-                cc.setScriptBaseClass(StepWrapperScript.name)
-            }
+            cc.setScriptBaseClass(StepWrapperScript.name)
         }
 
         /**
@@ -212,27 +218,83 @@ class StepWrapperFactory{
          */
         @Override
         void customizeImports(CpsFlowExecution execution, ImportCustomizer ic){
-            if(execution.hasProperty(FLAG)) {
-                ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-                ic.addImport(StepAlias.getName())
-            }
+            ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
+            ic.addImport(StepAlias.getName())
         }
 
-        @Override
-        void configureShell(@CheckForNull CpsFlowExecution execution, GroovyShell shell) {
-            if(execution.hasProperty(FLAG)){
-                FlowExecutionOwner owner = execution.getOwner()
-                File jte = owner.getRootDir()
-                File srcDir = new File(jte, "jte/src")
-                if (srcDir.exists()){
-                    if(srcDir.isDirectory()) {
-                        shell.getClassLoader().addURL(srcDir.toURI().toURL())
-                    } else {
-                        LOGGER.log(Level.WARNING, "${srcDir.getPath()} is not a directory.")
-                    }
+    }
+
+
+    // always runs
+    @Extension
+    static class OuterShellDecorator extends GroovyShellDecorator {
+
+        GroovyShellDecorator forTrusted() {
+            return new InnerShellDecorator()
+        }
+
+        class InnerShellDecorator extends GroovyShellDecorator {
+            @Override
+            void configureShell(CpsFlowExecution exec, GroovyShell shell) {
+                if(exec == null){
+                    return
+                }
+                FlowExecutionOwner flowOwner = exec.getOwner()
+                WorkflowRun run = flowOwner.run()
+                WorkflowJob job = run.getParent()
+                if(job.getDefinition() instanceof TemplateFlowDefinition) {
+                    GroovyClassLoader common = getCommonClassLoader(run, shell)
+                    ClassLoader loader = createNewClassLoaderHierarchy(shell, common)
+                    Field f = GroovyShell.getDeclaredField("loader")
+                    f.setAccessible(true)
+                    f.set(shell, loader)
                 }
             }
+
+            ClassLoader createNewClassLoaderHierarchy(GroovyShell shell, GroovyClassLoader common){
+                // build the list of loaders up until the SandboxResolvingClassLoader
+                // [ shell.loader, parent, ... ] -> next would be SandBoxResolvingClassLoader
+                ClassLoader loader = shell.getClassLoader()
+                List<ClassLoader> loaders = [ ]
+                while(!SandboxResolvingClassLoader.isInstance(loader)){
+                    loaders << loader
+                    loader = loader.parent
+                }
+                Field f = ClassLoader.getDeclaredField("parent")
+                f.setAccessible(true)
+                ClassLoader previous = common
+                loaders.reverse().each{ClassLoader l ->
+                    f.set(l, previous)
+                    previous = l
+                }
+                return loaders.first()
+            }
+
+            GroovyClassLoader getCommonClassLoader(WorkflowRun run, GroovyShell shell) {
+                TemplatePrimitiveCollector jte = run.getAction(TemplatePrimitiveCollector)
+                if (jte == null) {
+                    jte = new TemplatePrimitiveCollector()
+                }
+                if (jte.loader == null) {
+                    ClassLoader loader = shell.getClassLoader()
+                    while(!SandboxResolvingClassLoader.isInstance(loader.parent)){
+                        loader = loader.parent
+                    }
+                    GroovyClassLoader common = new GroovyClassLoader(loader.parent)
+                    jte.loader = common
+                    run.addOrReplaceAction(jte)
+                }
+                File rootDir = run.getRootDir()
+                File srcDir = new File(rootDir, "jte/src")
+                if (srcDir.exists()){
+                    jte.loader.addURL(srcDir.toURI().toURL())
+                }
+                return jte.loader
+            }
+
         }
     }
+
+
 
 }

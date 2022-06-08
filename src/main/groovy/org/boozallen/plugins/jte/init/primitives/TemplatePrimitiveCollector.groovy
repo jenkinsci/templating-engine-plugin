@@ -24,7 +24,6 @@ import jenkins.security.CustomClassFilter
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapper
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.DSL
@@ -35,15 +34,15 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.Nonnull
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Stores {@see TemplatePrimitive}s that have been created for a run
  */
 class TemplatePrimitiveCollector extends InvisibleAction{
 
+    private transient GroovyClassLoader loader
     List<TemplatePrimitiveNamespace> namespaces = []
-
-    transient ClassLoader classLoader
 
     static List<GlobalVariable> getGlobalVariablesByName(String name, Run run){
         return GlobalVariable.forRun(run).findAll{ variable ->
@@ -74,11 +73,6 @@ class TemplatePrimitiveCollector extends InvisibleAction{
         } catch(IllegalStateException e){
             return null
         }
-    }
-
-    TemplatePrimitiveCollector(CpsFlowExecution exec){
-        exec.parseScript()
-        this.classLoader = exec.getTrustedShell().getClassLoader()
     }
 
     void addNamespace(TemplatePrimitiveNamespace namespace){
@@ -210,7 +204,7 @@ class TemplatePrimitiveCollector extends InvisibleAction{
     static class CustomClassFilterImpl implements CustomClassFilter {
         @SuppressWarnings('BooleanMethodReturnsNull')
         @Override Boolean permits(Class<?> c){
-            return (c in TemplatePrimitive) ?: null
+            return (c in TemplatePrimitive || c instanceof AtomicInteger) ?: null
         }
     }
 

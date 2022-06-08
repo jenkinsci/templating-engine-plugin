@@ -122,7 +122,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         }
         TemplatePrimitiveCollector primitiveCollector = run.getAction(TemplatePrimitiveCollector)
         if(primitiveCollector == null){
-            primitiveCollector = new TemplatePrimitiveCollector(exec)
+            primitiveCollector = new TemplatePrimitiveCollector()
         }
         return primitiveCollector
     }

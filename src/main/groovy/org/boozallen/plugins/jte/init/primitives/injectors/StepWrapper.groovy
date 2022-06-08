@@ -26,7 +26,6 @@ import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
  * A library step

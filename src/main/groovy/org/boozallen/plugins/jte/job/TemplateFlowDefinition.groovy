@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte.job
 
+
 import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.JOB
 
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
@@ -79,7 +80,7 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         String template = templateResolver.resolve(config)
         // Step 3: create CpsFlowExecution
         FlowDurabilityHint hint = determineFlowDurabilityHint(owner)
-        CpsFlowExecution exec = new CpsFlowExecution(template, true, owner, hint)
+        CpsFlowExecution exec = new CpsFlowExecution(template, false, owner, hint)
         // Step 3: Invoke TemplatePrimitiveInjectors
         TemplatePrimitiveInjector.orchestrate(exec, config)
 
