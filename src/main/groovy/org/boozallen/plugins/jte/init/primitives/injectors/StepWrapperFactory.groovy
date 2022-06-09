@@ -243,7 +243,7 @@ class StepWrapperFactory{
                 WorkflowRun run = flowOwner.run()
                 WorkflowJob job = run.getParent()
                 if(job.getDefinition() instanceof TemplateFlowDefinition) {
-                    GroovyClassLoader common = getCommonClassLoader(run, shell)
+                    ClassLoader common = getCommonClassLoader(run, shell)
                     ClassLoader loader = createNewClassLoaderHierarchy(shell, common)
                     Field f = GroovyShell.getDeclaredField("loader")
                     f.setAccessible(true)
@@ -251,7 +251,7 @@ class StepWrapperFactory{
                 }
             }
 
-            ClassLoader createNewClassLoaderHierarchy(GroovyShell shell, GroovyClassLoader common){
+            ClassLoader createNewClassLoaderHierarchy(GroovyShell shell, ClassLoader common){
                 // build the list of loaders up until the SandboxResolvingClassLoader
                 // [ shell.loader, parent, ... ] -> next would be SandBoxResolvingClassLoader
                 ClassLoader loader = shell.getClassLoader()
@@ -270,7 +270,7 @@ class StepWrapperFactory{
                 return loaders.first()
             }
 
-            GroovyClassLoader getCommonClassLoader(WorkflowRun run, GroovyShell shell) {
+            ClassLoader getCommonClassLoader(WorkflowRun run, GroovyShell shell) {
                 TemplatePrimitiveCollector jte = run.getAction(TemplatePrimitiveCollector)
                 if (jte == null) {
                     jte = new TemplatePrimitiveCollector()
@@ -280,7 +280,8 @@ class StepWrapperFactory{
                     while(!SandboxResolvingClassLoader.isInstance(loader.parent)){
                         loader = loader.parent
                     }
-                    GroovyClassLoader common = new GroovyClassLoader(loader.parent)
+                    URL[] empty = []
+                    URLClassLoader common = new URLClassLoader(empty, loader.parent)
                     jte.loader = common
                     run.addOrReplaceAction(jte)
                 }

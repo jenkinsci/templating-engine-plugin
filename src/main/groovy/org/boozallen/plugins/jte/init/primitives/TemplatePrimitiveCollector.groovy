@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class TemplatePrimitiveCollector extends InvisibleAction{
 
-    private transient GroovyClassLoader loader
+    private transient URLClassLoader loader
     List<TemplatePrimitiveNamespace> namespaces = []
 
     static List<GlobalVariable> getGlobalVariablesByName(String name, Run run){
