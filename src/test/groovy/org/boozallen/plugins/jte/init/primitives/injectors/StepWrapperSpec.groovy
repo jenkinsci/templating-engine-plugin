@@ -837,4 +837,33 @@ class StepWrapperSpec extends Specification {
         jenkins.assertBuildStatusSuccess(run)
     }
 
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/279")
+    def "Step method parameters can be typed to library classes"(){
+        libProvider.addSrc('utility', 'src/jte/Utility.groovy', '''
+        package jte
+        class Utility implements Serializable{}
+        ''')
+        libProvider.addStep("utility", "checkUtility", """
+        import jte.Utility
+        void call(Utility u){
+          assert u instanceof Utility
+        }
+        """)
+        def run
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: 'libraries{ utility }',
+            template: '''
+            import jte.Utility
+            def u = new Utility()
+            checkUtility(u)
+            '''
+        )
+
+        when:
+        run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+    }
+
 }
