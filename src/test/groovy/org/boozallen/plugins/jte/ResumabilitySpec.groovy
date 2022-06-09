@@ -17,7 +17,6 @@ package org.boozallen.plugins.jte
 
 import org.junit.Rule
 import org.jvnet.hudson.test.RestartableJenkinsRule
-import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Specification
 import org.jenkinsci.plugins.workflow.job.WorkflowRun

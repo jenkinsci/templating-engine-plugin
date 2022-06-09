@@ -129,7 +129,7 @@ class TestLibraryProvider extends LibraryProvider {
      * @param folder the folder to add the library source to
      */
     void addToFolder(Folder folder){
-        TemplateConfigFolderProperty p = folder.getProperties().find{p ->
+        TemplateConfigFolderProperty p = folder.getProperties().find{ p ->
             p instanceof TemplateConfigFolderProperty
         }
         LibrarySource libSource = new LibrarySource(this)
