@@ -161,7 +161,7 @@ class StepWrapperFactory{
         @groovy.transform.BaseScript ${StepWrapperScript.getName()} _
         ${sourceText}
         """
-        GroovyShell shell = exec.getShell()
+        GroovyShell shell = exec.getTrustedShell()
         String scriptName = "JTE_${step.library ?: "Default"}_${step.name}"
         try {
             try {
@@ -200,22 +200,23 @@ class StepWrapperFactory{
     @Extension
     static class StepWrapperShellDecorator extends GroovyShellDecorator {
 
-        /**
-         * Automagically adds imports to library step files
-         * @param execution
-         * @param ic
-         */
-        @Override
-        void customizeImports(CpsFlowExecution execution, ImportCustomizer ic){
-            ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-            ic.addImport(StepAlias.getName())
-        }
-
         GroovyShellDecorator forTrusted() {
             return new InnerShellDecorator()
         }
 
         class InnerShellDecorator extends GroovyShellDecorator {
+
+            /**
+             * Automagically adds imports to library step files
+             * @param execution
+             * @param ic
+             */
+            @Override
+            void customizeImports(CpsFlowExecution execution, ImportCustomizer ic){
+                ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
+                ic.addImport(StepAlias.getName())
+            }
+
             @Override
             void configureShell(CpsFlowExecution exec, GroovyShell shell) {
                 if(exec == null){

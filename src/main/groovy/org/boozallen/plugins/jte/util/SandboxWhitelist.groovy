@@ -21,10 +21,12 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
 import org.boozallen.plugins.jte.init.primitives.injectors.LibraryNamespace
+import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperScript
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationBuilder
 import org.boozallen.plugins.jte.init.governance.config.dsl.DslEnvVar
 
+import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
 /**
@@ -68,6 +70,11 @@ import java.lang.reflect.Method
         boolean c = args.size() && permittedReceivers.collect{ r -> receivingClass in r }.contains(true)
         boolean d = args.size() && receivingClass.getName() in permittedReceiverStrings
         return (a || b || c || d)
+    }
+
+    @Override
+    boolean permitsConstructor(Constructor<?> constructor, Object[] args){
+        return constructor.getDeclaringClass() == StepWrapperScript
     }
 
 }
