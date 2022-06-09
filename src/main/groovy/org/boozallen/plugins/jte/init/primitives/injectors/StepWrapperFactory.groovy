@@ -154,13 +154,22 @@ class StepWrapperFactory{
          * of the template to the Step. attaching the flowOwner is
          * necessary for certain Jenkins Pipeline steps to work appropriately.
          */
-        try{
-            GroovyShell shell = getShell()
-            if(exec.getShell() == null || exec.getTrustedShell() == null){
-                exec.parseScript()
+        if(exec.getShell() == null || exec.getTrustedShell() == null){
+            exec.parseScript()
+        }
+        String modifiedSource = """
+        @groovy.transform.BaseScript ${StepWrapperScript.getName()} _
+        ${sourceText}
+        """
+        GroovyShell shell = exec.getShell()
+        String scriptName = "JTE_${step.library ?: "Default"}_${step.name}"
+        try {
+            try {
+                script = shell.reparse(scriptName, modifiedSource) as StepWrapperScript
+            } catch (LinkageError e) {
+                script = shell.getClassLoader().loadClass(scriptName).newInstance()
             }
-            script = shell.reparse(shell.generateScriptName(), sourceText) as StepWrapperScript
-        } catch(any){
+        }catch(any){
             TemplateLogger logger = new TemplateLogger(exec.getOwner().getListener())
             logger.printError("Failed to parse step text. Library: ${step.library}. Step: ${step.name}.")
             throw any
@@ -185,31 +194,11 @@ class StepWrapperFactory{
         return script
     }
 
-    GroovyShell getShell(){
-        def trustedShellFactory = new CpsGroovyShellFactory(exec).forTrusted()
-        Field decoratorsF = CpsGroovyShellFactory.getDeclaredField("decorators")
-        decoratorsF.setAccessible(true)
-        List<GroovyShellDecorator> decorators = trustedShellFactory.decorators
-        decorators.add(new StepWrapperShellDecorator())
-        decoratorsF.set(trustedShellFactory, decorators)
-        return trustedShellFactory.build()
-    }
-
-
     /**
      * Registers a compiler customization for parsing StepWrappers
      */
+    @Extension
     static class StepWrapperShellDecorator extends GroovyShellDecorator {
-
-        /**
-         * Sets the base script of library step files
-         * @param execution the run's execution
-         * @param cc the compiler configuration used to compile the step
-         */
-        @Override
-        void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
-            cc.setScriptBaseClass(StepWrapperScript.name)
-        }
 
         /**
          * Automagically adds imports to library step files
@@ -221,13 +210,6 @@ class StepWrapperFactory{
             ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
             ic.addImport(StepAlias.getName())
         }
-
-    }
-
-
-    // always runs
-    @Extension
-    static class OuterShellDecorator extends GroovyShellDecorator {
 
         GroovyShellDecorator forTrusted() {
             return new InnerShellDecorator()
@@ -244,30 +226,10 @@ class StepWrapperFactory{
                 WorkflowJob job = run.getParent()
                 if(job.getDefinition() instanceof TemplateFlowDefinition) {
                     ClassLoader common = getCommonClassLoader(run, shell)
-                    ClassLoader loader = createNewClassLoaderHierarchy(shell, common)
                     Field f = GroovyShell.getDeclaredField("loader")
                     f.setAccessible(true)
-                    f.set(shell, loader)
+                    f.set(shell, common)
                 }
-            }
-
-            ClassLoader createNewClassLoaderHierarchy(GroovyShell shell, ClassLoader common){
-                // build the list of loaders up until the SandboxResolvingClassLoader
-                // [ shell.loader, parent, ... ] -> next would be SandBoxResolvingClassLoader
-                ClassLoader loader = shell.getClassLoader()
-                List<ClassLoader> loaders = [ ]
-                while(!SandboxResolvingClassLoader.isInstance(loader)){
-                    loaders << loader
-                    loader = loader.parent
-                }
-                Field f = ClassLoader.getDeclaredField("parent")
-                f.setAccessible(true)
-                ClassLoader previous = common
-                loaders.reverse().each{ClassLoader l ->
-                    f.set(l, previous)
-                    previous = l
-                }
-                return loaders.first()
             }
 
             ClassLoader getCommonClassLoader(WorkflowRun run, GroovyShell shell) {
@@ -276,13 +238,7 @@ class StepWrapperFactory{
                     jte = new TemplatePrimitiveCollector()
                 }
                 if (jte.loader == null) {
-                    ClassLoader loader = shell.getClassLoader()
-                    while(!SandboxResolvingClassLoader.isInstance(loader.parent)){
-                        loader = loader.parent
-                    }
-                    URL[] empty = []
-                    URLClassLoader common = new URLClassLoader(empty, loader.parent)
-                    jte.loader = common
+                    jte.loader = shell.getClassLoader()
                     run.addOrReplaceAction(jte)
                 }
                 File rootDir = run.getRootDir()
