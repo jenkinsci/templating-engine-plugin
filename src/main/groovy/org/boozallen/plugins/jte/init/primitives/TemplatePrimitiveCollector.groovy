@@ -34,7 +34,6 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.Nonnull
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Stores {@see TemplatePrimitive}s that have been created for a run
@@ -211,7 +210,7 @@ class TemplatePrimitiveCollector extends InvisibleAction{
     static class CustomClassFilterImpl implements CustomClassFilter {
         @SuppressWarnings('BooleanMethodReturnsNull')
         @Override Boolean permits(Class<?> c){
-            return (c in TemplatePrimitive || c instanceof AtomicInteger) ?: null
+            return (c in TemplatePrimitive) ?: null
         }
     }
 
