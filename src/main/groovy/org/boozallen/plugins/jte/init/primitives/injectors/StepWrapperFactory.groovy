@@ -139,15 +139,13 @@ class StepWrapperFactory{
      */
     StepWrapperScript prepareScript(StepWrapper step, String sourceText){
         StepWrapperScript script
-        /*
-         * parse the step the same way Jenkins parses a Jenkinsfile
-         * this is easiest way to appropriately attach the flowOwner
-         * of the template to the Step. attaching the flowOwner is
-         * necessary for certain Jenkins Pipeline steps to work appropriately.
-         */
         if(exec.getShell() == null || exec.getTrustedShell() == null){
             exec.parseScript()
         }
+        // this is equivalent to compilerConfiguration.setScriptBaseClass(StepWrapperScript)
+        // but doesn't require a separate CompilerConfiugration between the pipeline template
+        // and library steps - which would in turn require a different classloader, which
+        // was the root cause of issue #279
         String modifiedSource = """
         @groovy.transform.BaseScript ${StepWrapperScript.getName()} _
         ${sourceText}
@@ -158,6 +156,8 @@ class StepWrapperFactory{
             try {
                 script = shell.reparse(scriptName, modifiedSource) as StepWrapperScript
             } catch (LinkageError e) {
+                // on restarts, we can run into a "class already define"
+                // exception.. so just reload the script from the classloader.
                 script = shell.getClassLoader().loadClass(scriptName).newInstance()
             }
         } catch(any){
@@ -222,7 +222,6 @@ class StepWrapperFactory{
                 @Override
                 void configureShell(CpsFlowExecution exec, GroovyShell shell) {
                     runIfJTE(exec){
-                        // add common classloader
                         ClassLoader common = getCommonClassLoader(exec.getOwner().run(), shell)
                         Field f = GroovyShell.getDeclaredField("loader")
                         f.setAccessible(true)
