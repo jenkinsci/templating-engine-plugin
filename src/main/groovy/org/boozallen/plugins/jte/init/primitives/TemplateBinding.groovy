@@ -17,12 +17,25 @@ package org.boozallen.plugins.jte.init.primitives
 
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
+import org.jenkinsci.plugins.workflow.cps.DSL
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
  * A custom binding that prevents users from inadvertently
  * overriding TemplatePrimitives or ReservedVariables
  */
 class TemplateBinding extends Binding{
+
+    static TemplateBinding create(CpsFlowExecution exec){
+        return create(exec.getOwner())
+    }
+
+    static TemplateBinding create(FlowExecutionOwner flowOwner){
+        TemplateBinding binding = new TemplateBinding()
+        binding.setVariable("steps", new DSL(flowOwner))
+        return binding
+    }
 
     @Override
     void setVariable(String name, Object value){

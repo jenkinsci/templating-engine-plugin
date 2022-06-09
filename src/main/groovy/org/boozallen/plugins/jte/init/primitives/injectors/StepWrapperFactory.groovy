@@ -25,7 +25,6 @@ import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageCo
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -175,10 +174,8 @@ class StepWrapperFactory{
          * 4. an optional StageContext
          * 5. an optional HookContext
          */
-        TemplateBinding binding = new TemplateBinding()
-        binding.setVariable("steps", new DSL(exec.getOwner()))
         script.with{
-            setBinding(binding)
+            setBinding(TemplateBinding.create(exec))
             setConfig(step.config)
             setBuildRootDir(exec.getOwner().getRootDir())
             setResourcesPath("jte/${step.library}/resources")
@@ -192,57 +189,70 @@ class StepWrapperFactory{
     @Extension
     static class StepWrapperShellDecorator extends GroovyShellDecorator {
 
-        GroovyShellDecorator forTrusted() {
-            return new InnerShellDecorator()
+        void runIfJTE(CpsFlowExecution exec, Closure body){
+            if (exec == null) {
+                return
+            }
+            FlowExecutionOwner flowOwner = exec.getOwner()
+            WorkflowRun run = flowOwner.run()
+            WorkflowJob job = run.getParent()
+            if (job.getDefinition() instanceof TemplateFlowDefinition) {
+                body.call()
+            }
         }
 
-        class InnerShellDecorator extends GroovyShellDecorator {
-
-            /**
-             * Automagically adds imports to library step files
-             * @param execution
-             * @param ic
-             */
-            @Override
-            void customizeImports(CpsFlowExecution execution, ImportCustomizer ic){
-                ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
-                ic.addImport(StepAlias.getName())
+        @Override
+        void configureShell(CpsFlowExecution exec, GroovyShell shell){
+            runIfJTE(exec) {
+                // add JTE binding
+                Field shellBinding = GroovyShell.getDeclaredField("context")
+                shellBinding.setAccessible(true)
+                shellBinding.set(shell, TemplateBinding.create(exec))
             }
-
-            @Override
-            void configureShell(CpsFlowExecution exec, GroovyShell shell) {
-                if(exec == null){
-                    return
-                }
-                FlowExecutionOwner flowOwner = exec.getOwner()
-                WorkflowRun run = flowOwner.run()
-                WorkflowJob job = run.getParent()
-                if(job.getDefinition() instanceof TemplateFlowDefinition) {
-                    ClassLoader common = getCommonClassLoader(run, shell)
-                    Field f = GroovyShell.getDeclaredField("loader")
-                    f.setAccessible(true)
-                    f.set(shell, common)
-                }
-            }
-
-            ClassLoader getCommonClassLoader(WorkflowRun run, GroovyShell shell) {
-                TemplatePrimitiveCollector jte = run.getAction(TemplatePrimitiveCollector)
-                if (jte == null) {
-                    jte = new TemplatePrimitiveCollector()
-                }
-                if (jte.loader == null) {
-                    jte.loader = shell.getClassLoader()
-                    run.addOrReplaceAction(jte)
-                }
-                File rootDir = run.getRootDir()
-                File srcDir = new File(rootDir, "jte/src")
-                if (srcDir.exists()){
-                    jte.loader.addURL(srcDir.toURI().toURL())
-                }
-                return jte.loader
-            }
-
         }
+
+        GroovyShellDecorator forTrusted(){
+            return new GroovyShellDecorator() {
+                @Override
+                void customizeImports(CpsFlowExecution execution, ImportCustomizer ic) {
+                    ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
+                    ic.addImport(StepAlias.getName())
+                }
+
+                @Override
+                void configureShell(CpsFlowExecution exec, GroovyShell shell) {
+                    runIfJTE(exec){
+                        // add common classloader
+                        ClassLoader common = getCommonClassLoader(exec.getOwner().run(), shell)
+                        Field f = GroovyShell.getDeclaredField("loader")
+                        f.setAccessible(true)
+                        f.set(shell, common)
+                    }
+                }
+            }
+        }
+
+        ClassLoader getCommonClassLoader(WorkflowRun run, GroovyShell shell) {
+            TemplatePrimitiveCollector jte = run.getAction(TemplatePrimitiveCollector)
+            // may be null at the beginning of the run
+            if (jte == null) {
+                jte = new TemplatePrimitiveCollector()
+            }
+            // loader would be null on pipeline restart because the field is transient
+            if (jte.loader == null) {
+                jte.loader = shell.getClassLoader()
+                run.addOrReplaceAction(jte)
+            }
+            // add the JTE library classes to the common classloader
+            // these would be added by the respective LibraryProvider's
+            File rootDir = run.getRootDir()
+            File srcDir = new File(rootDir, "jte/src")
+            if (srcDir.exists()) {
+                jte.loader.addURL(srcDir.toURI().toURL())
+            }
+            return jte.loader
+        }
+
     }
 
 }

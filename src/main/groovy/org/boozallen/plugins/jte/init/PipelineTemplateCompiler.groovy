@@ -16,7 +16,6 @@
 package org.boozallen.plugins.jte.init
 
 import hudson.Extension
-import org.boozallen.plugins.jte.init.primitives.TemplateBinding
 import org.boozallen.plugins.jte.init.primitives.hooks.CleanUp
 import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
 import org.boozallen.plugins.jte.init.primitives.hooks.Init
@@ -37,11 +36,11 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
-import org.jenkinsci.plugins.workflow.flow.FlowDefinition
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 import javax.annotation.CheckForNull
-import java.lang.reflect.Field
 
 /**
  * Decorates the pipeline template during compilation
@@ -53,23 +52,6 @@ import java.lang.reflect.Field
 @Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
 class PipelineTemplateCompiler extends GroovyShellDecorator {
 
-    @Override
-    void configureShell(@CheckForNull CpsFlowExecution context, GroovyShell shell) {
-        if (!isFromJTE(context)) {
-            return
-        }
-
-        // use our custom binding that checks for collisions
-        Field shellBinding = GroovyShell.getDeclaredField("context")
-        shellBinding.setAccessible(true)
-        shellBinding.set(shell, new TemplateBinding())
-    }
-
-    @Override
-    GroovyShellDecorator forTrusted() {
-        return this
-    }
-
     /**
      * For the JTE pipeline template, customizes the compiler so that the template is wrapped
      * in a try-finally block so that the @Validation and @Init Lifecycle Hooks can be invoked
@@ -79,141 +61,136 @@ class PipelineTemplateCompiler extends GroovyShellDecorator {
     @Override
     @SuppressWarnings("MethodSize")
     void configureCompiler(@CheckForNull final CpsFlowExecution execution, CompilerConfiguration cc) {
-        if (isFromJTE(execution)) {
-            cc.addCompilationCustomizers(new CompilationCustomizer(CompilePhase.CONVERSION) {
+        if(execution == null){
+            return
+        }
+        // ensure this is a JTE pipeline
+        FlowExecutionOwner flowOwner = execution.getOwner()
+        WorkflowRun run = flowOwner.run()
+        WorkflowJob job = run.getParent()
+        if(!(job.getDefinition() in TemplateFlowDefinition)){
+            return
+        }
+        cc.addCompilationCustomizers(new CompilationCustomizer(CompilePhase.CONVERSION) {
 
-                @Override
-                void call(SourceUnit source, GeneratorContext context, ClassNode classNode) throws CompilationFailedException {
-                    if (!isTemplate(classNode)) {
-                        return
-                    }
-                    // represents the AST of the user-provided template
-                    ModuleNode template = source.getAST()
-                    List<Statement> statements = template.getStatementBlock().getStatements()
-
-                    /* We want to seamlessly wrap the template in code for hooks like:
-                     *
-                     *   _JTE_hookContext_exceptionThrown = false
-                     *   try{
-                     *     Hooks.invoke(Validation)
-                     *     Hooks.invoke(Init)
-                     *     --> Insert Template Code Here <--
-                     *   } catch(Exception e){
-                     *     _JTE_hookContext_exceptionThrown = true
-                     *     throw e
-                     *   } finally {
-                     *     Hooks.invoke(CleanUp, _JTE_hookContext_exceptionThrown)
-                     *     Hooks.invoke(Notify, _JTE_hookContext_exceptionThrown)
-                     *   }
-                     */
-
-                    // 1. get the AST for the code in the comment above without the template
-                    BlockStatement wrapper = getTemplateWrapperAST()
-                    // 2. inject the user's pipeline template statements
-                    wrapper.getStatements()[1].getTryStatement().addStatements(statements)
-                    // 3. replace the compiled template with our new AST
-                    statements.clear()
-                    statements.add(0, wrapper)
+            @Override
+            void call(SourceUnit source, GeneratorContext context, ClassNode classNode) throws CompilationFailedException {
+                if (!isTemplate(classNode)) {
+                    return
                 }
+                // represents the AST of the user-provided template
+                ModuleNode template = source.getAST()
+                List<Statement> statements = template.getStatementBlock().getStatements()
 
-                BlockStatement getTemplateWrapperAST() {
-                    List<ASTNode> statements = new AstBuilder().buildFromSpec {
-                        block {
-                            expression{
-                                declaration{
-                                    variable "_JTE_hookContext_exceptionThrown"
-                                    token "="
-                                    constant false
+                /* We want to seamlessly wrap the template in code for hooks like:
+                 *
+                 *   _JTE_hookContext_exceptionThrown = false
+                 *   try{
+                 *     Hooks.invoke(Validation)
+                 *     Hooks.invoke(Init)
+                 *     --> Insert Template Code Here <--
+                 *   } catch(Exception e){
+                 *     _JTE_hookContext_exceptionThrown = true
+                 *     throw e
+                 *   } finally {
+                 *     Hooks.invoke(CleanUp, _JTE_hookContext_exceptionThrown)
+                 *     Hooks.invoke(Notify, _JTE_hookContext_exceptionThrown)
+                 *   }
+                 */
+
+                // 1. get the AST for the code in the comment above without the template
+                BlockStatement wrapper = getTemplateWrapperAST()
+                // 2. inject the user's pipeline template statements
+                wrapper.getStatements()[1].getTryStatement().addStatements(statements)
+                // 3. replace the compiled template with our new AST
+                statements.clear()
+                statements.add(0, wrapper)
+            }
+
+            BlockStatement getTemplateWrapperAST() {
+                List<ASTNode> statements = new AstBuilder().buildFromSpec {
+                    block {
+                        expression{
+                            declaration{
+                                variable "_JTE_hookContext_exceptionThrown"
+                                token "="
+                                constant false
+                            }
+                        }
+                        tryCatch {
+                            block {
+                                expression {
+                                    staticMethodCall(HooksWrapper, 'invoke') {
+                                        argumentList {
+                                            classExpression Validate
+                                        }
+                                    }
+                                }
+                                expression {
+                                    staticMethodCall(HooksWrapper, 'invoke') {
+                                        argumentList {
+                                            classExpression Init
+                                        }
+                                    }
                                 }
                             }
-                            tryCatch {
+                            block {
                                 block {
                                     expression {
                                         staticMethodCall(HooksWrapper, 'invoke') {
                                             argumentList {
-                                                classExpression Validate
-                                            }
-                                        }
-                                    }
-                                    expression {
-                                        staticMethodCall(HooksWrapper, 'invoke') {
-                                            argumentList {
-                                                classExpression Init
-                                            }
-                                        }
-                                    }
-                                }
-                                block {
-                                    block {
-                                        expression {
-                                            staticMethodCall(HooksWrapper, 'invoke') {
-                                                argumentList {
-                                                    classExpression CleanUp
-                                                    variable "_JTE_hookContext_exceptionThrown"
-                                                }
-                                            }
-                                        }
-                                        expression {
-                                            staticMethodCall(HooksWrapper, 'invoke') {
-                                                argumentList {
-                                                    classExpression Notify
-                                                    variable "_JTE_hookContext_exceptionThrown"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                catchStatement {
-                                    parameter 'e': Exception
-                                    block{
-                                        expression{
-                                            binary{
+                                                classExpression CleanUp
                                                 variable "_JTE_hookContext_exceptionThrown"
-                                                token "="
-                                                constant true
                                             }
                                         }
-                                        throwStatement {
-                                            variable 'e'
+                                    }
+                                    expression {
+                                        staticMethodCall(HooksWrapper, 'invoke') {
+                                            argumentList {
+                                                classExpression Notify
+                                                variable "_JTE_hookContext_exceptionThrown"
+                                            }
                                         }
+                                    }
+                                }
+                            }
+                            catchStatement {
+                                parameter 'e': Exception
+                                block{
+                                    expression{
+                                        binary{
+                                            variable "_JTE_hookContext_exceptionThrown"
+                                            token "="
+                                            constant true
+                                        }
+                                    }
+                                    throwStatement {
+                                        variable 'e'
                                     }
                                 }
                             }
                         }
                     }
-                    return statements.first()
                 }
+                return statements.first()
+            }
 
-                /*
-                    need to ensure we're only modifying AST for the template.
-                    an example of additional scripts getting compiled would be from a
-                    template or library step that does something like:
-                    evaluate("x = 1")
+            /*
+                need to ensure we're only modifying AST for the template.
+                an example of additional scripts getting compiled would be from a
+                template or library step that does something like:
+                evaluate("x = 1")
 
-                    to understand why specifically checking for "WorkflowScript" see:
-                    https://github.com/jenkinsci/workflow-cps-plugin/blob/workflow-cps-2.80/src/main/java/org/jenkinsci/plugins/workflow/cps/CpsFlowExecution.java#L561
+                to understand why specifically checking for "WorkflowScript" see:
+                https://github.com/jenkinsci/workflow-cps-plugin/blob/workflow-cps-2.80/src/main/java/org/jenkinsci/plugins/workflow/cps/CpsFlowExecution.java#L561
 
-                    to understand where "evaluate" method comes from see:
-                    https://github.com/jenkinsci/workflow-cps-plugin/blob/workflow-cps-2.80/src/main/java/org/jenkinsci/plugins/workflow/cps/CpsScript.java#L178-L182
-                 */
-
-                boolean isTemplate(ClassNode classNode) {
-                    return classNode.getName() == "WorkflowScript"
-                }
-            })
-        }
-    }
-
-    /**
-     * determines if the current pipeline is using JTE
-     */
-    boolean isFromJTE(CpsFlowExecution execution){
-        if(!execution){
-            return false // no execution defined yet, still initializing
-        }
-        WorkflowJob job = execution.getOwner().run().getParent()
-        FlowDefinition definition = job.getDefinition()
-        return (definition in TemplateFlowDefinition)
+                to understand where "evaluate" method comes from see:
+                https://github.com/jenkinsci/workflow-cps-plugin/blob/workflow-cps-2.80/src/main/java/org/jenkinsci/plugins/workflow/cps/CpsScript.java#L178-L182
+            */
+            boolean isTemplate(ClassNode classNode) {
+                return classNode.getName() == "WorkflowScript"
+            }
+        })
     }
 
 }

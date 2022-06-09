@@ -64,7 +64,7 @@ class TemplatePrimitiveCollector extends InvisibleAction{
      */
     static TemplatePrimitiveCollector current(){
         CpsThread thread = CpsThread.current()
-        if (!thread) {
+        if(!thread){
             throw new IllegalStateException("CpsThread not present.")
         }
         FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
