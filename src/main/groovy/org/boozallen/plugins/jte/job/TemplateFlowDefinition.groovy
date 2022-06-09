@@ -15,7 +15,6 @@
 */
 package org.boozallen.plugins.jte.job
 
-
 import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.JOB
 
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
@@ -86,7 +85,6 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
 
         return exec
     }
-
 
     /**
      * Fetch the job's Pipeline Configuration

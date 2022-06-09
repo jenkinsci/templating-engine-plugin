@@ -22,15 +22,12 @@ import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.RestartFlowFactoryAction
 import org.jenkinsci.plugins.pipeline.modeldefinition.causes.RestartDeclarativePipelineCause
-import org.jenkinsci.plugins.workflow.cps.CpsVmExecutorService
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.lang.reflect.Field
 
 class DeclarativeSpec extends Specification {
 

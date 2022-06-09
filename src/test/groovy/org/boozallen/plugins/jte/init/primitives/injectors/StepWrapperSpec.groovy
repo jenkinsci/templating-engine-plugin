@@ -16,8 +16,6 @@
 package org.boozallen.plugins.jte.init.primitives.injectors
 
 import hudson.model.Result
-import org.boozallen.plugins.jte.init.governance.GovernanceTier
-import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
 import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.util.TestUtil
@@ -25,7 +23,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.junit.ClassRule
 import org.jvnet.hudson.test.JenkinsRule
-import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Specification

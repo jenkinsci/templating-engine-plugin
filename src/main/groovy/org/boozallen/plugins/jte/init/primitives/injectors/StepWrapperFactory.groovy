@@ -24,22 +24,14 @@ import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector.StageContext
 import org.boozallen.plugins.jte.job.TemplateFlowDefinition
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.codehaus.groovy.tools.GroovyClass
-import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SandboxResolvingClassLoader
-import org.jenkinsci.plugins.workflow.cps.CpsGroovyShell
-import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
 import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.cps.GroovyShellDecorator
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
-
-import javax.annotation.CheckForNull
 import java.lang.reflect.Field
-import java.util.logging.Level
 
 /**
  * Produces StepWrappers
@@ -169,7 +161,7 @@ class StepWrapperFactory{
             } catch (LinkageError e) {
                 script = shell.getClassLoader().loadClass(scriptName).newInstance()
             }
-        }catch(any){
+        } catch(any){
             TemplateLogger logger = new TemplateLogger(exec.getOwner().getListener())
             logger.printError("Failed to parse step text. Library: ${step.library}. Step: ${step.name}.")
             throw any
@@ -252,7 +244,5 @@ class StepWrapperFactory{
 
         }
     }
-
-
 
 }

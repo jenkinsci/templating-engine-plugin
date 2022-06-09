@@ -392,7 +392,7 @@ ruleset {
     ClassSize
     // CrapMetric   // Requires the GMetrics jar and a Cobertura coverage file
     CyclomaticComplexity   // Requires the GMetrics jar
-    MethodCount
+    // MethodCount having a lot of tests is a good thing..
     MethodSize
     NestedBlockDepth
     ParameterCount

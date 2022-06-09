@@ -42,8 +42,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
 import javax.annotation.CheckForNull
 import java.lang.reflect.Field
-import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * Decorates the pipeline template during compilation
@@ -54,8 +52,6 @@ import java.util.logging.Logger
  */
 @Extension(ordinal=1.0D) // set ordinal > 0 so JTE comes before Declarative
 class PipelineTemplateCompiler extends GroovyShellDecorator {
-
-    private static final Logger LOGGER = Logger.getLogger(PipelineTemplateCompiler.name);
 
     @Override
     void configureShell(@CheckForNull CpsFlowExecution context, GroovyShell shell) {

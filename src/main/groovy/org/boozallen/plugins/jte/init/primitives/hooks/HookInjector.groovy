@@ -20,7 +20,6 @@ import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
  * registers the CpsTransformed classes used during pipeline execution related
