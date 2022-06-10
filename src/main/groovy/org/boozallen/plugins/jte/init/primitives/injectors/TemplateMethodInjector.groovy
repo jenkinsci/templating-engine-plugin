@@ -22,7 +22,6 @@ import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
  * creates no-op steps based on the pipeline configuration
@@ -34,8 +33,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
     @SuppressWarnings("ParameterName")
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector])
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
-        FlowExecutionOwner flowOwner = exec.getOwner()
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
         TemplatePrimitiveNamespace steps = new TemplatePrimitiveNamespace(name: KEY)
 
@@ -50,11 +48,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             }
         }
 
-        // add the namespace to the collector and save it on the run
-        if(steps.getPrimitives()) {
-            primitiveCollector.addNamespace(steps)
-            flowOwner.run().addOrReplaceAction(primitiveCollector)
-        }
+        return steps.getPrimitives() ? steps : null
     }
 
 }

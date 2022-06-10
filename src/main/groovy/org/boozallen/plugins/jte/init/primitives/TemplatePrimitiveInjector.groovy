@@ -86,8 +86,17 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      */
     static void orchestrate(CpsFlowExecution exec, PipelineConfigurationObject config){
         invoke("validateConfiguration", exec, config)
-        invoke("injectPrimitives", exec, config)
-        invoke("validatePrimitives", exec, config)
+        FlowExecutionOwner flowOwner = exec.getOwner()
+        WorkflowRun run = flowOwner.run()
+        TemplatePrimitiveCollector collector = new TemplatePrimitiveCollector()
+        run.addOrReplaceAction(collector) // may be used by one of the injectors
+        invoke("injectPrimitives", exec, config).each{ namespace ->
+            if(namespace){
+                collector.addNamespace(namespace)
+            }
+        }
+        invoke("validatePrimitives", exec, config, collector)
+        run.addOrReplaceAction(collector)
     }
 
     /**
@@ -104,7 +113,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
      */
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){}
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){ return null }
 
     /**
      * A second pass allowing the different injector's to inspect what TemplatePrimitives
@@ -113,7 +122,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param flowOwner the run's flowOwner
      * @param config the aggregated pipeline configuration
      */
-    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){}
+    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config, TemplatePrimitiveCollector collector){}
 
     TemplatePrimitiveCollector getPrimitiveCollector(CpsFlowExecution exec){
         WorkflowRun run = exec.getOwner().run()
@@ -133,7 +142,8 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param phase the phase to invoke
      * @param args the args to pass to the phase
      */
-    private static void invoke(String phase, Object... args){
+    private static List<TemplatePrimitiveNamespace> invoke(String phase, Object... args){
+        List<TemplatePrimitiveNamespace> namespaces = []
         List<Class<? extends TemplatePrimitiveInjector>> failedInjectors = []
         Graph<Class<? extends TemplatePrimitiveInjector>, DefaultEdge> graph = createGraph(phase, args)
         AggregateException errors = new AggregateException()
@@ -142,7 +152,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
             try{
                 // check if a dependent injector has failed, if so, don't execute
                 if(!(getPrerequisites(injector, phase, args).intersect(failedInjectors))){
-                    injector.invokeMethod(phase, args)
+                    namespaces << injector.invokeMethod(phase, args)
                 }
             } catch(any){
                 CpsFlowExecution exec = args[0]
@@ -157,6 +167,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         if(errors.size()) { // this phase failed throw an exception
             throw errors
         }
+        return namespaces
     }
 
     /**

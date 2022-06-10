@@ -21,7 +21,6 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.AggregateException
@@ -81,7 +80,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     }
 
     @Override
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         FlowExecutionOwner flowOwner = exec.getOwner()
         // fetch library providers and determine library resolution order
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
@@ -137,11 +136,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             }
         }
 
-        if(libCollector.getLibraries()) {
-            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
-            primitiveCollector.addNamespace(libCollector)
-            flowOwner.run().addOrReplaceAction(primitiveCollector)
-        }
+        return libCollector.getPrimitives() ? libCollector : null
     }
 
     /**

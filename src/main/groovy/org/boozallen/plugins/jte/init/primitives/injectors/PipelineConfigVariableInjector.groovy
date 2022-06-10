@@ -18,12 +18,10 @@ package org.boozallen.plugins.jte.init.primitives.injectors
 import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
-import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsScript
-import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 import javax.annotation.Nonnull
 
@@ -36,17 +34,13 @@ import javax.annotation.Nonnull
 
     @SuppressWarnings('NoDef')
     @Override
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
-        FlowExecutionOwner flowOwner = exec.getOwner()
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         PipelineConfigGlobalVariable pipelineConfig = new PipelineConfigGlobalVariable(config.getConfig())
         TemplatePrimitiveNamespace pipelineConfigNamespace = new TemplatePrimitiveNamespace(name: KEY)
         pipelineConfig.setParent(pipelineConfigNamespace)
         pipelineConfigNamespace.add(pipelineConfig)
 
-        // add the namespace to the collector and save it on the run
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
-        primitiveCollector.addNamespace(pipelineConfigNamespace)
-        flowOwner.run().addOrReplaceAction(primitiveCollector)
+        return pipelineConfigNamespace
     }
 
     class PipelineConfigGlobalVariable extends TemplatePrimitive{

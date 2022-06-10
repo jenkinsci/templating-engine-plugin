@@ -35,8 +35,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     @Override
     @RunAfter([LibraryStepInjector, DefaultStepInjector, TemplateMethodInjector])
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
-        FlowExecutionOwner flowOwner = exec.getOwner()
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         TemplatePrimitiveNamespace stages = new TemplatePrimitiveNamespace(name: KEY)
 
         // populate namespace with stages from pipeline config
@@ -48,26 +47,19 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             stages.add(stage)
         }
 
-        // add namespace to collector if there are primitives
-        if(stages.getPrimitives()){
-            // add the namespace to the collector and save it on the run
-            TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
-            primitiveCollector.addNamespace(stages)
-            flowOwner.run().addOrReplaceAction(primitiveCollector)
-        }
+        return stages.getPrimitives() ? stages : null
     }
 
     @Override
-    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config, TemplatePrimitiveCollector collector){
         FlowExecutionOwner flowOwner = exec.getOwner()
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
         LinkedHashMap aggregatedConfig = config.getConfig()
         LinkedHashMap stagesWithUndefinedSteps = [:]
         aggregatedConfig[KEY].each{ name, stageConfig ->
             List<String> steps = stageConfig.keySet() as List<String>
             List<String> undefinedSteps = []
             steps.each{ step ->
-                if(!primitiveCollector.hasStep(step)){
+                if(!collector.hasStep(step)){
                     undefinedSteps << step
                 }
             }

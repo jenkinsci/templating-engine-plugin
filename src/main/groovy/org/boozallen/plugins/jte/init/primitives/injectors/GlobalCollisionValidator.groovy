@@ -33,13 +33,12 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
 @Extension class GlobalCollisionValidator extends TemplatePrimitiveInjector{
 
     @Override
-    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config) {
+    void validatePrimitives(CpsFlowExecution exec, PipelineConfigurationObject config, TemplatePrimitiveCollector collector) {
         FlowExecutionOwner flowOwner = exec.getOwner()
         TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-        TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
 
         Map<String, List<TemplatePrimitive>> primitivesByName = [:]
-        primitiveCollector.getPrimitives().each{ primitive ->
+        collector.getPrimitives().each{ primitive ->
             String name = primitive.getName()
             if(!primitivesByName.containsKey(name)){
                 primitivesByName[name] = []
@@ -51,13 +50,6 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor
         checkForGlobalVariableCollisions(primitivesByName, flowOwner, logger)
         checkForJenkinsStepCollisions(primitivesByName, logger)
     }
-
-    /*
-
-        [
-          build: [ maven, gradle ]
-        ]
-     */
 
     void checkForPrimitiveCollisions(Map<String, List<TemplatePrimitive>> primitivesByName, PipelineConfigurationObject config, TemplateLogger logger){
         Map primitiveCollisions = primitivesByName.findAll{ key, value -> value.size() > 1 }

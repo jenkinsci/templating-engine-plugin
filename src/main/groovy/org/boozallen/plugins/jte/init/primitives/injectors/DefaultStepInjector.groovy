@@ -34,7 +34,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
     @Override
     @RunAfter(LibraryStepInjector)
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         FlowExecutionOwner flowOwner = exec.getOwner()
         TemplatePrimitiveCollector primitiveCollector = getPrimitiveCollector(exec)
         TemplatePrimitiveNamespace steps = new TemplatePrimitiveNamespace(name: KEY)
@@ -59,11 +59,7 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
             }
         }
 
-        // add the namespace to the collector and save it on the run
-        if(steps.getPrimitives()) {
-            primitiveCollector.addNamespace(steps)
-            flowOwner.run().addOrReplaceAction(primitiveCollector)
-        }
+        return steps.getPrimitives() ? steps : null
     }
 
 }

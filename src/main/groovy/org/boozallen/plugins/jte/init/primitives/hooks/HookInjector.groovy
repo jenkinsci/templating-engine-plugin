@@ -19,6 +19,7 @@ import hudson.Extension
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
+import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 
 /**
@@ -42,9 +43,10 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
     }
 
     @Override
-    void injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
+    TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         getHooksClass()
         getAnnotatedMethodClass()
+        return null
     }
 
 }
