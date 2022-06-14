@@ -7,6 +7,7 @@ theme:
     - navigation.instant
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - navigation.top
     - content.code.annotate
 
@@ -45,7 +46,11 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.highlight
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - toc:
       permalink: true
   - pymdownx.snippets:
@@ -62,27 +67,27 @@ nav:
   - Home: 'index.md'
   - Concepts:
     - Framework Overview:
-      - 'concepts/framework-overview/overview.md'
+      - 'concepts/framework-overview/index.md'
       - 'concepts/framework-overview/bottom-up.md'
       - 'concepts/framework-overview/top-down.md'
       - 'concepts/framework-overview/key-benefits.md'
     - Pipeline Templates:
-      - 'concepts/pipeline-templates/overview.md'
+      - 'concepts/pipeline-templates/index.md'
       - 'concepts/pipeline-templates/pipeline-catalog.md'
       - 'concepts/pipeline-templates/declarative-syntax.md'
     - Pipeline Configuration:
-      - 'concepts/pipeline-configuration/overview.md'
+      - 'concepts/pipeline-configuration/index.md'
       - 'concepts/pipeline-configuration/configuration-dsl.md'
       - 'concepts/pipeline-configuration/merging-configs.md'
     - Pipeline Primitives:
-      - 'concepts/pipeline-primitives/overview.md'
+      - 'concepts/pipeline-primitives/index.md'
       - 'concepts/pipeline-primitives/steps.md'
       - 'concepts/pipeline-primitives/stages.md'
       - 'concepts/pipeline-primitives/application-environments.md'
       - 'concepts/pipeline-primitives/keywords.md'
       - 'concepts/pipeline-primitives/primitive-namespace.md'
     - Library Development:
-      - 'concepts/library-development/overview.md'
+      - 'concepts/library-development/index.md'
       - 'concepts/library-development/library-structure.md'
       - 'concepts/library-development/library-steps.md'
       - 'concepts/library-development/library-resources.md'
@@ -94,7 +99,7 @@ nav:
       - 'concepts/library-development/multi-method-steps.md'
       - 'concepts/library-development/step-aliasing.md'
     - Pipeline Governance:
-      - 'concepts/pipeline-governance/overview.md'
+      - 'concepts/pipeline-governance/index.md'
       - 'concepts/pipeline-governance/configuration-hierarchy.md'
       - 'concepts/pipeline-governance/governance-tier.md'
       - 'concepts/pipeline-governance/pipeline-template-selection.md'
@@ -117,9 +122,13 @@ nav:
     - Upgrade Guides:
       - 'how-to/upgrade-2.0/index.md'
   - Contributing:
-    - 'contributing/overview.md'
     - 'contributing/fork-based.md'
-    - Documentation:
+    - ⚙️ Actions:
+      - 'contributing/linting.md'
+      - 'contributing/running-tests.md'
+      - 'contributing/building.md'
+      - 'contributing/releasing.md'
+    - 📓 Documentation:
       - 'contributing/docs/getting-started.md'
       - 'contributing/docs/documentation-structure.md'
       - 'contributing/docs/local-development.md'
@@ -128,10 +137,17 @@ nav:
       - 'contributing/docs/add-or-remove-pages.md'
       - 'contributing/docs/acronyms.md'
       - 'contributing/docs/markdown-cheatsheet.md'
-    - Developer Docs:
-      - 'contributing/developer/overview.md'
-      - 'contributing/developer/running-tests.md'
-      - 'contributing/developer/building.md'
-      - 'contributing/developer/linting.md'
-      - 'contributing/developer/local-jenkins.md'
-      - 'contributing/developer/releasing.md'
+  - Developer Docs:
+      - 'developer/index.md'
+      - Pipeline Initialization:
+        - 'developer/pipeline-initialization/index.md'
+        - 'developer/pipeline-initialization/aggregate-configs.md'
+        - 'developer/pipeline-initialization/determine-template.md'
+        - 'developer/pipeline-initialization/inject-primitives.md'
+      - Jenkins Configurations:
+        - 'developer/jenkins-config/index.md'
+        - 'developer/jenkins-config/job-types.md'
+        - 'developer/jenkins-config/governance-tiers.md'
+      - Testing:
+        - 'developer/testing/index.md'
+        - 'developer/testing/local-jenkins.md'

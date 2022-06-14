@@ -4,7 +4,7 @@ One of the [Key Benefits](../framework-overview/key-benefits.md) of using JTE is
 
 JTE achieves this governance by creating a [Configuration Hierarchy](./configuration-hierarchy.md) using Jenkins global settings and Folder properties.
 
-The nodes of this hierarchy, called [Governance Tiers](./governance-tier.md), store [Pipeline Configurations](../pipeline-configuration/overview.md), a [Pipeline Catalog](../pipeline-templates/pipeline-catalog.md), and [Library Sources](../library-development/library-source.md).
+The nodes of this hierarchy, called [Governance Tiers](./governance-tier.md), store [Pipeline Configurations](../pipeline-configuration/index.md), a [Pipeline Catalog](../pipeline-templates/pipeline-catalog.md), and [Library Sources](../library-development/library-source.md).
 
 Teams can create arbitrarily complex governance hierarchies simply by organizing jobs in Jenkins into the appropriate Folders.
 

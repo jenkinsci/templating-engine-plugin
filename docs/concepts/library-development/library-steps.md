@@ -64,13 +64,13 @@ Library Steps can accept method parameters just like any other method.
 
 <!-- markdownlint-disable -->
 !!! danger "Be Careful!"
-    Library Steps that accept method parameters run a high risk of breaking the interoperability of the [Pipeline Template](../pipeline-templates/overview.md).
+    Library Steps that accept method parameters run a high risk of breaking the interoperability of the [Pipeline Template](../pipeline-templates/index.md).
 
     Imagine the scenario where the Pipeline Template invokes a `build()` step and the same template is intended to be used across teams that may be using different tools, such as `gradle` and `npm`.
     
     If the `gradle` library's `build()` step accepts a set of parameters and the `npm` library's `build()` step doesn't then you won't be able to swap out the libraries interchangeably.
 
-    Instead of method parameters, consider passing steps information via the [Pipeline Configuration](../pipeline-configuration/overview.md) using the `config` variable.
+    Instead of method parameters, consider passing steps information via the [Pipeline Configuration](../pipeline-configuration/index.md) using the `config` variable.
 
     Check out the [Parameterizing Libraries](./parameterizing-libraries.md) page to learn more.
 <!-- markdownlint-restore -->

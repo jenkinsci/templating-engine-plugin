@@ -5,7 +5,7 @@ hide:
 
 # Overview
 
-Pipeline Primitives are objects that can be defined from the [Pipeline Configuration](../pipeline-configuration/overview.md) and accessed from a [Pipeline Template](../pipeline-templates/overview.md).
+Pipeline Primitives are objects that can be defined from the [Pipeline Configuration](../pipeline-configuration/index.md) and accessed from a [Pipeline Template](../pipeline-templates/index.md).
 
 Pipeline Primitives exist to make Pipeline Templates easier to write, easier to read, and easier to share across teams.
 

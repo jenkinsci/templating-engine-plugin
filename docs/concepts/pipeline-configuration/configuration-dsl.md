@@ -96,7 +96,7 @@ A special case is empty blocks and unset properties. Both situations result in a
 
 ## Pipeline Governance Annotations
 
-To support [Pipeline Governance](../pipeline-governance/overview.md), the Pipeline Configuration DSL uses special annotations to control which aspects of the configuration the **next configuration in the [Configuration Hierarchy](../pipeline-governance/configuration-hierarchy.md)** is able to modify.
+To support [Pipeline Governance](../pipeline-governance/index.md), the Pipeline Configuration DSL uses special annotations to control which aspects of the configuration the **next configuration in the [Configuration Hierarchy](../pipeline-governance/configuration-hierarchy.md)** is able to modify.
 
 These annotations are called `@override` and `@merge` and both can be placed on a block and property.
 

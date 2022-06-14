@@ -1,6 +1,6 @@
 # Application Environments
 
-The Application Environment primitive allows users to encapsulate environmental context. Users can define custom fields from the [Pipeline Configuration](../pipeline-configuration/overview.md).
+The Application Environment primitive allows users to encapsulate environmental context. Users can define custom fields from the [Pipeline Configuration](../pipeline-configuration/index.md).
 
 ## Defining Application Environments
 

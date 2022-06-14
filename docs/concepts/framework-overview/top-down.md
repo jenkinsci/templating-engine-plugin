@@ -29,7 +29,7 @@ Which Pipeline Primitives to inject are determined by a Pipeline Configuration.
 
 ## Pipeline Templates
 
-A [Pipeline Template](../pipeline-templates/overview.md) is nothing more than a Jenkinsfile with some *stuff* added at runtime.
+A [Pipeline Template](../pipeline-templates/index.md) is nothing more than a Jenkinsfile with some *stuff* added at runtime.
 
 Everything that can be done in a Jenkinsfile can be done in a Pipeline Template.
 
@@ -42,10 +42,10 @@ The only thing that makes a template a template is the use of Pipeline Primitive
 
 ## Pipeline Primitives
 
-[Pipeline Primitives](../pipeline-primitives/overview.md) are contributed by the JTE framework and help make templates reusable.
+[Pipeline Primitives](../pipeline-primitives/index.md) are contributed by the JTE framework and help make templates reusable.
 
 Pipeline Templates will typically make use of identically named Pipeline Primitives, such as **step** called `build()`, to become reusable.
 
 ## Pipeline Configuration
 
-The [Pipeline Configuration](../pipeline-configuration/overview.md) is where teams declare which Pipeline Primitives should be injected into the Pipeline Template for their application(s).
+The [Pipeline Configuration](../pipeline-configuration/index.md) is where teams declare which Pipeline Primitives should be injected into the Pipeline Template for their application(s).

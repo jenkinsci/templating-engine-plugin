@@ -6,7 +6,7 @@ This page explain the options to configure a Governance Tier.
 
 ## Overview
 
-Governance Tiers can store three important things: a [Pipeline Catalog](../concepts/pipeline-templates/pipeline-catalog.md), a [Pipeline Configuration](../concepts/pipeline-configuration/overview.md), and a list of [Library Sources](../concepts/library-development/library-source.md).
+Governance Tiers can store three important things: a [Pipeline Catalog](../concepts/pipeline-templates/pipeline-catalog.md), a [Pipeline Configuration](../concepts/pipeline-configuration/index.md), and a list of [Library Sources](../concepts/library-development/library-source.md).
 
 The configuration for Library Sources stands alone.
 The configuration for the Pipeline Catalog and Pipeline Configuration are grouped together.

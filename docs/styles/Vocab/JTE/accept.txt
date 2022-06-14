@@ -23,3 +23,5 @@ Divio
 md
 [Ee]num
 truthy
+Artifactory
+[rR]esumability

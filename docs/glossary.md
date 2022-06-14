@@ -7,3 +7,4 @@
 *[NPM]: Node Package Manager
 *[DRY]: Don't Repeat Yourself
 *[AWS]: Amazon Web Services
+*[UI]: User Interface

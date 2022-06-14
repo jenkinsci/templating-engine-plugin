@@ -57,6 +57,7 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
 
     @Override
     FlowExecution create(FlowExecutionOwner owner, TaskListener listener, List<? extends Action> actions) throws Exception {
+        // skip initialization for Replays
         WorkflowRun run = owner.run()
         ReplayCause replay = run.getCause(ReplayCause)
         RestartDeclarativePipelineCause restartDeclarative = run.getCause(RestartDeclarativePipelineCause)

@@ -44,6 +44,3 @@ The Jenkins Templating Engine is a pipeline development framework for [Jenkins](
     </div>
   </a>
 </div>
-
-!!! note "Work In Progress"
-    This docs site is still a work in progress! Check out the [contributing](./contributing/overview.md) section if you're interested in helping.

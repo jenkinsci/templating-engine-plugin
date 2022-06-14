@@ -1,6 +1,6 @@
 # Steps
 
-[Pipeline Templates](../pipeline-templates/overview.md) represent generic software delivery workflows.
+[Pipeline Templates](../pipeline-templates/index.md) represent generic software delivery workflows.
 
 Pipeline Templates use Steps to represent tasks in that workflow.
 
@@ -8,7 +8,7 @@ Pipeline Templates use Steps to represent tasks in that workflow.
     It is recommended that Steps are named generically. For example, rather than `npm_build()` the Step should be named `build()`.
 
     By naming Steps generically, multiple libraries can implement the same Step.
-    This allows teams to share the same Pipeline Template by loading different libraries via the [Pipeline Configuration](../pipeline-configuration/overview.md). 
+    This allows teams to share the same Pipeline Template by loading different libraries via the [Pipeline Configuration](../pipeline-configuration/index.md). 
 
 ## Placeholder Steps
 
@@ -53,9 +53,9 @@ To define Placeholder Steps, use the `template_methods{}` block.
 
 [Library Steps](../library-development/library-steps.md) are contributed by libraries.
 
-Users define in the [Pipeline Configuration](../pipeline-configuration/overview.md) which libraries to load, if any.
+Users define in the [Pipeline Configuration](../pipeline-configuration/index.md) which libraries to load, if any.
 
 !!! info "Learn More"
-    Learn more about how to create libraries over in the [Library Development](../library-development/overview.md) section.
+    Learn more about how to create libraries over in the [Library Development](../library-development/index.md) section.
 
 [^1]: [No Operation](https://en.wikipedia.org/wiki/NOP_(code)): a command that does nothing.

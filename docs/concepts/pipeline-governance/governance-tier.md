@@ -4,8 +4,8 @@ Governance Tiers are nodes in the [Configuration Hierarchy](./configuration-hier
 
 | Governance Tier Data                                            | Description                                                      |
 |-----------------------------------------------------------------|------------------------------------------------------------------|
-| [Pipeline Catalog](../pipeline-templates/pipeline-catalog.md)   | A set of [Pipeline Templates](../pipeline-templates/overview.md) |
-| [Pipeline Configuration](../pipeline-configuration/overview.md) | A Pipeline Configuration that will be inherited                  |
+| [Pipeline Catalog](../pipeline-templates/pipeline-catalog.md)   | A set of [Pipeline Templates](../pipeline-templates/index.md) |
+| [Pipeline Configuration](../pipeline-configuration/index.md) | A Pipeline Configuration that will be inherited                  |
 | [Library Sources](../library-development/library-source.md)     | A list of Library Sources                                        |
 
 !!! info "Reference: Governance Tier Structure"

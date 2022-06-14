@@ -1,6 +1,6 @@
 # Keywords
 
-Keywords let users declare variables from the [Pipeline Configuration](../pipeline-configuration/overview.md) that can be resolved from the [Pipeline Template](../pipeline-templates/overview.md) or [Library Steps](./steps.md).
+Keywords let users declare variables from the [Pipeline Configuration](../pipeline-configuration/index.md) that can be resolved from the [Pipeline Template](../pipeline-templates/index.md) or [Library Steps](./steps.md).
 
 ## Defining Keywords
 

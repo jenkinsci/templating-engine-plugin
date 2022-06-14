@@ -1,6 +1,6 @@
 # Overview
 
-[Pipeline Templates](../pipeline-templates/overview.md) are generic, tool-agnostic workflows that utilize [Pipeline Primitives](../pipeline-primitives/overview.md) to become concrete for specific teams.
+[Pipeline Templates](../pipeline-templates/index.md) are generic, tool-agnostic workflows that utilize [Pipeline Primitives](../pipeline-primitives/index.md) to become concrete for specific teams.
 
 The Pipeline Configuration is what determines for a given Pipeline Run which Pipeline Template and which Pipeline Primitives should be used.
 

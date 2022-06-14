@@ -2,7 +2,7 @@
 
 In JTE, Pipeline Templates are used to define tool-agnostic *workflows* that can be shared across teams.
 
-Pipeline Templates make use of [Pipeline Primitives](../pipeline-primitives/overview.md) to become reusable.
+Pipeline Templates make use of [Pipeline Primitives](../pipeline-primitives/index.md) to become reusable.
 
 ## Just A Jenkinsfile
 
@@ -31,7 +31,7 @@ One example of having multiple workflows would be if there were two branching st
 
 One way to think of a Pipeline Template is that it creates an "API contract" or interface between the pipeline and development teams.
 
-The [Pipeline Configuration](../pipeline-configuration/overview.md) is what "hydrates" the template to make it concrete by declaring which Pipeline Primitives should be loaded.
+The [Pipeline Configuration](../pipeline-configuration/index.md) is what "hydrates" the template to make it concrete by declaring which Pipeline Primitives should be loaded.
 
 ## Learn More
 

@@ -9,14 +9,14 @@ JTE supports this type of Aspect Oriented Programming style event handling throu
 
 The following lifecycle hook annotations are available:
 
-| Annotation    | Trigger                                                                                               |
-|---------------|-------------------------------------------------------------------------------------------------------|
-| `@Validate`   | Beginning of a Pipeline Run, before the Pipeline Template                                             |
-| `@Init`       | After all `@Validate` hooks, before  the Pipeline Template                                            |
-| `@BeforeStep` | During template execution, before every [Library Step](./library-steps.md)                            |
-| `@AfterStep`  | During template execution, after every [Library Step](./library-steps.md)                             |
-| `@CleanUp`    | After template execution                                                                              |
-| `@Notify`     | During template execution after every [Library Step](./library-steps.md) and after template execution |
+| Annotation    | Trigger                                                                                                                           |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `@Validate`   | Beginning of a Pipeline Run, before the Pipeline Template                                                                         |
+| `@Init`       | After all `@Validate` hooks, before  the Pipeline Template                                                                        |
+| `@BeforeStep` | During template execution, before every [Library Step](/concepts/library-development/library-steps.md)                            |
+| `@AfterStep`  | During template execution, after every [Library Step](/concepts/library-development/library-steps.md)                             |
+| `@CleanUp`    | After template execution                                                                                                          |
+| `@Notify`     | During template execution after every [Library Step](/concepts/library-development/library-steps.md) and after template execution |
 
 ![Placeholder](./lifecycle_hook.png)
 

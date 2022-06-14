@@ -75,11 +75,11 @@ This compiled Pipeline is then executed **just like any other Jenkinsfile**.
         }
         ```
 
-[config]: ../pipeline-configuration/overview.md
+[config]: ../pipeline-configuration/index.md
 [gov-tier]: ../pipeline-governance/governance-tier.md
 [hierarchy]: ../pipeline-governance/configuration-hierarchy.md
-[primitives]: ../pipeline-primitives/overview.md
-[template]: ../pipeline-templates/overview.md
+[primitives]: ../pipeline-primitives/index.md
+[template]: ../pipeline-templates/index.md
 [template-selection]: ../pipeline-governance/pipeline-template-selection.md
 [map]: https://docs.groovy-lang.org/latest/html/groovy-jdk/java/util/Map.html
 [pipelineConfig]: ../../../reference/autowired-variables/#pipelineconfig

@@ -31,9 +31,9 @@ After reviewing the framework overviews, check out the following sections to sta
 
 | Section                                                         | Description                                                                                                |
 |-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| [Pipeline Templates](../pipeline-templates/overview.md)         | Learn more about Pipeline Templates and how to define workflows                                            |
-| [Pipeline Configuration](../pipeline-configuration/overview.md) | Learn more about Pipeline Configurations                                                                   |
-| [Pipeline Primitives](../pipeline-primitives/overview.md)       | Learn more about Pipeline Primitives and how to make Pipeline Templates reusable                           |
-| [Library Development](../library-development/overview.md)       | Learn more about Library Development and how to write Library Steps                                        |
-| [Pipeline Governance](../pipeline-governance/overview.md)       | Learn more about how to govern template selection, library resolution, and Pipeline Configuration settings |
+| [Pipeline Templates](../pipeline-templates/index.md)         | Learn more about Pipeline Templates and how to define workflows                                            |
+| [Pipeline Configuration](../pipeline-configuration/index.md) | Learn more about Pipeline Configurations                                                                   |
+| [Pipeline Primitives](../pipeline-primitives/index.md)       | Learn more about Pipeline Primitives and how to make Pipeline Templates reusable                           |
+| [Library Development](../library-development/index.md)       | Learn more about Library Development and how to write Library Steps                                        |
+| [Pipeline Governance](../pipeline-governance/index.md)       | Learn more about how to govern template selection, library resolution, and Pipeline Configuration settings |
 | Advanced Topics                                                 | Learn about advanced features that don't cleanly fit anywhere else :smile:                                 |

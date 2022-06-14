@@ -1,6 +1,6 @@
 # Pipeline Template Selection
 
-Pipeline Template Selection is the name of the process that determines which [Pipeline Template](../pipeline-templates/overview.md) to use for a given Pipeline Run.
+Pipeline Template Selection is the name of the process that determines which [Pipeline Template](../pipeline-templates/index.md) to use for a given Pipeline Run.
 
 Figure 1 visualizes this process in a flow chart.
 
@@ -31,7 +31,7 @@ For MultiBranch Project Pipeline Jobs, if the source code repository has a `Jenk
 
 ## Named Pipeline Templates
 
-The next possibility is that the aggregated [Pipeline Configuration](../pipeline-configuration/overview.md) has configured JTE to look for a Named Pipeline Template from the [Pipeline Catalog](../pipeline-templates/pipeline-catalog.md).
+The next possibility is that the aggregated [Pipeline Configuration](../pipeline-configuration/index.md) has configured JTE to look for a Named Pipeline Template from the [Pipeline Catalog](../pipeline-templates/pipeline-catalog.md).
 
 If this is the case, JTE will recursively search each [Governance Tier](./governance-tier.md) in the [Configuration Hierarchy](./configuration-hierarchy.md) looking for the Named Pipeline Template.
 

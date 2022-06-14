@@ -2,7 +2,7 @@
 
 ## Overview
 
-Each directory within a [Library Source](/docs/concepts/library-development/library-source.md) is a different library that can be loaded via the [Pipeline Configuration](../pipeline-configuration/overview.md)
+Each directory within a [Library Source](/docs/concepts/library-development/library-source.md) is a different library that can be loaded via the [Pipeline Configuration](../pipeline-configuration/index.md)
 
 The name of the directory is the library identifier used within the Pipeline Configuration `libraries{}` block when loading the library.
 
@@ -10,7 +10,7 @@ The name of the directory is the library identifier used within the Pipeline Con
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `steps/**/*.groovy`     | groovy files under the steps directory will be loaded as steps where the basename of the file will be the name of the function made available in the pipeline |
 | `resources/**/*`        | any file under the `resources` directory will be accessible from within Library Steps via the `resource()` step                                               |
-| `src/**/*`              | Classes contributed by the library that can be imported from within [Pipeline Templates](../pipeline-templates/overview.md) and [steps](library-steps.md)              |
+| `src/**/*`              | Classes contributed by the library that can be imported from within [Pipeline Templates](../pipeline-templates/index.md) and [steps](library-steps.md)              |
 | `library_config.groovy` | the library configuration file                                                                                                                                |
 
 ## Example Library Structure

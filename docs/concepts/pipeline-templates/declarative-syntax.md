@@ -66,7 +66,7 @@ Many users, however, would still prefer to write Pipeline Templates in Declarati
 Declarative Syntax offers a simpler and more opinionated way to write Jenkins pipelines.
 Users familiar with Declarative Syntax can get started using JTE.
 
-[Pipeline Primitives](../pipeline-primitives/overview.md), including [Library Steps](../library-development/library-steps.md), can be resolved from a Pipeline Template written in Declarative Syntax.
+[Pipeline Primitives](../pipeline-primitives/index.md), including [Library Steps](../library-development/library-steps.md), can be resolved from a Pipeline Template written in Declarative Syntax.
 
 ## Step Resolution
 

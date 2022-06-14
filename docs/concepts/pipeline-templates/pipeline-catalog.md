@@ -1,6 +1,6 @@
 # Pipeline Catalog
 
-It's unlikely, especially when first starting out, that all your organization's pipelines will map to a single [Pipeline Template](../pipeline-templates/overview.md).
+It's unlikely, especially when first starting out, that all your organization's pipelines will map to a single [Pipeline Template](../pipeline-templates/index.md).
 
 JTE supports having multiple Pipeline Templates that teams can choose from.
 
