@@ -51,18 +51,14 @@ class FileSystemWrapperFactory {
         }
 
         FileSystemWrapper fsw
+        ItemGroup<?> parent = job.getParent()
+        FlowDefinition definition = job.getDefinition()
         if (scm) {
             fsw = this.fromSCM(owner, job, scm)
-        }
-
-        ItemGroup<?> parent = job.getParent()
-        if (parent instanceof WorkflowMultiBranchProject) {
+        } else if (parent instanceof WorkflowMultiBranchProject) {
             TaskListener listener = owner.getListener()
             fsw = this.fromMultiBranchProject(owner, job, listener)
-        }
-
-        FlowDefinition definition = job.getDefinition()
-        if (definition instanceof CpsScmFlowDefinition) {
+        } else if (definition instanceof CpsScmFlowDefinition) {
             fsw = this.fromPipelineJob(owner, job)
         }
 
