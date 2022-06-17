@@ -1,9 +1,22 @@
+/*
+    Copyright 2018 Booz Allen Hamilton
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
 package org.boozallen.plugins.jte.job
 
 import hudson.plugins.git.BranchSpec
 import hudson.plugins.git.GitSCM
-import hudson.plugins.git.TestGitRepo
-import hudson.plugins.git.UserRemoteConfig
 import hudson.plugins.git.extensions.GitSCMExtension
 import jenkins.branch.BranchProperty
 import jenkins.branch.BranchSource
@@ -29,15 +42,14 @@ import spock.lang.Specification
 class MultibranchTemplateFlowDefinitionSpec extends Specification {
 
     @Shared @ClassRule JenkinsRule jenkins = new JenkinsRule()
-    @Rule public GitSampleRepoRule appRepo = new GitSampleRepoRule();
-    @Rule public GitSampleRepoRule libRepo = new GitSampleRepoRule();
+    @Rule GitSampleRepoRule appRepo = new GitSampleRepoRule();
+    @Rule GitSampleRepoRule libRepo = new GitSampleRepoRule();
 
     // add the new library source for each test
     def setup() {
         appRepo.init()
         libRepo.init()
     }
-
 
     @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/286")
     def "multibranch pipeline not finding global libraries"(){
@@ -46,7 +58,6 @@ class MultibranchTemplateFlowDefinitionSpec extends Specification {
         libRepo.write("gradle/steps/build.groovy", "void call(){ println 'gradle build' }")
         libRepo.git("add", "*")
         libRepo.git("commit", "--all", "--message=init")
-        TestGitRepo r = new TestGitRepo("repo", libRepo.getRoot(), jenkins.createTaskListener())
         GitSCM libSCM = new GitSCM(
             GitSCM.createRepoList(libRepo.toString(), null),
             Collections.singletonList(new BranchSpec("*/master")),
@@ -64,7 +75,6 @@ class MultibranchTemplateFlowDefinitionSpec extends Specification {
         List<LibrarySource> sources = [ libSource ]
         tier.setLibrarySources(sources)
         global.setTier(tier)
-
 
         // create multibranch project
         WorkflowMultiBranchProject project = jenkins.createProject(WorkflowMultiBranchProject)
@@ -86,4 +96,5 @@ class MultibranchTemplateFlowDefinitionSpec extends Specification {
         jenkins.assertBuildStatusSuccess(run)
         jenkins.assertLogContains("gradle build", run)
     }
+
 }
