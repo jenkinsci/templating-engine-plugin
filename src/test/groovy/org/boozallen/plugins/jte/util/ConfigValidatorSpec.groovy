@@ -53,7 +53,8 @@ class ConfigValidatorSpec extends Specification {
 
         then:
         AggregateException ex = thrown()
-        ex.getMessage().contains("Field 'example' must be a String")
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("field 'example' must be a String")
     }
 
     def "valid required key does not throw exception"() {
@@ -78,7 +79,8 @@ class ConfigValidatorSpec extends Specification {
 
         then:
         AggregateException ex = thrown()
-        ex.getMessage().contains("Missing required field 'example'")
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("missing required field 'example'")
     }
 
     def "invalid optional key throws exception"() {
@@ -91,7 +93,8 @@ class ConfigValidatorSpec extends Specification {
 
         then:
         AggregateException ex = thrown()
-        ex.getMessage().contains("Field 'example' must be a String")
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("field 'example' must be a String")
     }
 
     def "missing optional key is okay"() {
@@ -108,7 +111,7 @@ class ConfigValidatorSpec extends Specification {
 
     def "keys not in schema throw exception"() {
         setup:
-        String schema = 'fields{ required{ example = String } }'
+        String schema = 'fields{}'
         LinkedHashMap config = [ nope: 11 ]
 
         when:
@@ -116,7 +119,8 @@ class ConfigValidatorSpec extends Specification {
 
         then:
         AggregateException ex = thrown()
-        ex.getMessage().contains("Field 'nope' is not used.")
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("field 'nope' is not used.")
     }
 
     def "nested required keys are validated"() {
@@ -129,7 +133,8 @@ class ConfigValidatorSpec extends Specification {
 
         then:
         AggregateException ex = thrown()
-        ex.getMessage().contains("Field 'nested.example' must be a String")
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("field 'nested.example' must be a String")
     }
 
     def "nested optional keys are validated"() {
@@ -142,7 +147,8 @@ class ConfigValidatorSpec extends Specification {
 
         then:
         AggregateException ex = thrown()
-        ex.getMessage().contains("Field 'nested.example' must be a String")
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("field 'nested.example' must be a String")
     }
 
     def "aggregate exception has all errors"() {
@@ -169,9 +175,10 @@ class ConfigValidatorSpec extends Specification {
         then:
         AggregateException ex = thrown()
         ex.size() == 3
-        ex.getMessage().contains("Field 'fieldA' must be a String")
-        ex.getMessage().contains("Field 'fieldB' must be a Number")
-        ex.getMessage().contains("Field 'fieldC' must be a boolean")
+        List<String> messages = ex.getExceptions().collect{ e -> e.getMessage() }
+        assert messages.contains("field 'fieldA' must be a String but is a Integer")
+        assert messages.contains("field 'fieldB' must be a Number but is a String")
+        assert messages.contains("field 'fieldC' must be a boolean but is a Integer")
     }
 
     @Unroll

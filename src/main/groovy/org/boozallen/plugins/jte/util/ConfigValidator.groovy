@@ -30,13 +30,13 @@ class ConfigValidator {
         this.flowOwner = flowOwner
     }
 
-    void validate(String schemaString, LinkedHashMap config){
+    void validate(String schemaString, LinkedHashMap config, String msgPrefix = ""){
         LinkedHashMap schema = parseSchema(schemaString)
-        validate(schema, config)
+        validate(schema, config, msgPrefix)
     }
 
     @SuppressWarnings('NoDef')
-    void validate(LinkedHashMap schema, LinkedHashMap config) throws AggregateException{
+    void validate(LinkedHashMap schema, LinkedHashMap config, String msgPrefix = "") throws AggregateException{
         // define key sets in dot notation
         List<String> keys = getNestedKeys(config)
         List<String> required = getNestedKeys(schema.fields?.required)
@@ -55,16 +55,16 @@ class ConfigValidator {
                 if (keyHasError){
                     String msg
                     if (expected instanceof java.util.regex.Pattern){
-                        msg = "Field ${requiredKey} must be a String matching ${expected} but is [${actual}]"
+                        msg = "field ${requiredKey} must be a String matching ${expected} but is [${actual}]"
                     } else if (expected instanceof ArrayList){
-                        msg = "Field '${requiredKey}' must be one of ${expected} but is [${actual}]"
+                        msg = "field '${requiredKey}' must be one of ${expected} but is [${actual}]"
                     } else {
-                        msg = "Field '${requiredKey}' must be a ${expected.getSimpleName()} but is a ${actual.getClass().getSimpleName()}"
+                        msg = "field '${requiredKey}' must be a ${expected.getSimpleName()} but is a ${actual.getClass().getSimpleName()}"
                     }
-                    errors.add(new JTEException(msg))
+                    errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}${msg}"))
                 }
             } else{
-                errors.add(new JTEException("Missing required field '${requiredKey}'"))
+                errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}missing required field '${requiredKey}'"))
             }
         }
 
@@ -78,20 +78,20 @@ class ConfigValidator {
                 if (keyHasError){
                     String msg
                     if (expected instanceof java.util.regex.Pattern){
-                        msg = "Field ${optionalKey} must be a String matching ${expected} but is [${actual}]"
+                        msg = "field ${optionalKey} must be a String matching ${expected} but is [${actual}]"
                     } else if (expected instanceof ArrayList){
-                        msg = "Field '${optionalKey}' must be one of ${expected} but is [${actual}]"
+                        msg = "field '${optionalKey}' must be one of ${expected} but is [${actual}]"
                     } else {
-                        msg = "Field '${optionalKey}' must be a ${expected.getSimpleName()} but is a ${actual.getClass().getSimpleName()}"
+                        msg = "field '${optionalKey}' must be a ${expected.getSimpleName()} but is a ${actual.getClass().getSimpleName()}"
                     }
-                    errors.add(new JTEException(msg))
+                    errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}${msg}"))
                 }
             }
         }
 
         // validate that there are no extraneous keys
         keys.each{ key ->
-            errors.add(new JTEException("Field '${key}' is not used."))
+            errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}field '${key}' is not used."))
         }
 
         // if there are any errors, throw 'em

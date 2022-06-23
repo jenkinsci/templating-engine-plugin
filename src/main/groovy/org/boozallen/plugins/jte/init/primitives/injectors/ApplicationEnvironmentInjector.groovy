@@ -19,6 +19,8 @@ import hudson.Extension
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
+import org.boozallen.plugins.jte.util.AggregateException
+import org.boozallen.plugins.jte.util.JTEException
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 
 /**
@@ -27,6 +29,20 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 @Extension class ApplicationEnvironmentInjector extends TemplatePrimitiveInjector {
 
     static private final String KEY = "application_environments"
+
+    @Override
+    void validateConfiguration(CpsFlowExecution exec, PipelineConfigurationObject config){
+        LinkedHashMap aggregatedConfig = config.getConfig()
+        AggregateException errors = new AggregateException()
+        aggregatedConfig[KEY].each { name, appEnvConfig ->
+            if(!(appEnvConfig in Map)){
+                errors.add(new JTEException("Configuration for Application Environment ${name} must be a Block but is a ${appEnvConfig.getClass().getSimpleName()}"))
+            }
+        }
+        if(errors.size()){
+            throw errors
+        }
+    }
 
     @SuppressWarnings('NoDef')
     @Override

@@ -430,4 +430,22 @@ class ApplicationEnvironmentSpec extends Specification {
         jenkins.buildAndAssertSuccess(job)
     }
 
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/253")
+    def "Invalid ApplicationEnvironment configuration throws readable exception"(){
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+        config: """
+        application_environments{
+            property = "oops"
+        }
+        """,
+        template: 'null'
+        )
+        when:
+        WorkflowRun run = job.scheduleBuild2(0).get()
+        then:
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("Configuration for Application Environment property must be a Block but is a String", run)
+    }
+
 }

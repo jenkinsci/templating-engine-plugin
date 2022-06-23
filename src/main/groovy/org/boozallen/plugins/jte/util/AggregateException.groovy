@@ -16,6 +16,9 @@
 package org.boozallen.plugins.jte.util
 
 import groovy.transform.InheritConstructors
+import hudson.model.TaskListener
+import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
+import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
 /**
  * A generic exception to mark an exception as coming from JTE
@@ -23,6 +26,15 @@ import groovy.transform.InheritConstructors
 @InheritConstructors class AggregateException extends Exception {
 
     private List<Exception> exceptions = []
+    private String message
+
+    void setMessage(String message){
+        this.message = message
+    }
+
+    String getMessage(){
+        return message
+    }
 
     void add(Exception e){
         if(e instanceof AggregateException){
@@ -40,12 +52,15 @@ import groovy.transform.InheritConstructors
         return exceptions
     }
 
-    String getMessage(){
-        List<String> msg = ["The following errors occurred: "]
+    void printToConsole(CpsFlowExecution exec){
+        FlowExecutionOwner flowOwner = exec.getOwner()
+        TaskListener listener = flowOwner.getListener()
+        TemplateLogger logger = new TemplateLogger(listener)
         exceptions.eachWithIndex{ e, i ->
-            msg.push("${i + 1}: ${e.getMessage()}".toString())
+            List<String> msg = [ "${i + 1}: ${e.getMessage()} "]
+            msg.addAll(e.getStackTrace().collect{ s -> s.toString() })
+            logger.printError(msg.join("\n"))
         }
-        return msg.join("\n")
     }
 
 }

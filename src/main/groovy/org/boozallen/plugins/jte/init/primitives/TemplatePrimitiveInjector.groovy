@@ -21,7 +21,6 @@ import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.AggregateException
 import org.boozallen.plugins.jte.util.JTEException
-import org.boozallen.plugins.jte.util.TemplateLogger
 import org.codehaus.groovy.reflection.CachedMethod
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
 import org.jenkinsci.plugins.workflow.cps.CpsGroovyShellFactory
@@ -155,16 +154,14 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
                     namespaces << injector.invokeMethod(phase, args)
                 }
             } catch(any){
-                CpsFlowExecution exec = args[0]
-                FlowExecutionOwner flowOwner = exec.getOwner()
-                TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-                String msg = [ any.getMessage(), any.getStackTrace()*.toString() ].flatten().join("\n")
-                logger.printError(msg)
                 errors.add(any)
                 failedInjectors << injectorClazz
             }
         }
         if(errors.size()) { // this phase failed throw an exception
+            CpsFlowExecution exec = args[0]
+            errors.printToConsole(exec)
+            errors.setMessage("JTE Pipeline Initialization failed during ${phase}")
             throw errors
         }
         return namespaces

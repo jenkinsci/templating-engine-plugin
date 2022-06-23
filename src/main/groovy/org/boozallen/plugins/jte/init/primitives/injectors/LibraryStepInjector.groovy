@@ -59,15 +59,9 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
                 String schema = provider.getLibrarySchema(flowOwner, libName)
                 if(schema){
                     try {
-                        validator.validate(schema, libConfig)
+                        validator.validate(schema, libConfig, "Library ${libName}")
                     } catch (AggregateException e) {
-                        TemplateLogger logger = new TemplateLogger(flowOwner.getListener())
-                        String errorHeader = "Library ${libName} has configuration errors"
-                        logger.printError(errorHeader)
-                        e.getExceptions().eachWithIndex{ error, idx ->
-                            logger.printError("${idx + 1}. ${error.getMessage()}".toString())
-                        }
-                        errors.add(new JTEException(errorHeader))
+                        errors.add(e)
                     }
                 }
             } else {
