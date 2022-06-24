@@ -8,3 +8,8 @@ config:
   code-block-style: false
 
 fix: true
+
+globs:
+  - docs/**/*.md
+ignores:
+  - docs/styles

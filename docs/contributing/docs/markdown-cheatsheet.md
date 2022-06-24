@@ -17,7 +17,7 @@
 |------------------------|--------------------------|
 | *Italics*              | `*Italics*`              |
 | **Bold**               | `**Bold**`               |
-| **_Bold and Italics_** | `**_Bold and Italics_**` |
+| ***Bold and Italics*** | `**_Bold and Italics_**` |
 
 ## Links
 

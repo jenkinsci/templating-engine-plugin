@@ -85,7 +85,7 @@ These values are now in the `jte` block in the pipeline_config
 
 ## Lifecycle Hook: `hookContext`
 
-JTE provides some _syntactic sugar_ by means of autowiring variables to library steps to simplify library development.
+JTE provides some *syntactic sugar* by means of autowiring variables to library steps to simplify library development.
 
 Previously, library steps that implemented lifecycle hooks were required to accept a method parameter to accept the hook context.
 This parameter was typically called `context` but could be called anything.

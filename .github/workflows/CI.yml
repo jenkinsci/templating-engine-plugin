@@ -31,6 +31,16 @@ jobs:
         with:
           name: codenarc-results
           path: build/reports
+  MarkdownLint:
+    runs-on: ubuntu-latest
+    container:
+      image: davidanson/markdownlint-cli2:0.4.0
+      volume: ${{ github.workspace }}:/app
+      options: -w /app --entrypoint sh
+    if: github.repository == 'jenkinsci/templating-engine-plugin'
+    steps:
+      - name: markdownlint-cli
+        run: markdownlint-cli2
   Unit_Test:
     runs-on: ubuntu-latest
     if: github.repository == 'jenkinsci/templating-engine-plugin'

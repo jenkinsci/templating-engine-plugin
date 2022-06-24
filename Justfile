@@ -55,7 +55,7 @@ lint-prose:
 
 # use markdownlit to lint the docs
 lint-markdown: 
-  docker run -v $(pwd):/app -w /app davidanson/markdownlint-cli2:0.3.1 "docs/**/*.md"
+  docker run -v $(pwd):/app -w /app davidanson/markdownlint-cli2:0.4.0
 
 # update current docs
 update-docs: buildDocsImage
