@@ -147,8 +147,9 @@ class StepWrapperFactory{
         // and library steps - which would in turn require a different classloader, which
         // was the root cause of issue #279
         String modifiedSource = """
-        @groovy.transform.BaseScript ${StepWrapperScript.getName()} _
         ${sourceText}
+
+        @groovy.transform.BaseScript ${StepWrapperScript.getName()} _
         """
         GroovyShell shell = exec.getTrustedShell()
         String scriptName = "JTE_${step.library ?: "Default"}_${step.name}"

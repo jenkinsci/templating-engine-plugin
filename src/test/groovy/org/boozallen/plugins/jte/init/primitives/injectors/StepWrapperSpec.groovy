@@ -901,4 +901,22 @@ class StepWrapperSpec extends Specification {
         jenkins.assertLogContains("gradle build", run)
     }
 
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/296")
+    def "Library steps can declare a package"(){
+        given:
+        libProvider.addStep("example", "step", """
+        package example
+        void call(){ println 'example step' }
+        """)
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+        config: 'libraries{ example }',
+        template: 'step()'
+        )
+        when:
+        WorkflowRun run = job.scheduleBuild2(0).get()
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("example step", run)
+    }
+
 }
