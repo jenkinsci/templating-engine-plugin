@@ -33,14 +33,24 @@ jobs:
           path: build/reports
   MarkdownLint:
     runs-on: ubuntu-latest
+    if: github.repository == 'jenkinsci/templating-engine-plugin'
     container:
       image: davidanson/markdownlint-cli2:0.4.0
       options: --user root
-    if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
       - uses: actions/checkout@v2
       - name: markdownlint-cli2
         run: markdownlint-cli2
+  Vale:
+    runs-on: ubuntu-latest
+    if: github.repository == 'jenkinsci/templating-engine-plugin'
+    container:
+      image: jdkato/vale:v2.18.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v2
+      - name: vale
+        run: vale docs
   Unit_Test:
     runs-on: ubuntu-latest
     if: github.repository == 'jenkinsci/templating-engine-plugin'
