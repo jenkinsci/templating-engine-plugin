@@ -37,11 +37,15 @@ jobs:
       image: davidanson/markdownlint-cli2:0.4.0
       volumes:
         - ${{ github.workspace }}:/app
-      options: -w /app --entrypoint sh
+      options: -w /app
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
-      - name: markdownlint-cli
-        run: ls && pwd && markdownlint-cli2
+      - name: pwd
+        run: pwd
+      - name: ls
+        run: ls
+      - name: markdownlint-cli2
+        run: markdownlint-cli2
   Unit_Test:
     runs-on: ubuntu-latest
     if: github.repository == 'jenkinsci/templating-engine-plugin'
