@@ -27,7 +27,7 @@ class ConfigValidator {
     FlowExecutionOwner flowOwner
     private final String msgPrefix
 
-    ConfigValidator(FlowExecutionOwner flowOwner, msgPrefix = null){
+    ConfigValidator(FlowExecutionOwner flowOwner, String msgPrefix = null){
         this.flowOwner = flowOwner
         this.msgPrefix = msgPrefix
     }
@@ -102,10 +102,6 @@ class ConfigValidator {
         }
     }
 
-    private String prefixMessage(String message){
-        return ([msgPrefix, message] - null).join(" ")
-    }
-
     LinkedHashMap parseSchema(String schema){
         PipelineConfigurationDsl dsl = new PipelineConfigurationDsl(flowOwner)
         PipelineConfigurationObject parsed = dsl.parse(schema)
@@ -163,6 +159,10 @@ class ConfigValidator {
                 logger.printWarning("Library Validator: Not sure how to handle value ${expected} with class ${expected.class}")
                 return false
         }
+    }
+
+    private String prefixMessage(String message){
+        return ([msgPrefix, message] - null).join(" ")
     }
 
 }
