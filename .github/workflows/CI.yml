@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: davidanson/markdownlint-cli2:0.4.0
+      options: --user root
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
       - uses: actions/checkout@v2
