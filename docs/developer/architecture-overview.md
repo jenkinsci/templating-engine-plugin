@@ -22,7 +22,7 @@ The `run()` method fetches the job's `FlowDefinition` and invokes `create()` to 
 
 JTE's `TemplateFlowDefinition.create()` is where Pipeline Initialization is performed.
 
-## Pipeline Initialization
+## Pipeline Initialization Phases
 
 The steps JTE performs before the pipeline starts is referred to as **Pipeline Initialization**.
 
