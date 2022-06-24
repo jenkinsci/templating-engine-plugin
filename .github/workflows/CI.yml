@@ -35,17 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: davidanson/markdownlint-cli2:0.4.0
-      volumes:
-        - ${{ github.workspace }}:/app
-      options: -w /app
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
-      - name: cd
-        run: cd /app && pwd && ls
-      - name: pwd
-        run: pwd
-      - name: ls
-        run: ls
+      - uses: actions/checkout@v2
       - name: markdownlint-cli2
         run: markdownlint-cli2
   Unit_Test:
