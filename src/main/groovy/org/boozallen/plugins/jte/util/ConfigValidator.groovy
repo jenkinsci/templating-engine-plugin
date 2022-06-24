@@ -25,18 +25,20 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 class ConfigValidator {
 
     FlowExecutionOwner flowOwner
+    private final String msgPrefix
 
-    ConfigValidator(FlowExecutionOwner flowOwner){
+    ConfigValidator(FlowExecutionOwner flowOwner, msgPrefix = null){
         this.flowOwner = flowOwner
+        this.msgPrefix = msgPrefix
     }
 
-    void validate(String schemaString, LinkedHashMap config, String msgPrefix = ""){
+    void validate(String schemaString, LinkedHashMap config){
         LinkedHashMap schema = parseSchema(schemaString)
-        validate(schema, config, msgPrefix)
+        validate(schema, config)
     }
 
     @SuppressWarnings('NoDef')
-    void validate(LinkedHashMap schema, LinkedHashMap config, String msgPrefix = "") throws AggregateException{
+    void validate(LinkedHashMap schema, LinkedHashMap config) throws AggregateException{
         // define key sets in dot notation
         List<String> keys = getNestedKeys(config)
         List<String> required = getNestedKeys(schema.fields?.required)
@@ -61,10 +63,10 @@ class ConfigValidator {
                     } else {
                         msg = "field '${requiredKey}' must be a ${expected.getSimpleName()} but is a ${actual.getClass().getSimpleName()}"
                     }
-                    errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}${msg}"))
+                    errors.add(new JTEException(prefixMessage(msg)))
                 }
             } else{
-                errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}missing required field '${requiredKey}'"))
+                errors.add(new JTEException(prefixMessage("missing required field '${requiredKey}'")))
             }
         }
 
@@ -84,20 +86,24 @@ class ConfigValidator {
                     } else {
                         msg = "field '${optionalKey}' must be a ${expected.getSimpleName()} but is a ${actual.getClass().getSimpleName()}"
                     }
-                    errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}${msg}"))
+                    errors.add(new JTEException(prefixMessage(msg)))
                 }
             }
         }
 
         // validate that there are no extraneous keys
         keys.each{ key ->
-            errors.add(new JTEException("${msgPrefix ? "${msgPrefix} " : ""}field '${key}' is not used."))
+            errors.add(new JTEException(prefixMessage("field '${key}' is not used.")))
         }
 
         // if there are any errors, throw 'em
         if(errors.size()){
             throw errors
         }
+    }
+
+    private String prefixMessage(String message){
+        return ([msgPrefix, message] - null).join(" ")
     }
 
     LinkedHashMap parseSchema(String schema){

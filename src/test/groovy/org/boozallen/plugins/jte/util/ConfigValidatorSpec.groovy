@@ -32,6 +32,7 @@ class ConfigValidatorSpec extends Specification {
 
     @ClassRule @Shared JenkinsRule jenkins = new JenkinsRule()
     @Shared ConfigValidator validator
+    @Shared FlowExecutionOwner flowOwner
 
     def setupSpec(){
         WorkflowJob job = jenkins.createProject(WorkflowJob)
@@ -39,7 +40,7 @@ class ConfigValidatorSpec extends Specification {
         job.scheduleBuild2(0).waitForStart()
         WorkflowRun r = job.getLastBuild()
         jenkins.waitForCompletion(r)
-        FlowExecutionOwner flowOwner = r.asFlowExecutionOwner()
+        flowOwner = r.asFlowExecutionOwner()
         validator = new ConfigValidator(flowOwner)
     }
 
@@ -213,6 +214,21 @@ class ConfigValidatorSpec extends Specification {
         'a'         |       List        | true
         [ 'a' ]     |  ArrayList        | false
         'a'         |  ArrayList        | true
+    }
+
+    def "msgPrefix actually prefixes the message"(){
+        given:
+        ConfigValidator validator = new ConfigValidator(flowOwner, "prefix")
+        String schema = 'fields{ required{ field = String } }'
+        LinkedHashMap config = [:]
+
+        when:
+        validator.validate(schema, config)
+
+        then:
+        AggregateException ex = thrown()
+        assert ex.size() == 1
+        ex.getExceptions().first().getMessage().contains("prefix missing required field 'field'")
     }
 
 }
