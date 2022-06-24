@@ -35,7 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: davidanson/markdownlint-cli2:0.4.0
-      volume: ${{ github.workspace }}:/app
+      volumes:
+        - ${{ github.workspace }}:/app
       options: -w /app --entrypoint sh
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
