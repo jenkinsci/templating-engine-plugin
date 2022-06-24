@@ -40,6 +40,8 @@ jobs:
       options: -w /app
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
+      - name: cd
+        run: cd /app
       - name: pwd
         run: pwd
       - name: ls
