@@ -89,11 +89,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
         WorkflowRun run = flowOwner.run()
         TemplatePrimitiveCollector collector = new TemplatePrimitiveCollector()
         run.addOrReplaceAction(collector) // may be used by one of the injectors
-        invoke("injectPrimitives", exec, config).each{ namespace ->
-            if(namespace){
-                collector.addNamespace(namespace)
-            }
-        }
+        invoke(run, collector, "injectPrimitives", exec, config)
         invoke("validatePrimitives", exec, config, collector)
         run.addOrReplaceAction(collector)
     }
@@ -141,8 +137,7 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param phase the phase to invoke
      * @param args the args to pass to the phase
      */
-    private static List<TemplatePrimitiveNamespace> invoke(String phase, Object... args){
-        List<TemplatePrimitiveNamespace> namespaces = []
+    private static void invoke(WorkflowRun run = null, TemplatePrimitiveCollector collector = null, String phase, Object... args){
         List<Class<? extends TemplatePrimitiveInjector>> failedInjectors = []
         Graph<Class<? extends TemplatePrimitiveInjector>, DefaultEdge> graph = createGraph(phase, args)
         AggregateException errors = new AggregateException()
@@ -151,7 +146,11 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
             try{
                 // check if a dependent injector has failed, if so, don't execute
                 if(!(getPrerequisites(injector, phase, args).intersect(failedInjectors))){
-                    namespaces << injector.invokeMethod(phase, args)
+                    TemplatePrimitiveNamespace namespace = injector.invokeMethod(phase, args)
+                    if(namespace){
+                        collector.addNamespace(namespace)
+                        run.addOrReplaceAction(collector)
+                    }
                 }
             } catch(any){
                 errors.add(any)
@@ -164,7 +163,6 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
             errors.setMessage("JTE Pipeline Initialization failed during ${phase}")
             throw errors
         }
-        return namespaces
     }
 
     /**

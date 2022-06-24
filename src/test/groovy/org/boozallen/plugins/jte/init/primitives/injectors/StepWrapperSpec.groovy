@@ -866,4 +866,39 @@ class StepWrapperSpec extends Specification {
         jenkins.assertBuildStatusSuccess(run)
     }
 
+    def "Template Methods work when no library step is present"(){
+        given:
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+                config: 'template_methods{ build }',
+                template: 'build()'
+        )
+
+        when:
+        WorkflowRun run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("Step build is not implemented.", run)
+    }
+
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/291")
+    def "Pipeline Passes when library step overloads template method step"(){
+        given:
+        libProvider.addStep("gradle", "build", "void call(){ println 'gradle build' }")
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+            config: """
+            libraries{ gradle }
+            template_methods{ build }
+            """,
+            template: 'build()'
+        )
+
+        when:
+        WorkflowRun run = job.scheduleBuild2(0).get()
+
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+        jenkins.assertLogContains("gradle build", run)
+    }
+
 }
