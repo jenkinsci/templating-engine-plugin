@@ -10,6 +10,7 @@
 </div>
 
 **Table of Contents:**
+
 - [Jenkins Templating Engine](#jenkins-templating-engine)
   - [Overview](#overview)
   - [Learn More](#learn-more)
@@ -27,7 +28,7 @@
 
 The Jenkins Templating Engine (JTE) is a plugin originally created by [Booz Allen Hamilton](https://www.boozallen.com/) enabling pipeline templating and governance.  
 
-Different teams are going to use different tools, but the flow of the pipeline is typically consistent. Having to maintain a Jenkinsfile in every source code repository introduces real challenges when scaling a DevOps pipeline across an organization: 
+Different teams are going to use different tools, but the flow of the pipeline is typically consistent. Having to maintain a Jenkinsfile in every source code repository introduces real challenges when scaling a DevOps pipeline across an organization:
 
 1. *Time*: Typical Jenkins Shared Libraries help to consolidate common pipeline code, but software teams should focus on where they provide business value: building their application. Jenkins can have a nontrivial learning curve and there's a desire to achieve economies of scale within an organization.
 2. *Governance*: Having a Jenkinsfile in every repository makes it difficult, if not impossible, to ensure that every team is following an agreed upon business process to get code from developer's laptops out to users in production. Furthermore, developer's have access to this Jenkinsfile and could have permission to skip required quality or security gates.
@@ -57,7 +58,6 @@ There are many resources available to help you get started:
   - [Jenkins World 2018](https://www.youtube.com/watch?v=BM9Vmsh2iMI)
 - **Blog Posts**
   - [Introducing the Jenkins Templating Engine](https://jenkins.io/blog/2019/05/09/templating-engine/)
-
 
 ## Participate
 
