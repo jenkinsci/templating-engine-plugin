@@ -41,7 +41,7 @@ jobs:
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     steps:
       - name: markdownlint-cli
-        run: markdownlint-cli2
+        run: ls && pwd && markdownlint-cli2
   Unit_Test:
     runs-on: ubuntu-latest
     if: github.repository == 'jenkinsci/templating-engine-plugin'

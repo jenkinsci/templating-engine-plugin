@@ -10,6 +10,6 @@ config:
 fix: true
 
 globs:
-  - docs/**/*.md
+  - "**.md"
 ignores:
   - docs/styles
