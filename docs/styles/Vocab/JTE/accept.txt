@@ -25,3 +25,4 @@ md
 truthy
 Artifactory
 [rR]esumability
+[gG]roovy

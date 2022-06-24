@@ -33,7 +33,7 @@ The `template_methods{}` block is used to define the names of steps to create a 
 
 Refer to [Placeholder Steps](../concepts/pipeline-primitives/steps.md#placeholder-steps) for more information.
 
-!!! example "Example template_methods block"
+!!! example "Example `template_methods` block"
     ``` groovy title="pipeline_config.groovy"
     template_methods{
       unit_test
@@ -80,7 +80,7 @@ The `stages{}` block is used to define [Stages](../concepts/pipeline-primitives/
 
 The `application_environments{}` block is used to define [Application Environments](../concepts/pipeline-primitives/application-environments.md).
 
-!!! example "Example application_environments block"
+!!! example "Example `application_environments` block"
     ``` groovy title="pipeline_config.groovy"
     application_environments{
       dev{

@@ -17,6 +17,6 @@ hide:
 
 | Topic                                                         | Description                                                    |
 |---------------------------------------------------------------|----------------------------------------------------------------|
-| [Pipeline Initialization](./pipeline-initialization/index.md) | The bulk of JTE - covers what JTE does prior to a Pipeline Run |
+| [Pipeline Initialization](./pipeline-initialization/index.md) | The bulk of JTE - covers what JTE does before a Pipeline Run |
 | [Jenkins Configuration](./jenkins-config/index.md)            | Explains how JTE is configured through the Jenkins UI          |
 | [Testing](./testing/index.md)                                 | Covers how unit testing is done for JTE                        |

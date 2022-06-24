@@ -14,7 +14,7 @@ The use case often arises where a library has multiple steps that are all essent
 
 Step Aliases allow you to write a step one time and invoke it using multiple names.
 
-Steps have access to a [`stepContext` variable](/reference/autowired-variables#stepcontext) to determine the current context of the step, such as the name being used and whether or not the step is an alias.
+Steps have access to a [`stepContext` variable](/reference/autowired-variables#stepcontext) to determine the current context of the step, such as the name being used and whether the step is an alias.
 
 ## Static Step Aliases
 

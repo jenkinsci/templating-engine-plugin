@@ -9,7 +9,7 @@ It is preferred that instead, the Jenkins Test Harness is used to create actual 
 
 This approach results in tests that are easier to write, decoupled from the technical implementation of the feature, and produce higher confidence that the functionality will work in a Jenkins pipeline.
 
-Given some of the oddities of [CPS](https://github.com/jenkinsci/workflow-cps-plugin#technical-design) - nothing beats the real thing when validating JTE is working as expected.
+Given the nuances of [CPS](https://github.com/jenkinsci/workflow-cps-plugin#technical-design) - nothing beats the real thing when validating JTE is working as expected.
 
 !!! note "Work in Progress"
 

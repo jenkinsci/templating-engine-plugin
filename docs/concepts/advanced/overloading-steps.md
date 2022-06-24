@@ -6,7 +6,7 @@ Function Overloading[^1] is when there are multiple methods with the same name a
 
 To allow multiple libraries to contribute the same step, the [Pipeline Configuration](../pipeline-configuration/index.md) must have `jte.permissive_initialization` set to true.
 
-If multiple libraries *do* contribute the same step, the step will no longer be able to be invoked by its short_name.
+If multiple libraries *do* contribute the same step, the step will no longer be able to be invoked by its `short_name`.
 Instead, overloaded steps must be accessed using the [Pipeline Primitive Namespace](../pipeline-primitives/primitive-namespace.md).
 
 !!! example "Overloaded Library Steps"

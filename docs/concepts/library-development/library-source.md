@@ -14,7 +14,7 @@ The Jenkins Templating Engine plugin provides an interface to create Library Sou
 
 The plugin comes with two types of Library Sources built-in: SCM Library Sources and Plugin Library Sources.
 
-### SCM Library Source
+### Source Code Library Source
 
 The SCM Library Source is used to fetch libraries from a source code repository.
 This repository can be a local directory with a `.git` directory accessible from the Jenkins Controller or a remote repository.
