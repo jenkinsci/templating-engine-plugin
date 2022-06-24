@@ -50,7 +50,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         if(reverseProviders) {
             providers = providers.reverse()
         }
-        ConfigValidator validator = new ConfigValidator(flowOwner,  "Library ${libName}")
         aggregatedConfig[KEY].each { libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)
@@ -59,6 +58,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
                 String schema = provider.getLibrarySchema(flowOwner, libName)
                 if(schema){
                     try {
+                        ConfigValidator validator = new ConfigValidator(flowOwner,  "Library ${libName}")
                         validator.validate(schema, libConfig)
                     } catch (AggregateException e) {
                         errors.add(e)
