@@ -5,9 +5,14 @@
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/templating-engine.svg?color=blue)](https://plugins.jenkins.io/templating-engine)
 [![Gitter](https://badges.gitter.im/jenkinsci/templating-engine-plugin.svg)](https://gitter.im/jenkinsci/templating-engine-plugin)
 
-<div align="center">
-   <img src="docs/jte.png" width="192">
-</div>
+<table border="0">
+  <tr>
+  <td>
+    <div align="center">
+       <img src="docs/jte.png" width="192">
+    </div>
+  </td>
+  <td>
 
 **Table of Contents:**
 
@@ -23,6 +28,10 @@
       - [Unit Tests](#unit-tests)
       - [Squash Some Bugs](#squash-some-bugs)
       - [Feature Development](#feature-development)
+
+  </td>
+  </tr>
+</table>
 
 ## Overview
 
