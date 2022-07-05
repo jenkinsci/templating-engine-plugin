@@ -5,7 +5,7 @@
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/templating-engine.svg?color=blue)](https://plugins.jenkins.io/templating-engine)
 [![Gitter](https://badges.gitter.im/jenkinsci/templating-engine-plugin.svg)](https://gitter.im/jenkinsci/templating-engine-plugin)
 
-<table border="0" style="border-collapse: collapse; border: none; width: 100%">
+<table border="0">
   <tr>
   <td>
     <div align="center">
@@ -35,25 +35,20 @@
 
 ## Overview
 
-The Jenkins Templating Engine (JTE) is a plugin originally created by [Booz Allen Hamilton](https://www.boozallen.com/) enabling pipeline templating and governance.  
+The Jenkins Templating Engine (JTE) is a plugin originally created by [Booz Allen Hamilton](https://www.boozallen.com/) enabling pipeline templating and governance.
 
-Different teams are going to use different tools, but the flow of the pipeline is typically consistent. Having to maintain a Jenkinsfile in every source code repository introduces real challenges when scaling a DevOps pipeline across an organization:
+JTE brings the [Template Method Design Pattern](https://refactoring.guru/design-patterns/template-method) to Jenkins pipelines.
+Users can remove the Jenkinsfile from individual source code repositories in favor of a centralized, tool-agnostic [Pipeline Template](https://jenkinsci.github.io/templating-engine-plugin/2.5/concepts/pipeline-templates/). 
+This template provides the structure of the pipeline.
 
-1. *Time*: Typical Jenkins Shared Libraries help to consolidate common pipeline code, but software teams should focus on where they provide business value: building their application. Jenkins can have a nontrivial learning curve and there's a desire to achieve economies of scale within an organization.
-2. *Governance*: Having a Jenkinsfile in every repository makes it difficult, if not impossible, to ensure that every team is following an agreed upon business process to get code from developer's laptops out to users in production. Furthermore, developer's have access to this Jenkinsfile and could have permission to skip required quality or security gates.
-3. *Maintainability*: Incorporating lessons learned into the pipeline over time becomes untenable when there are multiple pipeline definitions - it requires opening a Pull Request across each source code repository.
+Pipeline functionality is provided by Library Steps.
+For example, if the Pipeline Template references a `build()` step then the implementation of `build()` can be deferred to a user-developed library providing that step such as a Maven or Gradle library.
 
-JTE aims to remove this friction by pulling the Jenkinsfile out of individual source code repositories and instead, creating tool-agnostic Pipeline Templates that can be reused across multiple teams.
+A hierarchical Pipeline Configuration is used for each individual pipeline to determine which libraries to load (among other things).
 
 <div align="center">
    <img src="docs/concepts/framework-overview/jte.gif">
 </div>
-
-For the academic coders out there, one way to describe the Jenkins Templating Engine is an implementation of the Template Method Design Pattern for Jenkins pipelines. JTE essentially separates the business logic of a pipeline from the technical implementation.
-
-Templates define a workflow by calling *steps*. Steps are contributed by libraries. Instead of a Jenkinsfile in each source code repository, teams can now inherit a Pipeline Template (or choose a template from a Pipeline Catalog) and then *configure* the pipeline through a configuration file that specifies what libraries to load. Based on what libraries are loaded, the same Pipeline Template can be used to support an arbitrary combination of tools.
-
-If your Pipeline Template is setup to build, test, scan, and deploy then it doesn't matter if you're using Docker, Maven, SonarQube, and Helm or NPM, Fortify, and S3: both pipelines can now be executed via the same Pipeline Template.
 
 ## Learn More
 
@@ -61,6 +56,7 @@ There are many resources available to help you get started:
 
 - [Documentation](https://jenkinsci.github.io/templating-engine-plugin)
 - **Presentations**
+  - [CDF Online Meetup](https://www.youtube.com/watch?v=FYLaoqn0pDE)
   - [Jenkins Online Meetup](https://www.youtube.com/watch?v=pz_kPpb9C1w&feature=youtu.be)
   - [JTE at KubeCon 2019](https://www.youtube.com/watch?v=OClSwxhsspA)
   - [Trusted Software Supply Chains with JTE](https://www.youtube.com/watch?v=TMxUAi3XXOg&list=PLj6h78yzYM2MGKo_LNRA-lhxlNXwiDJDT&index=5&t=0s)
@@ -74,30 +70,16 @@ There are many ways to get involved. We look forward to hearing from you.
 
 ### Join the Conversation
 
-JTE has a [channel](https://gitter.im/jenkinsci/templating-engine-plugin) in the Jenkins community's gitter space. It's a great place to ask questions or propose ideas for the future of JTE.
+JTE has a [channel](https://gitter.im/jenkinsci/templating-engine-plugin) in the Jenkins community's gitter space.
+It's a great place to ask questions or propose ideas for the future of JTE.
 
 ### Report a Bug or Request a Feature
 
-Something not quite working right? Have a cool idea for how to make JTE better? Open an [Issue](https://github.com/jenkinsci/templating-engine-plugin/issues) on the JTE repository and let's get the conversation started.
+Something not quite working right? Have a cool idea for how to make JTE better?
+[Open an Issue](https://github.com/jenkinsci/templating-engine-plugin/issues/new/choose) on the JTE repository and let's get the conversation started.
 
 ### Contributions Welcome
 
 No contribution is too small - all are appreciated!
 
-#### Documentation
-
-Documentation is crucial to the health of JTE as a framework. Please feel free to update the documentation to resolve typos, make an explanation more clear, or add a new page to explain a particular pattern or concept.
-
-JTE is the core engine that powers Booz Allen's open source DevSecOps capability, the Solutions Delivery Platform. To facilitate the aggregation of documentation, we leverage a documentation framework called [MkDocs](https://www.mkdocs.org/) along with the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme. Documentation for MkDocs is written in [Markdown](https://daringfireball.net/projects/markdown/basics). The documentation can be found in the ``docs`` directory. To view your changes locally, run ``just serve`` and then open ``0.0.0.0:8000`` in your browser.
-
-#### Unit Tests
-
-JTE is written in [Groovy](https://groovy-lang.org/) and Unit Tests for JTE are written using [Spock](http://spockframework.org/spock/docs/1.3/all_in_one.html).
-
-#### Squash Some Bugs
-
-Feel free to open a Pull Request that addresses one of the bugs outlined in an [Issue](https://github.com/jenkinsci/templating-engine-plugin/issues)!
-
-#### Feature Development
-
-New features are welcome. JTE strives to be an unopinionated framework for creating tool-agnostic Pipeline Templates. Some features are great ideas, but belong in a separate plugin or can be implemented through libraries. Because of this, it would be best to open an Issue to discuss the feature first so we can have a conversation about it to see if there's already a way to achieve the same functionality without bringing it into JTE's core.
+Check out the [Contributing Section](https://jenkinsci.github.io/templating-engine-plugin/2.5/contributing/fork-based/) of the documentation to understand how to get started.
