@@ -44,11 +44,7 @@ This template provides the structure of the pipeline.
 Pipeline functionality is provided by Library Steps.
 For example, if the Pipeline Template references a `build()` step then the implementation of `build()` can be deferred to a user-developed library providing that step such as a Maven or Gradle library.
 
-A hierarchical Pipeline Configuration is used for each individual pipeline to determine which libraries to load (among other things).
-
-<div align="center">
-   <img src="docs/concepts/framework-overview/jte.gif">
-</div>
+A hierarchical [Pipeline Configuration](https://jenkinsci.github.io/templating-engine-plugin/2.5/concepts/pipeline-configuration/) is used for each individual pipeline to determine which libraries to load (among other things).
 
 ## Learn More
 
