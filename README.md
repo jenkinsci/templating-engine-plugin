@@ -5,7 +5,7 @@
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/templating-engine.svg?color=blue)](https://plugins.jenkins.io/templating-engine)
 [![Gitter](https://badges.gitter.im/jenkinsci/templating-engine-plugin.svg)](https://gitter.im/jenkinsci/templating-engine-plugin)
 
-<table border="0" style="border-collapse: collapse; border: none;">
+<table border="0" style="border-collapse: collapse; border: none; width: 100%">
   <tr>
   <td>
     <div align="center">
