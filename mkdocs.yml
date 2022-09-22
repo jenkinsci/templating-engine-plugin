@@ -119,6 +119,7 @@ nav:
     - 'how-to/overview.md'
     - Library Development:
       - 'how-to/library-development/lifecycle-hooks-on-failure.md'
+      - 'how-to/library-development/package-libraries-as-plugin.md'
     - Upgrade Guides:
       - 'how-to/upgrade-2.0/index.md'
   - Contributing:
