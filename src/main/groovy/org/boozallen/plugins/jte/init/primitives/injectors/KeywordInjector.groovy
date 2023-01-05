@@ -35,7 +35,7 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
         // populate namespace with keywords from pipeline config
         LinkedHashMap aggregatedConfig = config.getConfig()
         aggregatedConfig[KEY].each{ key, value ->
-            Keyword keyword = new Keyword(name: key, value: value)
+            Keyword keyword = new Keyword(name: key, value: (value instanceof GString ? value.toString() : value))
             keyword.setParent(keywords)
             keywords.add(keyword)
         }
