@@ -23,6 +23,8 @@ import jenkins.scm.api.SCMFileSystem
 import jenkins.scm.api.SCMHead
 import jenkins.scm.api.SCMRevision
 import jenkins.scm.api.SCMSource
+import com.cloudbees.jenkins.plugins.bitbucket.BranchSCMHead
+import com.cloudbees.jenkins.plugins.bitbucket.PullRequestSCMHead
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowDefinition
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
@@ -99,7 +101,14 @@ class FileSystemWrapperFactory {
 
         SCMFileSystem fs
         String scmKey
-        if (tip) {
+        if (head instanceof PullRequestSCMHead) {
+            // For BitBucket pull requests, we must use BranchSCMHead instead of PullRequestSCMHead
+            //  to retrieve the SCMFileSystem from the source branch
+            BranchSCMHead branchHead = new BranchSCMHead(head.getBranchName())
+            SCMRevision sourceRevision = scmSource.fetch(branchHead, listener)
+            scmKey = branch.getScm().getKey()
+            fs = SCMFileSystem.of(scmSource, branchHead, sourceRevision)
+        } else if (tip) {
             scmKey = branch.getScm().getKey()
             SCMRevision rev = scmSource.getTrustedRevision(tip, listener)
             fs = SCMFileSystem.of(scmSource, head, rev)

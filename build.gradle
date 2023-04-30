@@ -46,6 +46,7 @@ dependencies {
     implementation 'org.jenkins-ci.plugins.workflow:workflow-api:2.28'
     implementation 'org.jenkins-ci.plugins:branch-api:2.0.20'
     implementation 'org.jenkins-ci.plugins:scm-api:2.2.7'
+    implementation 'org.jenkins-ci.plugins:cloudbees-bitbucket-branch-source:2.4.1'
     implementation 'org.jenkins-ci.plugins:junit:1.24'
     implementation 'org.jenkins-ci.plugins:script-security:1.76'
     implementation 'org.jenkinsci.plugins:pipeline-model-definition:1.8.4' // version declarative started supporting JTE
