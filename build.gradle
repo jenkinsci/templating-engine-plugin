@@ -2,12 +2,12 @@ plugins {
   id 'groovy'
   id 'org.jenkins-ci.jpi' version '0.50.0-rc.3'
   id 'jacoco'
-  id "com.diffplug.gradle.spotless" version "3.29.0"
+  id "com.diffplug.spotless" version "6.13.0"
   id 'codenarc'
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven {
         url('https://repo.jenkins-ci.org/public/')
     }
@@ -80,7 +80,7 @@ dependencies {
 
 jacocoTestReport {
     reports {
-        html.enabled true
+        html.required.set(true)
     }
 }
 
