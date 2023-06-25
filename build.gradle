@@ -1,6 +1,6 @@
 plugins {
   id 'groovy'
-  id 'org.jenkins-ci.jpi' version '0.43.0'
+  id 'org.jenkins-ci.jpi' version '0.50.0-rc.3'
   id 'jacoco'
   id "com.diffplug.gradle.spotless" version "3.29.0"
   id 'codenarc'
@@ -18,7 +18,7 @@ version = '2.5.3'
 description = 'Allows users to create tool-agnostic, templated pipelines to be shared by multiple teams'
 
 jenkinsPlugin {
-    coreVersion = '2.263.1'
+    coreVersion = '2.346.3'
     shortName = 'templating-engine'
     displayName = 'Templating Engine'
     url = 'https://github.com/jenkinsci/templating-engine-plugin'
@@ -42,26 +42,28 @@ jenkinsPlugin {
 
 dependencies {
     // plugin dependencies
-    implementation 'org.jenkins-ci.plugins.workflow:workflow-multibranch:2.20'
-    implementation 'org.jenkins-ci.plugins.workflow:workflow-api:2.28'
-    implementation 'org.jenkins-ci.plugins:branch-api:2.0.20'
-    implementation 'org.jenkins-ci.plugins:scm-api:2.2.7'
-    implementation 'org.jenkins-ci.plugins:junit:1.24'
-    implementation 'org.jenkins-ci.plugins:script-security:1.76'
-    implementation 'org.jenkinsci.plugins:pipeline-model-definition:1.8.4' // version declarative started supporting JTE
+    implementation platform('io.jenkins.tools.bom:bom-2.346.x:1763.v092b_8980a_f5e')
+    implementation 'org.jenkins-ci.plugins.workflow:workflow-multibranch'
+    implementation 'org.jenkins-ci.plugins.workflow:workflow-api'
+    implementation 'org.jenkins-ci.plugins:branch-api'
+    implementation 'org.jenkins-ci.plugins:scm-api'
+    implementation 'org.jenkins-ci.plugins:junit'
+    implementation 'org.jenkins-ci.plugins:script-security'
+    implementation 'org.jenkinsci.plugins:pipeline-model-definition'
     implementation 'org.jgrapht:jgrapht-core:1.4.0'
+    implementation 'org.jenkins-ci.modules:sshd'
 
     // unit test dependencies
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.spockframework:spock-core:1.3-groovy-2.4'
     testImplementation 'net.bytebuddy:byte-buddy:1.10.7' // used by Spock
     testImplementation 'org.objenesis:objenesis:3.1'     // used by Spock
-    testImplementation(group: 'org.jenkins-ci.plugins', name: 'git', version:'3.9.3', classifier:'tests') {
+    testImplementation(group: 'org.jenkins-ci.plugins', name: 'git', classifier:'tests') {
         exclude(module: 'httpclient')
         exclude(module: 'annotation-indexer')
     }
 
-    testImplementation(group: "org.jenkins-ci.main", name: "jenkins-test-harness", version: "2.71")
+    testImplementation(group: "org.jenkins-ci.main", name: "jenkins-test-harness", version: "1837.vb_6efb_1790942")
 
     // test plugins
     testImplementation(group: "org.jenkins-ci.plugins.workflow", name: "workflow-support", classifier: "tests")
@@ -70,10 +72,10 @@ dependencies {
         exclude(module: 'httpclient')
         exclude(module: 'annotation-indexer')
     }
-    testImplementation 'org.jenkins-ci.plugins:token-macro:2.13'
-    testImplementation 'org.jenkins-ci.plugins:matrix-project:1.18'
+    testImplementation 'org.jenkins-ci.plugins:token-macro'
+    testImplementation 'org.jenkins-ci.plugins:matrix-project'
     testImplementation 'org.jenkins-ci.plugins.workflow:workflow-aggregator:2.6'
-    testImplementation 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.19'
+    testImplementation 'org.jenkins-ci.plugins.workflow:workflow-step-api'
 }
 
 jacocoTestReport {
