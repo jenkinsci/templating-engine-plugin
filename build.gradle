@@ -135,7 +135,7 @@ groovydoc{
  */
 task javadocJar(type: Jar) {
     description "An archive of the JavaDocs for Maven Central"
-    classifier "javadoc"
+    archiveClassifier.set("javadoc")
     from groovydoc
 }
 
