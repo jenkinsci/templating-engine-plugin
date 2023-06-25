@@ -18,12 +18,11 @@ version = '2.5.3'
 description = 'Allows users to create tool-agnostic, templated pipelines to be shared by multiple teams'
 
 jenkinsPlugin {
-    coreVersion = '2.346.3'
-    shortName = 'templating-engine'
-    displayName = 'Templating Engine'
-    url = 'https://github.com/jenkinsci/templating-engine-plugin'
-    disabledTestInjection = false
-    localizerOutputDir = "${project.buildDir}/generated-src/localizer"
+    jenkinsVersion.set('2.346.3')
+    pluginId.set('templating-engine')
+    humanReadableName.set('Templating Engine')
+    homePage.set(uri('https://github.com/jenkinsci/templating-engine-plugin'))
+    generateTests.set(true)
     configureRepositories = false
     configurePublishing = true
     developers {
