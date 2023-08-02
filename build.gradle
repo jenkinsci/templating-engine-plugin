@@ -2,7 +2,7 @@ plugins {
   id 'groovy'
   id 'org.jenkins-ci.jpi' version '0.50.0-rc.3'
   id 'jacoco'
-  id "com.diffplug.spotless" version "6.13.0"
+  id "com.diffplug.spotless" version "6.20.0"
   id 'codenarc'
 }
 
@@ -18,7 +18,7 @@ version = '2.5.3'
 description = 'Allows users to create tool-agnostic, templated pipelines to be shared by multiple teams'
 
 jenkinsPlugin {
-    jenkinsVersion.set('2.346.3')
+    jenkinsVersion.set('2.387.3')
     pluginId.set('templating-engine')
     humanReadableName.set('Templating Engine')
     homePage.set(uri('https://github.com/jenkinsci/templating-engine-plugin'))
@@ -41,7 +41,7 @@ jenkinsPlugin {
 
 dependencies {
     // plugin dependencies
-    implementation platform('io.jenkins.tools.bom:bom-2.346.x:1763.v092b_8980a_f5e')
+    implementation platform('io.jenkins.tools.bom:bom-2.387.x:2278.v47b_4508e256a')
     implementation 'org.jenkins-ci.plugins.workflow:workflow-multibranch'
     implementation 'org.jenkins-ci.plugins.workflow:workflow-api'
     implementation 'org.jenkins-ci.plugins:branch-api'
