@@ -19,7 +19,6 @@ import org.junit.Rule
 import org.jvnet.hudson.test.RestartableJenkinsRule
 import spock.lang.Ignore
 import spock.lang.Issue
-import spock.lang.Retry
 import spock.lang.Specification
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
