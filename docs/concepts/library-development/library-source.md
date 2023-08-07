@@ -25,4 +25,4 @@ The Plugin Library Source is used when libraries have been bundled into a separa
 This option will only be available in the Jenkins UI when a plugin has been installed that can serve as a library-providing plugin.
 
 !!! note "Learn More"
-    To learn more, check out [How to Package a Library Source as a Plugin](/how-to/library-development/package-libraries-as-plugin)
+    To learn more, check out [How to Package a Library Source as a Plugin](../../../how-to/library-development/package-libraries-as-plugin)
