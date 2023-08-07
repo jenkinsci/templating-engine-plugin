@@ -17,8 +17,6 @@ package org.boozallen.plugins.jte.init.primitives
 
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
-import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
-import org.jenkinsci.plugins.workflow.cps.CpsScript
 import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
