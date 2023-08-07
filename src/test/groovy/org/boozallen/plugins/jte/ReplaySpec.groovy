@@ -15,6 +15,7 @@
 */
 package org.boozallen.plugins.jte
 
+import org.boozallen.plugins.jte.init.governance.libs.TestLibraryProvider
 import org.boozallen.plugins.jte.util.TestUtil
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
@@ -55,6 +56,28 @@ class ReplaySpec extends Specification{
         WorkflowRun b2 = b1.getAction(ReplayAction).run(template, [:]).get()
         jenkins.assertBuildStatusSuccess(b2)
         jenkins.assertLogContains("hello world", b2)
+    }
+
+    @Issue("https://github.com/jenkinsci/templating-engine-plugin/issues/318")
+    def "replay scripted pipeline with step"(){
+        given:
+        TestLibraryProvider libProvider = new TestLibraryProvider()
+        libProvider.addStep('example', 'test', 'void call(){ echo "test step" }')
+        libProvider.addGlobally()
+
+        when:
+        String template = 'test()'
+        WorkflowJob p = TestUtil.createAdHoc(jenkins,
+            config: 'libraries{ example }',
+            template: template
+        )
+        then:
+        WorkflowRun b1 = jenkins.assertBuildStatusSuccess(p.scheduleBuild2(0))
+        jenkins.assertLogContains("test step", b1)
+        then:
+        WorkflowRun b2 = b1.getAction(ReplayAction).run(template, [:]).get()
+        jenkins.assertBuildStatusSuccess(b2)
+        jenkins.assertLogContains("test step", b2)
     }
 
 }

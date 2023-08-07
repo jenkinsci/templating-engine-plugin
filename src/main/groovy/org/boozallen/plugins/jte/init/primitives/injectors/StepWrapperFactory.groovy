@@ -176,7 +176,7 @@ class StepWrapperFactory{
          * 5. an optional HookContext
          */
         script.with{
-            setBinding(TemplateBinding.create(exec))
+            setBinding(new TemplateBinding())
             setConfig(step.config)
             setBuildRootDir(exec.getOwner().getRootDir())
             setResourcesPath("jte/${step.library}/resources")
@@ -208,7 +208,7 @@ class StepWrapperFactory{
                 // add JTE binding
                 Field shellBinding = GroovyShell.getDeclaredField("context")
                 shellBinding.setAccessible(true)
-                shellBinding.set(shell, TemplateBinding.create(exec))
+                shellBinding.set(shell, new TemplateBinding())
             }
         }
 

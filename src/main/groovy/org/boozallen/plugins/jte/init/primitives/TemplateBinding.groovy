@@ -18,6 +18,8 @@ package org.boozallen.plugins.jte.init.primitives
 import org.boozallen.plugins.jte.util.JTEException
 import org.boozallen.plugins.jte.util.TemplateLogger
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
+import org.jenkinsci.plugins.workflow.cps.CpsScript
+import org.jenkinsci.plugins.workflow.cps.CpsThread
 import org.jenkinsci.plugins.workflow.cps.DSL
 import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
 
@@ -27,21 +29,22 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
  */
 class TemplateBinding extends Binding{
 
-    static TemplateBinding create(CpsFlowExecution exec){
-        return create(exec.getOwner())
-    }
-
-    static TemplateBinding create(FlowExecutionOwner flowOwner){
-        TemplateBinding binding = new TemplateBinding()
-        binding.setVariable("steps", new DSL(flowOwner))
-        return binding
-    }
-
     @Override
     void setVariable(String name, Object value){
         checkPrimitiveCollision(name)
         checkReservedVariables(name)
         super.setVariable(name, value)
+    }
+
+    @Override
+    Object getVariable(String name) {
+        // this needs to match CpsScript.STEPS_VAR, which is private
+        if (name == "steps"){
+            CpsThread thread = CpsThread.current()
+            FlowExecutionOwner flowOwner = thread.getExecution().getOwner()
+            return new DSL(flowOwner)
+        }
+        return super.getVariable(name)
     }
 
     void checkPrimitiveCollision(String name){
