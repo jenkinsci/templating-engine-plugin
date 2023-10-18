@@ -1,0 +1,76 @@
+:root {
+  --gray-darker: #444444;
+  --gray-dark: #696969;
+  --gray: #999999;
+  --gray-light: #cccccc;
+  --gray-lighter: #ececec;
+  --gray-lightest: #ededed;
+}
+
+*,
+*::before,
+*::after { 
+  box-sizing: border-box;
+}
+
+.cards {
+  display: grid;
+  grid-gap: 1rem;
+  margin: 0 auto;
+  margin-left: 20%;
+  margin-right: 20%;
+  max-width: 1000px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.card {
+  border-radius: 0.5rem;
+  min-height: 10rem;
+  box-shadow: 0 10px 20px 0px rgba(0,0,0,0.25);
+  transition: box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card:hover{
+  box-shadow: 0 20px 40px 0px rgba(0,0,0,0.25);
+}
+
+.card__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 1rem;
+  color: black; 
+}
+
+.card__title {
+  color: var(--md-primary-fg-color);
+  font-size: 1.25rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.card__title svg {
+  margin-right: 5px;
+}
+
+.card__text {
+  flex: 1 1 auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+/* to center an image */
+.center{
+  display: block;
+  margin: 0 auto;
+}
+
+/* table cell align vertical middle */
+.md-typeset table:not([class]) td {
+  vertical-align: middle;
+}

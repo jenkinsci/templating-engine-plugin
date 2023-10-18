@@ -1,0 +1,47 @@
+extends: substitution
+message: Use '%s' instead of '%s' to be consistent
+level: error
+ignorecase: false
+nonword: true
+# swap maps tokens in form of bad: good
+swap:
+  'pipeline template': Pipeline Template
+  'Pipeline template': Pipeline Template
+  'pipeline Template': Pipeline Template
+  'Pipeline configuration': Pipeline Configuration
+  'pipeline configuration': Pipeline Configuration
+  'pipeline Configuration': Pipeline Configuration
+  'pipeline primitive': Pipeline Primitive
+  'Pipeline primitive': Pipeline Primitive
+  'pipeline Primitive': Pipeline Primitive
+  'pipeline governance' : Pipeline Governance
+  'Pipeline governance' : Pipeline Governance
+  'pipeline Governance' : Pipeline Governance
+  'pipeline catalog' : Pipeline Catalog
+  'Pipeline catalog' : Pipeline Catalog
+  'pipeline Catalog' : Pipeline Catalog
+  'jenkins templating engine' : Jenkins Templating Engine
+  'Jenkins templating engine' : Jenkins Templating Engine
+  'jenkins Templating engine' : Jenkins Templating Engine
+  'jenkins templating Engine' : Jenkins Templating Engine
+  'Jenkins Templating engine' : Jenkins Templating Engine
+  'jenkins Templating Engine' : Jenkins Templating Engine
+  'application environment' : Application Environment
+  'Application environment' : Application Environment
+  'application Environment' : Application Environment
+  'library step' : Library Step
+  'Library step' : Library Step
+  'library Step' : Library Step
+  'library source' : Library Source
+  'Library source' : Library Source
+  'library Source' : Library Source
+# No 'y' here because this covers both Library and Libraries
+  'pipeline librar' : Pipeline Librar
+  'Pipeline librar' : Pipeline Librar
+  'pipeline Librar' : Pipeline Librar
+  'governance tier' : Governance Tier
+  'Governance tier' : Governance Tier
+  'governance Tier' : Governance Tier
+  'pipeline runs?\b' : Pipeline Run
+  'Pipeline runs?\b' : Pipeline Run
+  'pipeline Runs?\b' : Pipeline Run
