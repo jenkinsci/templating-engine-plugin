@@ -18,5 +18,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
     <f:dropdownDescriptorSelector title="Plugin" 
                                   field="plugin"
-                                  descriptors="${descriptor.getLibraryProvidingPlugins()}" /> 
+                                  descriptors="${descriptor.getLibraryProvidingPlugins()}"
+                                  default="${descriptor.getPlugin()}"
+                                   /> 
 </j:jelly>

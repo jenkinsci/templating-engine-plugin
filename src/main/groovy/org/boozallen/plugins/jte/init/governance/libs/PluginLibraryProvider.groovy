@@ -173,6 +173,10 @@ class PluginLibraryProvider extends LibraryProvider{
         return pluginDescriptor?.getDisplayName()
     }
 
+    LibraryProvidingPlugin getPlugin() {
+        return this.plugin
+    }
+
     @Extension
     static class DescriptorImpl extends LibraryProvider.LibraryProviderDescriptor{
 
