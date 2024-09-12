@@ -36,6 +36,8 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
  */
 class FileSystemWrapperFactory {
 
+||    private static Map<String, FileSystemWrapper> cache = [:]
+
     /**
      * Creates a FileSystemWrapper. Can either be provided an SCM directly
      * or try to infer the SCM from the current job
@@ -49,6 +51,13 @@ class FileSystemWrapperFactory {
         if (job == null){
             throw new IllegalStateException("Job cannot be null when creating FileSystemWrapper")
         }
+
+        final String cacheKey = job.getFullName()
+
+        if (cache.containsKey(cacheKey)) {
+            return cache.get(cacheKey)
+        }
+
 
         FileSystemWrapper fsw
         ItemGroup<?> parent = job.getParent()
@@ -66,6 +75,8 @@ class FileSystemWrapperFactory {
             if(fsw.fs == null){
                 TemplateLogger logger = new TemplateLogger(owner.getListener())
                 logger.printWarning("FileSystemWrapperFactory: Unable to create SCMFileSystem: job: ${job.getFullName()}, scm: ${scm}")
+            } else {
+                cache.put(cacheKey, fsw)
             }
             return fsw
         }
@@ -119,6 +130,13 @@ class FileSystemWrapperFactory {
         SCMFileSystem fs = SCMFileSystem.of(job, jobSCM)
         FileSystemWrapper fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
         return fsw
+    }
+
+    static void clear_cache(FlowExecutionOwner owner) {
+        WorkflowRun run = owner.run()
+        WorkflowJob job = run.getParent()
+        final String cacheKey = job.getFullName()
+        cache.remove(cacheKey)
     }
 
 }
