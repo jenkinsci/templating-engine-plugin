@@ -62,7 +62,7 @@ jobs:
     - uses: eskatos/gradle-command-action@v1
       with:
         arguments: --no-daemon test jacocoTestReport
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: test-results
@@ -78,7 +78,7 @@ jobs:
     - uses: eskatos/gradle-command-action@v1
       with:
         arguments: --no-daemon jpi
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: jpi
         path: build/libs/templating-engine.hpi

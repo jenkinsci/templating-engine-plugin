@@ -36,7 +36,7 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
  */
 class FileSystemWrapperFactory {
 
-||    private static Map<String, FileSystemWrapper> cache = [:]
+    private static Map<String, FileSystemWrapper> cache = [:]
 
     /**
      * Creates a FileSystemWrapper. Can either be provided an SCM directly
