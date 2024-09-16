@@ -36,6 +36,24 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
  */
 class FileSystemWrapperFactory {
 
+    /**
+     * A static cache that maps {@link FileSystemCacheKey} instances to their corresponding
+     * {@link FileSystemWrapper} objects.
+     *
+     * <p>This cache is used to avoid redundant filesystem operations by reusing {@code FileSystemWrapper}
+     * instances that have already been created for a given {@link FileSystemCacheKey}. It helps
+     * improve performance by preventing repeated lookups or calculations for the same SCM data
+     * during Jenkins pipeline executions.</p>
+     *
+     * <p>The cache is implemented as a {@code Map<FileSystemCacheKey, FileSystemWrapper>}, where:</p>
+     * <ul>
+     *   <li>The key is an instance of {@link FileSystemCacheKey}, which uniquely identifies the SCM context.</li>
+     *   <li>The value is an instance of {@link FileSystemWrapper}, which encapsulates file system operations for that context.</li>
+     * </ul>
+     *
+     * <p>This cache is a static attribute of the class, shared across all instances of {@code FileSystemCacheKey},
+     * and is initialized as an empty map, represented by {@code [:]}. It can grow dynamically as new entries are added during runtime.</p>
+     */
     private static Map<FileSystemCacheKey, FileSystemWrapper> cache = [:]
 
     /**
