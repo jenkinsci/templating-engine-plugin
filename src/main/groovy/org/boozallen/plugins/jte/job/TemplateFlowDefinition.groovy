@@ -15,8 +15,6 @@
 */
 package org.boozallen.plugins.jte.job
 
-import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
-
 import static org.jenkinsci.plugins.workflow.cps.persistence.PersistenceContext.JOB
 
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector

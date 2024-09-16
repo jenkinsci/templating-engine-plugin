@@ -61,6 +61,8 @@ import org.jenkinsci.plugins.workflow.flow.FlowExecutionOwner
  */
 class FileSystemCacheKey {
 
+    private static final int MULTIPLIER = 31
+
     FlowExecutionOwner owner
     SCM scm
     SCMSource scmSource
@@ -77,23 +79,37 @@ class FileSystemCacheKey {
      * @param o the object to be compared with this instance.
      * @return {@code true} if the provided object is equal to this instance, {@code false} otherwise.
      */
-    @Override
     boolean equals(o) {
-        if (this.is(o)) return true
-        if (!(o instanceof FileSystemCacheKey)) return false
+        if (this.is(o)) {
+            return true
+        }
+        if (!(o instanceof FileSystemCacheKey)) {
+            return false
+        }
 
         FileSystemCacheKey that = (FileSystemCacheKey) o
 
-        if (owner != that.owner) return false
-        if (scm != that.scm) return false
-        if (scmHead != that.scmHead) return false
-        if (scmRevision != that.scmRevision) return false
-        if (scmSource != that.scmSource) return false
+        boolean result = true
 
-        return true
+        if (owner != that.owner) {
+            result = false
+        }
+        if (scm != that.scm) {
+            result = false
+        }
+        if (scmHead != that.scmHead) {
+            result = false
+        }
+        if (scmRevision != that.scmRevision) {
+            result = false
+        }
+        if (scmSource != that.scmSource)  {
+            result = false
+        }
+
+        return result
     }
-
-    /**
+/**
      * Generates a hash code for this FileSystemCacheKey instance.
      * The hash code is computed based on the {@code owner}, {@code scm}, {@code scmSource},
      * {@code scmHead}, and {@code scmRevision} fields.
@@ -107,10 +123,11 @@ class FileSystemCacheKey {
     int hashCode() {
         int result
         result = (owner != null ? owner.hashCode() : 0)
-        result = 31 * result + (scm != null ? scm.hashCode() : 0)
-        result = 31 * result + (scmSource != null ? scmSource.hashCode() : 0)
-        result = 31 * result + (scmHead != null ? scmHead.hashCode() : 0)
-        result = 31 * result + (scmRevision != null ? scmRevision.hashCode() : 0)
+        result = MULTIPLIER * result + (scm != null ? scm.hashCode() : 0)
+        result = MULTIPLIER * result + (scmSource != null ? scmSource.hashCode() : 0)
+        result = MULTIPLIER * result + (scmHead != null ? scmHead.hashCode() : 0)
+        result = MULTIPLIER * result + (scmRevision != null ? scmRevision.hashCode() : 0)
         return result
     }
+
 }

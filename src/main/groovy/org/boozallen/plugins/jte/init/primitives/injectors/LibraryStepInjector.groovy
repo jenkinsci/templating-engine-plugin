@@ -91,7 +91,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
         // this will copy their contents to ${jteDir} for the run
         LinkedHashMap aggregatedConfig = config.getConfig()
 
-
         aggregatedConfig[KEY].each{ libName, libConfig ->
             LibraryProvider provider = providers.find{ provider ->
                 provider.hasLibrary(flowOwner, libName)
