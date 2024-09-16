@@ -79,7 +79,8 @@ class FileSystemCacheKey {
      * @param o the object to be compared with this instance.
      * @return {@code true} if the provided object is equal to this instance, {@code false} otherwise.
      */
-    boolean equals(o) {
+    @Override
+    boolean equals(Object o) {
         if (this.is(o)) {
             return true
         }
