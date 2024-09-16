@@ -20,6 +20,7 @@ import hudson.ExtensionPoint
 import jenkins.model.Jenkins
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationObject
 import org.boozallen.plugins.jte.util.AggregateException
+import org.boozallen.plugins.jte.util.FileSystemWrapperFactory
 import org.boozallen.plugins.jte.util.JTEException
 import org.codehaus.groovy.reflection.CachedMethod
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution
@@ -84,14 +85,18 @@ abstract class TemplatePrimitiveInjector implements ExtensionPoint{
      * @param config the aggregated pipeline configuration
      */
     static void orchestrate(CpsFlowExecution exec, PipelineConfigurationObject config){
-        invoke("validateConfiguration", exec, config)
-        FlowExecutionOwner flowOwner = exec.getOwner()
-        WorkflowRun run = flowOwner.run()
-        TemplatePrimitiveCollector collector = new TemplatePrimitiveCollector()
-        run.addOrReplaceAction(collector) // may be used by one of the injectors
-        invoke(run, collector, "injectPrimitives", exec, config)
-        invoke("validatePrimitives", exec, config, collector)
-        run.addOrReplaceAction(collector)
+        try {
+            invoke("validateConfiguration", exec, config)
+            FlowExecutionOwner flowOwner = exec.getOwner()
+            WorkflowRun run = flowOwner.run()
+            TemplatePrimitiveCollector collector = new TemplatePrimitiveCollector()
+            run.addOrReplaceAction(collector) // may be used by one of the injectors
+            invoke(run, collector, "injectPrimitives", exec, config)
+            invoke("validatePrimitives", exec, config, collector)
+            run.addOrReplaceAction(collector)
+        } finally {
+            FileSystemWrapperFactory.clearCache(exec.getOwner())
+        }
     }
 
     /**

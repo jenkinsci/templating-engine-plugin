@@ -85,7 +85,6 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         CpsFlowExecution exec = new CpsFlowExecution(template, true, owner, hint)
         // Step 3: Invoke TemplatePrimitiveInjectors
         TemplatePrimitiveInjector.orchestrate(exec, config)
-        FileSystemWrapperFactory.clear_cache(owner)
         return exec
     }
 
