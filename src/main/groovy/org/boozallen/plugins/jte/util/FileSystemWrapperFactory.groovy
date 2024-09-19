@@ -57,7 +57,17 @@ class FileSystemWrapperFactory {
     private final static Map<FileSystemCacheKey, FileSystemWrapper> CACHE = [:]
 
     static void clearCache(FlowExecutionOwner owner) {
-        CACHE.entrySet().removeIf { entry -> entry.getKey().getOwner() == owner }
+        if (!CACHE.isEmpty()) {
+            TemplateLogger logger = new TemplateLogger(owner.getListener())
+            ArrayList msg = [
+                    "Values were found in the cache, so this helped reduce pipeline initiation time.",
+            ]
+            CACHE.entrySet().find { it.getKey().getOwner() == owner}.each {
+                msg.add("-- scm ${it.value.getScmKey()}")
+            }
+            logger.print(msg)
+            CACHE.entrySet().removeIf { entry -> entry.getKey().getOwner() == owner }
+        }
     }
 
     /**

@@ -33,3 +33,5 @@ Splunk
 [Tt]emplat(e|es|ed|ing)\b
 truthy
 [Ww]alkthroughs?
+JTE's
+stageContext

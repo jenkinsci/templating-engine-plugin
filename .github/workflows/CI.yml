@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'jenkinsci/templating-engine-plugin'
     container:
-      image: jdkato/vale:v2.18.0
+      image: jdkato/vale:v2.21.3
       options: --user root
     steps:
       - uses: actions/checkout@v2
