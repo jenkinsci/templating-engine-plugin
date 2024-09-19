@@ -62,8 +62,8 @@ class FileSystemWrapperFactory {
             ArrayList msg = [
                     "Values were found in the cache, so this helped reduce pipeline initiation time.",
             ]
-            CACHE.entrySet().find { it.getKey().getOwner() == owner}.each {
-                msg.add("-- scm ${it.value.getScmKey()}")
+            CACHE.entrySet().find { entry ->  entry.getKey().getOwner() == owner }.each { entry ->
+                msg.add("-- scm ${entry.getValue().getScmKey()}")
             }
             logger.print(msg)
             CACHE.entrySet().removeIf { entry -> entry.getKey().getOwner() == owner }
