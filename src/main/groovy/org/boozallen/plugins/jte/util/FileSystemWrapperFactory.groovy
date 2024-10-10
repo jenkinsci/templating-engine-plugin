@@ -109,15 +109,12 @@ class FileSystemWrapperFactory {
 
     private static FileSystemWrapper fromSCM(FlowExecutionOwner owner, WorkflowJob job, SCM scm) {
         FileSystemWrapper fsw
-        TemplateLogger logger = new TemplateLogger(owner.getListener())
         FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scm: scm)
         if (CACHE.containsKey(cacheKey)) {
             fsw = CACHE.get(cacheKey)
-            logger.print("Loading scm: ${scm.getKey()} from cache")
         } else {
             SCMFileSystem fs
             fs = SCMFileSystem.of(job, scm)
-            fsw = new FileSystemWrapper(fs: fs, scmKey: scm.getKey(), owner: owner)
             CACHE.put(cacheKey, fsw)
         }
 
@@ -126,7 +123,6 @@ class FileSystemWrapperFactory {
 
     private static FileSystemWrapper fromMultiBranchProject(FlowExecutionOwner owner, WorkflowJob job, TaskListener listener){
         ItemGroup<?> parent = job.getParent()
-        TemplateLogger logger = new TemplateLogger(owner.getListener())
         BranchJobProperty property = job.getProperty(BranchJobProperty)
         if (!property) {
             throw new JTEException("BranchJobProperty is somehow missing")
@@ -149,7 +145,6 @@ class FileSystemWrapperFactory {
             FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scmSource: scmSource, scmHead: head, scmRevision: rev)
             if (CACHE.containsKey(cacheKey)) {
                 fsw = CACHE.get(cacheKey)
-                logger.print("Loading scm: ${scmKey} from cache")
             } else {
                 fs = SCMFileSystem.of(scmSource, head, rev)
                 fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
@@ -161,7 +156,6 @@ class FileSystemWrapperFactory {
             FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scm: jobSCM)
             if (CACHE.containsKey(cacheKey)) {
                 fsw = CACHE.get(cacheKey)
-                logger.print("Loading scm: ${scmKey} from cache")
             } else {
                 fs = SCMFileSystem.of(job, jobSCM)
                 fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
@@ -172,7 +166,6 @@ class FileSystemWrapperFactory {
     }
 
     private static FileSystemWrapper fromPipelineJob(FlowExecutionOwner owner, WorkflowJob job){
-        TemplateLogger logger = new TemplateLogger(owner.getListener())
         FlowDefinition definition = job.getDefinition()
         SCM jobSCM = definition.getScm()
         String scmKey = jobSCM.getKey()
@@ -180,7 +173,6 @@ class FileSystemWrapperFactory {
         FileSystemWrapper fsw
         if (CACHE.containsKey(cacheKey)) {
             fsw = CACHE.get(cacheKey)
-            logger.print("Loading scm: ${scmKey} from cache")
         } else {
             SCMFileSystem fs = SCMFileSystem.of(job, jobSCM)
             fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
