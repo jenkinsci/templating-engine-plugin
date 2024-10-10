@@ -115,6 +115,7 @@ class FileSystemWrapperFactory {
         } else {
             SCMFileSystem fs
             fs = SCMFileSystem.of(job, scm)
+            fsw = new FileSystemWrapper(fs: fs, scmKey: scm.getKey(), owner: owner)
             CACHE.put(cacheKey, fsw)
         }
 
