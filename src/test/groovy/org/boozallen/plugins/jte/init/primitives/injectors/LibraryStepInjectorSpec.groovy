@@ -148,7 +148,7 @@ class LibraryStepInjectorSpec extends Specification {
         jenkins.assertLogContains("folder step", run)
     }
 
-    def "library on higher governance tier (last in hierarchy array) gets loaded if library override set to false"() {
+    def "library on higher governance tier last in hierarchy array gets loaded if library override set to false"() {
         given:
         // add global
         TestLibraryProvider lib = new TestLibraryProvider()
@@ -177,6 +177,52 @@ class LibraryStepInjectorSpec extends Specification {
         then:
         jenkins.assertBuildStatusSuccess(run)
         jenkins.assertLogContains("global step", run)
+    }
+
+    def "folder library steps are sandboxed"() {
+        given:
+        // add folder
+        TestLibraryProvider lib2 = new TestLibraryProvider()
+        lib2.addStep("lib", "step", """
+        import jenkins.model.Jenkins
+        void call(){
+          println Jenkins.get().getRootUrl()
+        }
+        """)
+        Folder folder = jenkins.createProject(Folder)
+        lib2.addToFolder(folder)
+        // create job
+        WorkflowJob job = TestUtil.createAdHocInFolder(folder,
+          config: 'libraries{ lib }',
+          template: 'step()'
+        )
+        when:
+        def run = job.scheduleBuild2(0).get()
+        then:
+        jenkins.assertBuildStatus(Result.FAILURE, run)
+        jenkins.assertLogContains("Scripts not permitted to use staticMethod jenkins.model.Jenkins get", run)
+    }
+
+    def "global library steps are not sandboxed"() {
+        given:
+        // add folder
+        TestLibraryProvider lib2 = new TestLibraryProvider()
+        lib2.addStep("lib", "step", """
+        import jenkins.model.Jenkins
+        void call(){
+          println Jenkins.get().getRootUrl()
+        }
+        """)
+        lib2.addGlobally()
+        // create job
+        WorkflowJob job = TestUtil.createAdHoc(jenkins,
+          config: 'libraries{ lib }',
+          template: 'step()'
+        )
+        when:
+        def run = job.scheduleBuild2(0).get()
+        then:
+        jenkins.assertBuildStatusSuccess(run)
     }
 
 }

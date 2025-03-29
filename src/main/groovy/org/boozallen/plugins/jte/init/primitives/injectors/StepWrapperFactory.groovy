@@ -53,7 +53,7 @@ class StepWrapperFactory{
      * @param config the library configuration for the step
      * @return a StepWrapper instance
      */
-    StepWrapper createFromFilePath(FilePath filePath, String library, Map config){
+    StepWrapper createFromFilePath(FilePath filePath, String library, Map config, Boolean isSandboxed){
         String name = filePath.getBaseName()
         String sourceText = filePath.readToString()
         StepContext stepContext = new StepContext(library: library, name: name, isAlias: false)
@@ -61,7 +61,8 @@ class StepWrapperFactory{
             stepContext: stepContext,
             config: config,
             sourceFile: filePath.absolutize().getRemote(),
-            isLibraryStep: true
+            isLibraryStep: true,
+            isSandboxed: isSandboxed
         )
         StepWrapperScript script = prepareScript(step, sourceText)
         step.setScript(script)
@@ -151,7 +152,12 @@ class StepWrapperFactory{
 
         @groovy.transform.BaseScript ${StepWrapperScript.getName()} _
         """
-        GroovyShell shell = exec.getTrustedShell()
+        GroovyShell shell
+        if (step.isSandboxed){
+            shell = exec.getShell()
+        } else {
+            shell = exec.getTrustedShell()
+        }
         String scriptName = "JTE_${step.library ?: "Default"}_${step.name}"
         try {
             try {
@@ -210,6 +216,12 @@ class StepWrapperFactory{
                 shellBinding.setAccessible(true)
                 shellBinding.set(shell, new TemplateBinding())
             }
+        }
+
+        @Override
+        void customizeImports(CpsFlowExecution execution, ImportCustomizer ic) {
+            ic.addStarImports("org.boozallen.plugins.jte.init.primitives.hooks")
+            ic.addImport(StepAlias.getName())
         }
 
         GroovyShellDecorator forTrusted(){

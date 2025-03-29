@@ -79,6 +79,7 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
     protected boolean isLibraryStep  = false
     protected boolean isDefaultStep  = false
     protected boolean isTemplateStep = false
+    protected boolean isSandboxed = true
 
     @SuppressWarnings("UnusedMethodParameter")
     Object getValue(CpsScript script, Boolean skipOverloaded = false){
@@ -125,6 +126,10 @@ class StepWrapper extends TemplatePrimitive implements Serializable{
 
     String getLibrary(){
         return stepContext.library
+    }
+
+    void setSandboxed(boolean sandboxed){
+        this.isSandboxed = sandboxed
     }
 
     /**

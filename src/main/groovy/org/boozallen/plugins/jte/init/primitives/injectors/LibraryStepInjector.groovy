@@ -21,6 +21,7 @@ import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfiguratio
 import org.boozallen.plugins.jte.init.governance.GovernanceTier
 import org.boozallen.plugins.jte.init.governance.libs.LibraryProvider
 import org.boozallen.plugins.jte.init.governance.libs.LibrarySource
+import org.boozallen.plugins.jte.init.governance.TemplateGlobalConfig
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveInjector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
 import org.boozallen.plugins.jte.util.AggregateException
@@ -76,7 +77,15 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
     @Override
     TemplatePrimitiveNamespace injectPrimitives(CpsFlowExecution exec, PipelineConfigurationObject config){
         FlowExecutionOwner flowOwner = exec.getOwner()
-        // fetch library providers and determine library resolution order
+
+        // Get global tier libraries first
+        GovernanceTier globalTier = TemplateGlobalConfig.get().getTier()
+        Set<LibraryProvider> globalProviders = []
+        if(globalTier?.getLibrarySources()) {
+            globalProviders.addAll(globalTier.getLibrarySources().collect { source -> source.getLibraryProvider() } - null)
+        }
+
+        // fetch all library providers and determine library resolution order
         List<LibraryProvider> providers = getLibraryProviders(flowOwner)
         boolean reverseProviders = config.jteBlockWrapper.reverse_library_resolution
         if(reverseProviders) {
@@ -106,8 +115,13 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
             String includes = "${libName}/${LibraryProvider.STEPS_DIR_NAME}/**/*.groovy"
             TemplatePrimitiveNamespace library = new TemplatePrimitiveNamespace(name: libName)
             library.setParent(libCollector)
+
+            // Find the provider for this library
+            LibraryProvider provider = providers.find{ p -> p.hasLibrary(flowOwner, libName) }
+            boolean isSandboxed = !globalProviders.contains(provider)
+
             jteDir.list(includes).each{ stepFile ->
-                StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig)
+                StepWrapper step = stepFactory.createFromFilePath(stepFile, libName, libConfig, isSandboxed)
                 List<StepAlias> aliases = getStepAliases(step)
                 if(aliases.isEmpty() || shouldKeepOriginal(aliases)) {
                     step.setParent(library)
