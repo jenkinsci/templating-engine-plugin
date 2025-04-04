@@ -83,7 +83,6 @@ abstract class TemplateFlowDefinition extends FlowDefinition {
         CpsFlowExecution exec = new CpsFlowExecution(template, true, owner, hint)
         // Step 3: Invoke TemplatePrimitiveInjectors
         TemplatePrimitiveInjector.orchestrate(exec, config)
-
         return exec
     }
 

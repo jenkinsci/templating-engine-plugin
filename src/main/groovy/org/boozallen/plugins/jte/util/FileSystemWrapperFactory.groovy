@@ -37,6 +37,40 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 class FileSystemWrapperFactory {
 
     /**
+     * A static cache that maps {@link FileSystemCacheKey} instances to their corresponding
+     * {@link FileSystemWrapper} objects.
+     *
+     * <p>This cache is used to avoid redundant filesystem operations by reusing {@code FileSystemWrapper}
+     * instances that have already been created for a given {@link FileSystemCacheKey}. It helps
+     * improve performance by preventing repeated lookups or calculations for the same SCM data
+     * during Jenkins pipeline executions.</p>
+     *
+     * <p>The cache is implemented as a {@code Map<FileSystemCacheKey, FileSystemWrapper>}, where:</p>
+     * <ul>
+     *   <li>The key is an instance of {@link FileSystemCacheKey}, which uniquely identifies the SCM context.</li>
+     *   <li>The value is an instance of {@link FileSystemWrapper}, which encapsulates file system operations for that context.</li>
+     * </ul>
+     *
+     * <p>This cache is a static attribute of the class, shared across all instances of {@code FileSystemCacheKey},
+     * and is initialized as an empty map, represented by {@code [:]}. It can grow dynamically as new entries are added during runtime.</p>
+     */
+    private final static Map<FileSystemCacheKey, FileSystemWrapper> CACHE = [:]
+
+    static void clearCache(FlowExecutionOwner owner) {
+        if (!CACHE.isEmpty()) {
+            TemplateLogger logger = new TemplateLogger(owner.getListener())
+            ArrayList msg = [
+                    "Values were found in the cache, so this helped reduce pipeline initiation time.",
+            ]
+            CACHE.entrySet().find { entry ->  entry.getKey().getOwner() == owner }.each { entry ->
+                msg.add("-- scm ${entry.getValue().getScmKey()}")
+            }
+            logger.print(msg)
+            CACHE.entrySet().removeIf { entry -> entry.getKey().getOwner() == owner }
+        }
+    }
+
+    /**
      * Creates a FileSystemWrapper. Can either be provided an SCM directly
      * or try to infer the SCM from the current job
      * @param owner the current run
@@ -73,16 +107,23 @@ class FileSystemWrapperFactory {
         throw new IllegalStateException("Unable to build a FileSystemWrapper")
     }
 
-    private static FileSystemWrapper fromSCM(FlowExecutionOwner owner, WorkflowJob job, SCM scm){
-        SCMFileSystem fs
-        fs = SCMFileSystem.of(job, scm)
-        FileSystemWrapper fsw = new FileSystemWrapper(fs: fs, scmKey: scm.getKey(), owner: owner)
+    private static FileSystemWrapper fromSCM(FlowExecutionOwner owner, WorkflowJob job, SCM scm) {
+        FileSystemWrapper fsw
+        FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scm: scm)
+        if (CACHE.containsKey(cacheKey)) {
+            fsw = CACHE.get(cacheKey)
+        } else {
+            SCMFileSystem fs
+            fs = SCMFileSystem.of(job, scm)
+            fsw = new FileSystemWrapper(fs: fs, scmKey: scm.getKey(), owner: owner)
+            CACHE.put(cacheKey, fsw)
+        }
+
         return fsw
     }
 
     private static FileSystemWrapper fromMultiBranchProject(FlowExecutionOwner owner, WorkflowJob job, TaskListener listener){
         ItemGroup<?> parent = job.getParent()
-
         BranchJobProperty property = job.getProperty(BranchJobProperty)
         if (!property) {
             throw new JTEException("BranchJobProperty is somehow missing")
@@ -96,19 +137,32 @@ class FileSystemWrapperFactory {
 
         SCMHead head = branch.getHead()
         SCMRevision tip = scmSource.fetch(head, listener)
-
+        FileSystemWrapper fsw
         SCMFileSystem fs
         String scmKey
         if (tip) {
             scmKey = branch.getScm().getKey()
             SCMRevision rev = scmSource.getTrustedRevision(tip, listener)
-            fs = SCMFileSystem.of(scmSource, head, rev)
+            FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scmSource: scmSource, scmHead: head, scmRevision: rev)
+            if (CACHE.containsKey(cacheKey)) {
+                fsw = CACHE.get(cacheKey)
+            } else {
+                fs = SCMFileSystem.of(scmSource, head, rev)
+                fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
+                CACHE.put(cacheKey, fsw)
+            }
         } else {
             SCM jobSCM = branch.getScm()
-            fs = SCMFileSystem.of(job, jobSCM)
             scmKey = jobSCM.getKey()
+            FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scm: jobSCM)
+            if (CACHE.containsKey(cacheKey)) {
+                fsw = CACHE.get(cacheKey)
+            } else {
+                fs = SCMFileSystem.of(job, jobSCM)
+                fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
+                CACHE.put(cacheKey, fsw)
+            }
         }
-        FileSystemWrapper fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
         return fsw
     }
 
@@ -116,8 +170,15 @@ class FileSystemWrapperFactory {
         FlowDefinition definition = job.getDefinition()
         SCM jobSCM = definition.getScm()
         String scmKey = jobSCM.getKey()
-        SCMFileSystem fs = SCMFileSystem.of(job, jobSCM)
-        FileSystemWrapper fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
+        FileSystemCacheKey cacheKey = new FileSystemCacheKey(owner: owner, scm: jobSCM)
+        FileSystemWrapper fsw
+        if (CACHE.containsKey(cacheKey)) {
+            fsw = CACHE.get(cacheKey)
+        } else {
+            SCMFileSystem fs = SCMFileSystem.of(job, jobSCM)
+            fsw = new FileSystemWrapper(fs: fs, scmKey: scmKey, owner: owner)
+            CACHE.put(cacheKey, fsw)
+        }
         return fsw
     }
 
