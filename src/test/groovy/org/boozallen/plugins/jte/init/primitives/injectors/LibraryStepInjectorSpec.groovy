@@ -225,4 +225,26 @@ class LibraryStepInjectorSpec extends Specification {
         jenkins.assertBuildStatusSuccess(run)
     }
 
+    def "folder libraries can access config variable"() {
+        given:
+        // add folder
+        TestLibraryProvider lib2 = new TestLibraryProvider()
+        lib2.addStep("lib", "step", """
+        void call(){
+          assert config.x == 1
+        }
+        """)
+        Folder folder = jenkins.createProject(Folder)
+        lib2.addToFolder(folder)
+        // create job
+        WorkflowJob job = TestUtil.createAdHocInFolder(folder,
+          config: 'libraries{ lib { x = 1 } }',
+          template: 'step()'
+        )
+        when:
+        def run = job.scheduleBuild2(0).get()
+        then:
+        jenkins.assertBuildStatusSuccess(run)
+    }
+
 }

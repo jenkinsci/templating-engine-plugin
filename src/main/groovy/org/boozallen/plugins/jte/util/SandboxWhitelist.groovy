@@ -19,8 +19,11 @@ import hudson.Extension
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitive
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveCollector
 import org.boozallen.plugins.jte.init.primitives.TemplatePrimitiveNamespace
+import org.boozallen.plugins.jte.init.primitives.hooks.HookContext
 import org.boozallen.plugins.jte.init.primitives.hooks.HooksWrapper
 import org.boozallen.plugins.jte.init.primitives.injectors.LibraryNamespace
+import org.boozallen.plugins.jte.init.primitives.injectors.StageInjector
+import org.boozallen.plugins.jte.init.primitives.injectors.StepContext
 import org.boozallen.plugins.jte.init.primitives.injectors.StepWrapperScript
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.AbstractWhitelist
 import org.boozallen.plugins.jte.init.governance.config.dsl.PipelineConfigurationBuilder
@@ -40,13 +43,17 @@ import java.lang.reflect.Method
     ]
 
     private final List<Class> permittedReceivers = [
-        TemplatePrimitive,
-        TemplatePrimitiveCollector.JTEVar,
-        TemplatePrimitiveNamespace,
-        LibraryNamespace,
-        HooksWrapper,
-        PipelineConfigurationBuilder,
-        DslEnvVar
+            TemplatePrimitive,
+            TemplatePrimitiveCollector.JTEVar,
+            TemplatePrimitiveNamespace,
+            LibraryNamespace,
+            HooksWrapper,
+            PipelineConfigurationBuilder,
+            DslEnvVar,
+            StepWrapperScript,
+            HookContext,
+            StepContext,
+            StageInjector.StageContext
     ]
 
     @Override
