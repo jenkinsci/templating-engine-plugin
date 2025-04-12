@@ -123,10 +123,10 @@ sourceSets {
         }
     }
 }
-
-groovydoc{
-    source fileTree("src/main/groovy")
-}
+//
+//groovydoc{
+//    source fileTree("src/main/groovy")
+//}
 
 /**
  * this is necessary so that the groovydocs show up as the javadocs

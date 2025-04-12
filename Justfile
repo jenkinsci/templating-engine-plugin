@@ -101,7 +101,7 @@ release version branch=`git branch --show-current`:
   git push origin refs/tags/{{version}}
 
   # publish the docs
-  docker run --rm -v ~/.git-credentials:/root/.git-credentials -v $(pwd):/app -w /app --entrypoint=mike jte-docs-builder deploy --push --update-aliases {{version}} latest
+  # docker run --rm -v ~/.git-credentials:/root/.git-credentials -v $(pwd):/app -w /app --entrypoint=mike jte-docs-builder deploy --push --update-aliases {{version}} latest
 
   # publish the JPI
   ./gradlew publish
